@@ -98,32 +98,43 @@ function SettingsForm() {
   const usernameValid = /^[a-z0-9_.]{3,20}$/.test(username)
 
   useEffect(() => {
+    let mounted = true
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push('/auth/login'); return }
-      setUserId(user.id)
-      setEmail(user.email || '')
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!mounted) return
+        if (!session?.user) { router.replace('/auth/login?redirect=/settings'); return }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+        const user = session.user
+        setUserId(user.id)
+        setEmail(user.email || '')
 
-      if (profile) {
-        setFullName(profile.full_name || '')
-        setUsername(profile.username || '')
-        setBio(profile.bio || '')
-        setWebsite(profile.website || '')
-        setTwitter(profile.twitter || '')
-        setInstagram(profile.instagram || '')
-        setYoutube(profile.youtube || '')
-        setAvatarUrl(profile.avatar_url || '')
-        setAvatarPreview(profile.avatar_url || '')
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (!mounted) return
+        if (profile) {
+          setFullName(profile.full_name || '')
+          setUsername(profile.username || '')
+          setBio(profile.bio || '')
+          setWebsite(profile.website || '')
+          setTwitter(profile.twitter || '')
+          setInstagram(profile.instagram || '')
+          setYoutube(profile.youtube || '')
+          setAvatarUrl(profile.avatar_url || '')
+          setAvatarPreview(profile.avatar_url || '')
+        }
+      } catch (err) {
+        console.error(err)
+      } finally {
+        if (mounted) setPageLoading(false)
       }
-      setPageLoading(false)
     }
     load()
+    return () => { mounted = false }
   }, [])
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
