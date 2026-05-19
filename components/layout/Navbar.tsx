@@ -147,6 +147,16 @@ export default function Navbar() {
             }}>+ Share Prompt</Link>
             {user ? (
               <>
+                <Link href="/post/new" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  background: '#FF6D1F', color: '#fff', fontWeight: 700,
+                  padding: '8px 16px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px',
+                }}>+ Share Prompt</Link>
+                <Link href="/settings" style={{
+                  fontSize: '13px', color: '#9a8f7a', textDecoration: 'none',
+                  padding: '6px 10px', borderRadius: '8px',
+                  background: 'rgba(255,255,255,0.05)',
+                }}>⚙️ Settings</Link>
                 <Link href={`/profile/${user.user_metadata?.username || user.id}`} style={{
                   width: '34px', height: '34px', borderRadius: '50%',
                   background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
@@ -227,7 +237,7 @@ export default function Navbar() {
           { href: '/prompts',   label: 'Prompts',   Icon: PromptsIcon },
           { href: '/post/new',  label: '',          Icon: PostIcon, isPost: true },
           { href: '/tutorials', label: 'Tutorials', Icon: TutorialsIcon },
-          { href: '/community', label: 'Community', Icon: CommunityIcon },
+          { href: '/settings',  label: 'Settings',  Icon: CommunityIcon },
         ].map(({ href, label, Icon, isPost }) => {
           const active = isPost ? pathname === href : pathname.startsWith(href)
           return (

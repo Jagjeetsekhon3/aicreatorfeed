@@ -25,7 +25,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div style={{ minHeight: '100vh', background: '#222222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%' }} />
       </div>
     }>
       <LoginForm />
@@ -39,19 +39,41 @@ function LoginForm() {
   const redirect = searchParams.get('redirect') || '/feed'
   const supabase = createClient()
 
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('') // email or username
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
+  const isEmail = identifier.includes('@')
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setError(error.message); setLoading(false) }
-    else { router.push(redirect); router.refresh() }
+
+    try {
+      let email = identifier.trim()
+
+      // If username entered, resolve to email first
+      if (!isEmail) {
+        const res = await fetch('/api/auth/resolve-username', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: identifier.trim().replace('@', '') }),
+        })
+        const data = await res.json()
+        if (!res.ok) { setError(data.error || 'Username not found'); setLoading(false); return }
+        email = data.email
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) { setError(error.message); setLoading(false) }
+      else { router.push(redirect); router.refresh() }
+    } catch {
+      setError('Something went wrong. Please try again.')
+      setLoading(false)
+    }
   }
 
   return (
@@ -75,9 +97,32 @@ function LoginForm() {
           )}
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required autoComplete="email" style={inp} />
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>
+                Email or Username
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  value={identifier}
+                  onChange={e => setIdentifier(e.target.value)}
+                  placeholder="you@email.com or @username"
+                  required
+                  autoComplete="username"
+                  style={{ ...inp, paddingRight: '80px' }}
+                />
+                {identifier && (
+                  <span style={{
+                    position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+                    fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '6px',
+                    background: isEmail ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.08)',
+                    color: isEmail ? '#FF6D1F' : '#9a8f7a',
+                  }}>
+                    {isEmail ? 'email' : 'username'}
+                  </span>
+                )}
+              </div>
             </div>
 
             <div>
@@ -86,18 +131,26 @@ function LoginForm() {
                 <Link href="/auth/forgot-password" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none' }}>Forgot password?</Link>
               </div>
               <div style={{ position: 'relative' }}>
-                <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required autoComplete="current-password" style={{ ...inp, paddingRight: '48px' }} />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: '#9a8f7a' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password} onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••" required autoComplete="current-password"
+                  style={{ ...inp, paddingRight: '48px' }}
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{
+                  position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: '#9a8f7a',
+                }}>
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
             </div>
 
-            <button type="submit" disabled={loading || !email || !password} style={{
+            <button type="submit" disabled={loading || !identifier || !password} style={{
               width: '100%', padding: '14px', borderRadius: '12px',
-              background: '#FF6D1F', border: 'none', cursor: 'pointer',
+              background: '#FF6D1F', border: 'none', cursor: loading ? 'wait' : 'pointer',
               fontSize: '15px', fontWeight: 700, color: '#fff', fontFamily: 'inherit',
-              opacity: (!email || !password) ? 0.5 : 1, marginTop: '4px',
+              opacity: (!identifier || !password) ? 0.5 : 1, marginTop: '4px',
             }}>
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
