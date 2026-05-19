@@ -35,15 +35,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Already logged in — don't show login/signup pages
-  if (user && (
-    request.nextUrl.pathname === '/auth/login' ||
-    request.nextUrl.pathname === '/auth/signup'
-  )) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/feed'
-    return NextResponse.redirect(url)
-  }
+  // NOTE: We do NOT redirect logged-in users away from /auth pages here
+  // because middleware session timing can cause false redirects.
+  // The auth pages handle this themselves.
 
   return supabaseResponse
 }

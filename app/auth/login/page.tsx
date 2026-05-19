@@ -1,5 +1,5 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -39,13 +39,28 @@ function LoginForm() {
   const redirect = searchParams.get('redirect') || '/feed'
   const supabase = createClient()
 
-  const [identifier, setIdentifier] = useState('') // email or username
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [checking, setChecking] = useState(true)
 
   const isEmail = identifier.includes('@')
+
+  // If already logged in, go to feed
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) router.replace(redirect)
+      else setChecking(false)
+    })
+  }, [])
+
+  if (checking) return (
+    <div style={{ minHeight: '100vh', background: '#222222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%' }} />
+    </div>
+  )
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
