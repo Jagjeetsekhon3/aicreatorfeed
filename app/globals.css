@@ -1,45 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* ── AiCreatorFeed Official Brand Colors ── */
-  --bg:             #222222;
-  --surface:        #2a2a2a;
-  --card:           #2f2f2f;
-  --border:         rgba(255,255,255,0.08);
-  --accent:         #FF6D1F;
-  --accent-hover:   #FF8540;
-  --accent-muted:   rgba(255,109,31,0.12);
-  --text-primary:   #FAF3E1;
-  --text-secondary: #F5E7C6;
-  --text-muted:     #9a8f7a;
+  --bg:     #222222;
+  --card:   #2f2f2f;
+  --orange: #FF6D1F;
+  --cream:  #FAF3E1;
+  --beige:  #F5E7C6;
+  --muted:  #9a8f7a;
+  --border: rgba(255,255,255,0.07);
 }
 
 body {
   background: var(--bg);
-  color: var(--text-primary);
+  color: var(--cream);
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer components {
-  .card {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    @apply rounded-2xl;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    @apply font-medium px-5 py-2.5 rounded-xl transition-all;
-  }
-  .btn-primary:hover { background: var(--accent-hover); }
-  .btn-outline {
-    border: 0.5px solid rgba(255,109,31,0.35);
-    color: var(--accent);
-    @apply font-medium px-5 py-2.5 rounded-xl transition-all;
-  }
-  .btn-outline:hover { background: var(--accent-muted); }
-  .tag {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
-  }
-}
+a { color: inherit; }
+
+img { max-width: 100%; display: block; }

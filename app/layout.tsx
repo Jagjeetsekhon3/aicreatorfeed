@@ -7,16 +7,15 @@ const inter = Inter({ subsets: ['latin'], weight: ['400','500','600','700','900'
 
 export const metadata: Metadata = {
   title: 'AiCreatorFeed — Where AI Creators Connect',
-  description: 'Follow AI creators, share image & video prompts, explore the latest AI news and tutorials. Feed Your AI Obsession.',
-  keywords: 'AI community, AI prompts, Midjourney, Sora, AI tutorials, AI news',
+  description: 'Follow AI creators, share image & video prompts, explore the latest AI news and tutorials.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className} style={{ background: '#222222', color: '#FAF3E1', minHeight: '100vh' }}>
+      <body className={inter.className} style={{ background: '#222222', color: '#FAF3E1', minHeight: '100vh', margin: 0, padding: 0 }}>
         <Navbar />
-        <main className="max-w-6xl mx-auto px-4 pt-6 pb-16">
+        <main style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 16px 80px' }}>
           {children}
         </main>
       </body>
