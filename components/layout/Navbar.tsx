@@ -12,11 +12,13 @@ const navLinks = [
 
 function Logo() {
   return (
-    <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="10" fill="#FF6D1F"/>
-      <text x="20" y="29" textAnchor="middle" fontFamily="Arial Black, Arial, sans-serif" fontWeight="900" fontSize="26" fill="#FAF3E1">A</text>
-      <circle cx="29" cy="12" r="4.5" fill="#222222"/>
-      <circle cx="29" cy="12" r="3" fill="#FAF3E1"/>
+    <svg width="34" height="34" viewBox="-54 -100 108 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Triangle A shape */}
+      <polygon points="0,-72 54,60 36,60 0,-12 -36,60 -54,60" fill="#FF6D1F"/>
+      {/* Crossbar cutout — matches navbar bg */}
+      <rect x="-28" y="14" width="56" height="13" fill="#222222" opacity="1"/>
+      {/* Circle dot on top */}
+      <circle cx="0" cy="-88" r="13" fill="#FF6D1F"/>
     </svg>
   )
 }
