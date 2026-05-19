@@ -1,0 +1,93 @@
+<!-- 
+  PASTE THIS IN: Supabase Dashboard → Authentication → Email Templates → Confirm signup
+  This replaces the default Supabase email with your AiCreatorFeed brand
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirm your AiCreatorFeed account</title>
+</head>
+<body style="margin:0;padding:0;background:#1a1a1a;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#1a1a1a;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+
+          <!-- Logo header -->
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-right:10px;">
+                    <!-- A logo mark -->
+                    <svg width="38" height="38" viewBox="-54 -100 108 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <polygon points="0,-72 54,60 36,60 0,-12 -36,60 -54,60" fill="#FF6D1F"/>
+                      <rect x="-28" y="14" width="56" height="13" fill="#222222"/>
+                      <circle cx="0" cy="-88" r="13" fill="#FF6D1F"/>
+                    </svg>
+                  </td>
+                  <td>
+                    <span style="font-size:22px;font-weight:900;color:#FAF3E1;letter-spacing:-0.5px;">
+                      Ai<span style="color:#FF6D1F;">Creator</span>Feed
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td style="background:#2f2f2f;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:40px 36px;">
+
+              <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#FAF3E1;text-align:center;">
+                Confirm your email
+              </h1>
+              <p style="margin:0 0 32px;font-size:15px;color:#9a8f7a;text-align:center;line-height:1.6;">
+                You're one step away from joining the AI creator community.
+              </p>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding-bottom:32px;">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#FF6D1F;color:#ffffff;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:12px;">
+                      Confirm my account →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 8px;font-size:13px;color:#9a8f7a;text-align:center;">
+                Or copy this link into your browser:
+              </p>
+              <p style="margin:0 0 32px;font-size:12px;color:#FF6D1F;text-align:center;word-break:break-all;">
+                {{ .ConfirmationURL }}
+              </p>
+
+              <hr style="border:none;border-top:1px solid rgba(255,255,255,0.07);margin-bottom:24px;"/>
+
+              <p style="margin:0;font-size:12px;color:#9a8f7a;text-align:center;line-height:1.6;">
+                This link expires in 24 hours. If you didn't create an account, you can safely ignore this email.<br/>
+                <strong style="color:#F5E7C6;">AiCreatorFeed</strong> · Where AI Creators Connect
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:24px;">
+              <p style="margin:0;font-size:12px;color:#6b6460;">
+                © 2025 AiCreatorFeed · aicreatorfeed.com
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
