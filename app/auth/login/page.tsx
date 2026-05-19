@@ -50,10 +50,15 @@ function LoginForm() {
 
   // If already logged in, go to feed
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) router.replace(redirect)
+    let mounted = true
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return
+      if (data.session) router.replace(redirect)
       else setChecking(false)
+    }).catch(() => {
+      if (mounted) setChecking(false)
     })
+    return () => { mounted = false }
   }, [])
 
   if (checking) return (
