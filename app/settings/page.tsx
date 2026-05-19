@@ -99,11 +99,21 @@ function SettingsForm() {
 
   useEffect(() => {
     let mounted = true
+
+    // Hard timeout — if nothing loads in 5s, stop spinning
+    const timeout = setTimeout(() => {
+      if (mounted) setPageLoading(false)
+    }, 5000)
+
     async function load() {
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!mounted) return
-        if (!session?.user) { router.replace('/auth/login?redirect=/settings'); return }
+        if (!session?.user) {
+          clearTimeout(timeout)
+          router.replace('/auth/login?redirect=/settings')
+          return
+        }
 
         const user = session.user
         setUserId(user.id)
@@ -116,7 +126,18 @@ function SettingsForm() {
           .single()
 
         if (!mounted) return
-        if (profile) {
+
+        // Profile might not exist yet if user signed up before DB was set up
+        if (!profile) {
+          const defaultUsername = (user.email || '').split('@')[0].replace(/[^a-z0-9_.]/g, '').slice(0, 20) || `user_${user.id.slice(0, 8)}`
+          await supabase.from('profiles').upsert({
+            id: user.id,
+            username: defaultUsername,
+            full_name: user.user_metadata?.full_name || '',
+          })
+          setUsername(defaultUsername)
+          setFullName(user.user_metadata?.full_name || '')
+        } else {
           setFullName(profile.full_name || '')
           setUsername(profile.username || '')
           setBio(profile.bio || '')
@@ -128,13 +149,14 @@ function SettingsForm() {
           setAvatarPreview(profile.avatar_url || '')
         }
       } catch (err) {
-        console.error(err)
+        console.error('Settings load error:', err)
       } finally {
+        clearTimeout(timeout)
         if (mounted) setPageLoading(false)
       }
     }
     load()
-    return () => { mounted = false }
+    return () => { mounted = false; clearTimeout(timeout) }
   }, [])
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -220,7 +242,8 @@ function SettingsForm() {
 
   if (pageLoading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
