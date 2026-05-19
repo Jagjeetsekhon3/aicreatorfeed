@@ -99,19 +99,25 @@ function SettingsForm() {
 
   useEffect(() => {
     let mounted = true
-
-    // Hard timeout — if nothing loads in 5s, stop spinning
-    const timeout = setTimeout(() => {
-      if (mounted) setPageLoading(false)
-    }, 5000)
+    const timeout = setTimeout(() => { if (mounted) setPageLoading(false) }, 6000)
 
     async function load() {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        // Try getSession first (fast, reads cookie)
+        let session = (await supabase.auth.getSession()).data.session
+
+        // If no session, wait 1s and retry once (handles slow cookie propagation on production)
+        if (!session) {
+          await new Promise(r => setTimeout(r, 1000))
+          session = (await supabase.auth.getSession()).data.session
+        }
+
         if (!mounted) return
+
         if (!session?.user) {
           clearTimeout(timeout)
-          router.replace('/auth/login?redirect=/settings')
+          // Don't redirect — just show empty form, user can sign in from navbar
+          setPageLoading(false)
           return
         }
 
@@ -127,14 +133,9 @@ function SettingsForm() {
 
         if (!mounted) return
 
-        // Profile might not exist yet if user signed up before DB was set up
         if (!profile) {
           const defaultUsername = (user.email || '').split('@')[0].replace(/[^a-z0-9_.]/g, '').slice(0, 20) || `user_${user.id.slice(0, 8)}`
-          await supabase.from('profiles').upsert({
-            id: user.id,
-            username: defaultUsername,
-            full_name: user.user_metadata?.full_name || '',
-          })
+          await supabase.from('profiles').upsert({ id: user.id, username: defaultUsername, full_name: user.user_metadata?.full_name || '' })
           setUsername(defaultUsername)
           setFullName(user.user_metadata?.full_name || '')
         } else {

@@ -21,23 +21,9 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session — keeps user logged in
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // Protect these routes — redirect to login if not authed
-  const protectedPaths = ['/post/new', '/settings', '/profile/edit']
-  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p))
-
-  if (isProtected && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
-    url.searchParams.set('redirect', request.nextUrl.pathname)
-    return NextResponse.redirect(url)
-  }
-
-  // NOTE: We do NOT redirect logged-in users away from /auth pages here
-  // because middleware session timing can cause false redirects.
-  // The auth pages handle this themselves.
+  // Only refresh the session — do NOT do any redirects here.
+  // Route protection is handled client-side in each page.
+  await supabase.auth.getSession()
 
   return supabaseResponse
 }
