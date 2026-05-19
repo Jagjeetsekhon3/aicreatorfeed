@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 
 const navLinks = [
   { href: '/feed',      label: 'Feed',      icon: FeedIcon },
@@ -81,6 +82,7 @@ function NewsIcon({ active }: { active: boolean }) {
 
 export default function Navbar() {
   const pathname = usePathname()
+  const { user, signOut } = useAuth()
 
   return (
     <>
@@ -143,12 +145,30 @@ export default function Navbar() {
               background: '#FF6D1F', color: '#fff', fontWeight: 700,
               padding: '8px 16px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px',
             }}>+ Share Prompt</Link>
-            <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
-            <Link href="/auth/signup" style={{
-              fontSize: '13px', fontWeight: 600,
-              background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)',
-              color: '#FF6D1F', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none',
-            }}>Join free</Link>
+            {user ? (
+              <>
+                <Link href={`/profile/${user.user_metadata?.username || user.id}`} style={{
+                  width: '34px', height: '34px', borderRadius: '50%',
+                  background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '13px', fontWeight: 700, color: '#FF6D1F', textDecoration: 'none',
+                }}>
+                  {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
+                </Link>
+                <button onClick={signOut} style={{
+                  fontSize: '13px', color: '#9a8f7a', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                }}>Sign out</button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
+                <Link href="/auth/signup" style={{
+                  fontSize: '13px', fontWeight: 600,
+                  background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)',
+                  color: '#FF6D1F', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none',
+                }}>Join free</Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -170,12 +190,27 @@ export default function Navbar() {
           </span>
         </Link>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
-          <Link href="/auth/signup" style={{
-            fontSize: '12px', fontWeight: 700,
-            background: '#FF6D1F', color: '#fff',
-            padding: '7px 14px', borderRadius: '8px', textDecoration: 'none',
-          }}>Join free</Link>
+          {user ? (
+            <>
+              <Link href={`/profile/${user.user_metadata?.username || user.id}`} style={{
+                width: '32px', height: '32px', borderRadius: '50%',
+                background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '12px', fontWeight: 700, color: '#FF6D1F', textDecoration: 'none',
+              }}>
+                {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
+              <Link href="/auth/signup" style={{
+                fontSize: '12px', fontWeight: 700,
+                background: '#FF6D1F', color: '#fff',
+                padding: '7px 14px', borderRadius: '8px', textDecoration: 'none',
+              }}>Join free</Link>
+            </>
+          )}
         </div>
       </nav>
 
