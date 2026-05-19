@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -11,6 +11,14 @@ const inp: React.CSSProperties = {
 }
 
 export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#222222' }} />}>
+      <ForgotPasswordForm />
+    </Suspense>
+  )
+}
+
+function ForgotPasswordForm() {
   const supabase = createClient()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
