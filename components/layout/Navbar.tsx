@@ -140,11 +140,6 @@ export default function Navbar() {
 
           {/* Right */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Link href="/post/new" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '6px',
-              background: '#FF6D1F', color: '#fff', fontWeight: 700,
-              padding: '8px 16px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px',
-            }}>+ Share Prompt</Link>
             {user ? (
               <>
                 <Link href="/post/new" style={{
@@ -152,12 +147,7 @@ export default function Navbar() {
                   background: '#FF6D1F', color: '#fff', fontWeight: 700,
                   padding: '8px 16px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px',
                 }}>+ Share Prompt</Link>
-                <Link href="/settings" style={{
-                  fontSize: '13px', color: '#9a8f7a', textDecoration: 'none',
-                  padding: '6px 10px', borderRadius: '8px',
-                  background: 'rgba(255,255,255,0.05)',
-                }}>⚙️ Settings</Link>
-                <Link href={`/profile/${user.user_metadata?.username || user.id}`} style={{
+                <Link href="/settings" title="Settings" style={{
                   width: '34px', height: '34px', borderRadius: '50%',
                   background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -171,6 +161,11 @@ export default function Navbar() {
               </>
             ) : (
               <>
+                <Link href="/post/new" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  background: '#FF6D1F', color: '#fff', fontWeight: 700,
+                  padding: '8px 16px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px',
+                }}>+ Share Prompt</Link>
                 <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
                 <Link href="/auth/signup" style={{
                   fontSize: '13px', fontWeight: 600,
@@ -201,16 +196,14 @@ export default function Navbar() {
         </Link>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {user ? (
-            <>
-              <Link href={`/profile/${user.user_metadata?.username || user.id}`} style={{
-                width: '32px', height: '32px', borderRadius: '50%',
-                background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '12px', fontWeight: 700, color: '#FF6D1F', textDecoration: 'none',
-              }}>
-                {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
-              </Link>
-            </>
+            <Link href="/settings" title="Settings" style={{
+              width: '32px', height: '32px', borderRadius: '50%',
+              background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '12px', fontWeight: 700, color: '#FF6D1F', textDecoration: 'none',
+            }}>
+              {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
+            </Link>
           ) : (
             <>
               <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>

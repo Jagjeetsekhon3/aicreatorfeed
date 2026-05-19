@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Protect these routes — redirect to login if not authed
-  const protectedPaths = ['/post/new', '/profile/edit', '/settings']
+  const protectedPaths = ['/post/new', '/settings', '/profile/edit']
   const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p))
 
   if (isProtected && !user) {
@@ -36,7 +36,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Already logged in — don't show login/signup pages
-  if (user && (request.nextUrl.pathname.startsWith('/auth/login') || request.nextUrl.pathname.startsWith('/auth/signup'))) {
+  if (user && (
+    request.nextUrl.pathname === '/auth/login' ||
+    request.nextUrl.pathname === '/auth/signup'
+  )) {
     const url = request.nextUrl.clone()
     url.pathname = '/feed'
     return NextResponse.redirect(url)
