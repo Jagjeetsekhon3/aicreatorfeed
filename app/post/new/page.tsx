@@ -1,7 +1,5 @@
 'use client'
 import { useState } from 'react'
-import ImageUpload from '@/components/ui/ImageUpload'
-import { Sparkles, Tag, ChevronDown } from 'lucide-react'
 
 const AI_TOOLS = ['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Adobe Firefly', 'Other']
 const MEDIA_TYPES = [
@@ -10,22 +8,17 @@ const MEDIA_TYPES = [
   { value: 'text',  label: 'Text / tips' },
 ]
 
-const inputStyle = {
-  width: '100%',
-  background: '#2f2f2f',
-  border: '0.5px solid rgba(255,255,255,0.1)',
-  borderRadius: '12px',
-  padding: '12px 16px',
-  fontSize: '14px',
-  color: '#FAF3E1',
-  outline: 'none',
+const inp: React.CSSProperties = {
+  width: '100%', background: '#2f2f2f',
+  border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
+  padding: '12px 16px', fontSize: '14px', color: '#FAF3E1', outline: 'none',
+  fontFamily: 'inherit',
 }
 
 export default function NewPostPage() {
-  const [mediaType, setMediaType] = useState<'image' | 'video' | 'text'>('image')
+  const [mediaType, setMediaType] = useState('image')
   const [caption, setCaption] = useState('')
   const [promptText, setPromptText] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
   const [aiTool, setAiTool] = useState('')
   const [tags, setTags] = useState('')
@@ -34,120 +27,63 @@ export default function NewPostPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
-    try {
-      alert('Post ready to save! Connect Supabase to publish.')
-    } finally {
-      setSubmitting(false)
-    }
+    try { alert('Ready to save! Connect Supabase to publish.') }
+    finally { setSubmitting(false) }
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-black mb-1" style={{ color: '#FAF3E1' }}>Share your prompt</h1>
-        <p className="text-sm" style={{ color: '#9a8f7a' }}>Show the community what you created with AI</p>
-      </div>
+    <div style={{ maxWidth: '640px', margin: '0 auto', padding: '32px 0' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#FAF3E1', marginBottom: '6px' }}>Share your prompt</h1>
+      <p style={{ color: '#9a8f7a', fontSize: '14px', marginBottom: '24px' }}>Show the community what you created with AI</p>
 
-      {/* Media type selector */}
-      <div className="flex gap-2 mb-6">
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
         {MEDIA_TYPES.map(({ value, label }) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setMediaType(value as typeof mediaType)}
-            className="px-4 py-2 rounded-xl text-sm font-semibold transition-all border"
-            style={mediaType === value
-              ? { background: '#FF6D1F', color: '#fff', borderColor: '#FF6D1F' }
-              : { background: '#2f2f2f', color: '#9a8f7a', borderColor: 'rgba(255,255,255,0.08)' }
-            }
-          >
-            {label}
-          </button>
+          <button key={value} onClick={() => setMediaType(value)} style={{
+            padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
+            border: '1px solid', cursor: 'pointer',
+            background: mediaType === value ? '#FF6D1F' : '#2f2f2f',
+            borderColor: mediaType === value ? '#FF6D1F' : 'rgba(255,255,255,0.08)',
+            color: mediaType === value ? '#fff' : '#9a8f7a',
+          }}>{label}</button>
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-
-        {mediaType === 'image' && (
-          <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: '#F5E7C6' }}>Image</label>
-            <ImageUpload onUpload={(url) => setImageUrl(url)} folder="posts" />
-          </div>
-        )}
-
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {mediaType === 'video' && (
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: '#F5E7C6' }}>YouTube or video URL</label>
-            <input
-              type="url"
-              placeholder="https://youtube.com/watch?v=..."
-              value={videoUrl}
-              onChange={e => setVideoUrl(e.target.value)}
-              style={inputStyle}
-            />
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '8px' }}>YouTube or video URL</label>
+            <input type="url" placeholder="https://youtube.com/watch?v=..." value={videoUrl} onChange={e => setVideoUrl(e.target.value)} style={inp} />
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: '#F5E7C6' }}>Caption</label>
-          <input
-            type="text"
-            placeholder="Describe what you created..."
-            value={caption}
-            onChange={e => setCaption(e.target.value)}
-            style={inputStyle}
-          />
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '8px' }}>Caption</label>
+          <input type="text" placeholder="Describe what you created..." value={caption} onChange={e => setCaption(e.target.value)} style={inp} />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: '#F5E7C6' }}>
-            <Sparkles size={14} style={{ color: '#FF6D1F' }} />
-            Your AI prompt
-          </label>
-          <textarea
-            placeholder="Paste the exact prompt you used so others can try it..."
-            value={promptText}
-            onChange={e => setPromptText(e.target.value)}
-            rows={4}
-            style={{ ...inputStyle, fontFamily: 'monospace', resize: 'none' }}
-          />
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '8px' }}>✦ Your AI prompt</label>
+          <textarea placeholder="Paste the exact prompt you used..." value={promptText} onChange={e => setPromptText(e.target.value)} rows={4} style={{ ...inp, fontFamily: 'monospace', resize: 'none' }} />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: '#F5E7C6' }}>AI tool used</label>
-          <div className="relative">
-            <select
-              value={aiTool}
-              onChange={e => setAiTool(e.target.value)}
-              style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
-            >
-              <option value="">Select tool...</option>
-              {AI_TOOLS.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#9a8f7a' }} />
-          </div>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '8px' }}>AI tool used</label>
+          <select value={aiTool} onChange={e => setAiTool(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+            <option value="">Select tool...</option>
+            {AI_TOOLS.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: '#F5E7C6' }}>
-            <Tag size={14} />
-            Tags
-          </label>
-          <input
-            type="text"
-            placeholder="cinematic, portrait, fantasy (comma separated)"
-            value={tags}
-            onChange={e => setTags(e.target.value)}
-            style={inputStyle}
-          />
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '8px' }}>Tags</label>
+          <input type="text" placeholder="cinematic, portrait, fantasy (comma separated)" value={tags} onChange={e => setTags(e.target.value)} style={inp} />
         </div>
 
-        <button
-          type="submit"
-          disabled={submitting || (!caption && !promptText)}
-          className="w-full font-bold py-3.5 rounded-xl transition-all disabled:opacity-50"
-          style={{ background: '#FF6D1F', color: '#fff' }}
-        >
+        <button type="submit" disabled={submitting || (!caption && !promptText)} style={{
+          background: '#FF6D1F', color: '#fff', fontWeight: 700, fontSize: '15px',
+          border: 'none', borderRadius: '12px', padding: '14px', cursor: 'pointer',
+          opacity: submitting ? 0.6 : 1,
+        }}>
           {submitting ? 'Publishing...' : 'Publish prompt'}
         </button>
       </form>
