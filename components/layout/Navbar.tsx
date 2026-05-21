@@ -157,6 +157,7 @@ function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
   const links = [
     { href: '/feed',      label: 'Feed',        icon: '🏠' },
     { href: '/explore',   label: 'Explore',     icon: '🔭' },
+    { href: '/search',    label: 'Search',      icon: '🔍' },
     { href: '/community', label: 'Community',   icon: '👥' },
     { href: '/news',      label: 'AI News',     icon: '📰' },
     { href: '/tutorials', label: 'Tutorials',   icon: '🎬' },
@@ -302,6 +303,16 @@ export default function Navbar() {
 
           {/* Right */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <Link href="/search" title="Search" style={{
+              width: '36px', height: '36px', borderRadius: '10px',
+              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="7" cy="7" r="5" stroke="#9a8f7a" strokeWidth="1.5"/>
+                <path d="M11 11L14 14" stroke="#9a8f7a" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </Link>
             <Link href="/post/new" title="Create post" style={{
               width: '36px', height: '36px', borderRadius: '10px', background: '#FF6D1F',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -338,6 +349,12 @@ export default function Navbar() {
           </span>
         </Link>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <Link href="/search" style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="7" cy="7" r="5" stroke="#9a8f7a" strokeWidth="1.5"/>
+              <path d="M11 11L14 14" stroke="#9a8f7a" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </Link>
           <BurgerMenu user={user} signOut={signOut} />
           {user ? (
             <ProfileDropdown user={user} signOut={signOut} />
