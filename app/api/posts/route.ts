@@ -56,9 +56,6 @@ export async function POST(req: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    // Update post count
-    await admin.rpc('increment_posts_count', { user_id: user.id }).catch(() => {})
-
     return NextResponse.json({ post: data })
   } catch (err) {
     console.error(err)
