@@ -5,7 +5,6 @@ import { useAuth } from '@/lib/auth-context'
 
 const navLinks = [
   { href: '/feed',      label: 'Feed',      icon: FeedIcon },
-  { href: '/prompts',   label: 'Prompts',   icon: PromptsIcon },
   { href: '/post/new',  label: 'Post',      icon: PostIcon },
   { href: '/tutorials', label: 'Tutorials', icon: TutorialsIcon },
   { href: '/community', label: 'Community', icon: CommunityIcon },
@@ -121,7 +120,6 @@ export default function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             {[
               { href: '/feed', label: 'Feed' },
-              { href: '/prompts', label: 'Prompts' },
               { href: '/news', label: 'AI News' },
               { href: '/tutorials', label: 'Tutorials' },
               { href: '/community', label: 'Community' },
@@ -142,11 +140,21 @@ export default function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {user ? (
               <>
-                <Link href="/post/new" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  background: '#FF6D1F', color: '#fff', fontWeight: 700,
-                  padding: '8px 16px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px',
-                }}>+ Share Prompt</Link>
+                <Link href="/post/new" title="Create post" style={{
+                  width: '36px', height: '36px', borderRadius: '10px',
+                  background: '#FF6D1F', color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  textDecoration: 'none', flexShrink: 0,
+                  boxShadow: '0 2px 8px rgba(255,109,31,0.35)',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.08)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 14px rgba(255,109,31,0.5)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 8px rgba(255,109,31,0.35)' }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 3.5V14.5M3.5 9H14.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
+                  </svg>
+                </Link>
                 <Link href="/settings" title="Settings" style={{
                   width: '34px', height: '34px', borderRadius: '50%',
                   background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
@@ -161,11 +169,17 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/post/new" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  background: '#FF6D1F', color: '#fff', fontWeight: 700,
-                  padding: '8px 16px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px',
-                }}>+ Share Prompt</Link>
+                <Link href="/post/new" title="Create post" style={{
+                  width: '36px', height: '36px', borderRadius: '10px',
+                  background: '#FF6D1F', color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  textDecoration: 'none', flexShrink: 0,
+                  boxShadow: '0 2px 8px rgba(255,109,31,0.35)',
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 3.5V14.5M3.5 9H14.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
+                  </svg>
+                </Link>
                 <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
                 <Link href="/auth/signup" style={{
                   fontSize: '13px', fontWeight: 600,
@@ -227,7 +241,6 @@ export default function Navbar() {
       }} className="mobile-bottom-nav">
         {[
           { href: '/feed',      label: 'Feed',      Icon: FeedIcon },
-          { href: '/prompts',   label: 'Prompts',   Icon: PromptsIcon },
           { href: '/post/new',  label: '',          Icon: PostIcon, isPost: true },
           { href: '/tutorials', label: 'Tutorials', Icon: TutorialsIcon },
           { href: '/settings',  label: 'Settings',  Icon: CommunityIcon },

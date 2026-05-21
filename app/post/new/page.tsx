@@ -4,21 +4,13 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { extractYouTubeId, getYouTubeThumbnail } from '@/lib/youtube'
 
-const AI_TOOLS = ['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Adobe Firefly', 'Flux', 'Other']
-
-const inp: React.CSSProperties = {
-  width: '100%', background: '#2a2a2a',
-  border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
-  padding: '12px 16px', fontSize: '14px', color: '#FAF3E1',
-  outline: 'none', fontFamily: 'inherit',
-}
+const AI_TOOLS = ['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Flux', 'Adobe Firefly', 'Other']
 
 export default function NewPostPage() {
   const router = useRouter()
   const supabase = createClient()
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const [userId, setUserId] = useState('')
   const [text, setText] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [imagePreview, setImagePreview] = useState('')
@@ -29,68 +21,60 @@ export default function NewPostPage() {
   const [youtubeThumbnail, setYoutubeThumbnail] = useState('')
   const [tags, setTags] = useState('')
   const [showPrompt, setShowPrompt] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [userAvatar, setUserAvatar] = useState('')
+  const [userInitial, setUserInitial] = useState('?')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) router.replace('/auth/login?redirect=/post/new')
-      else setUserId(data.session.user.id)
+      if (!data.session) { router.replace('/auth/login?redirect=/post/new'); return }
+      const u = data.session.user
+      setUserInitial((u.user_metadata?.full_name || u.email || '?')[0].toUpperCase())
+      supabase.from('profiles').select('avatar_url, full_name').eq('id', u.id).single().then(({ data: p }) => {
+        if (p?.avatar_url) setUserAvatar(p.avatar_url)
+        if (p?.full_name) setUserInitial(p.full_name[0].toUpperCase())
+      })
     })
   }, [])
 
-  // Auto-detect YouTube URL as user types
   useEffect(() => {
-    if (!youtubeLink) { setYoutubeId(''); setYoutubeThumbnail(''); return }
+    if (!youtubeLink.trim()) { setYoutubeId(''); setYoutubeThumbnail(''); return }
     const id = extractYouTubeId(youtubeLink)
     if (id) { setYoutubeId(id); setYoutubeThumbnail(getYouTubeThumbnail(id, 'hqdefault')) }
     else { setYoutubeId(''); setYoutubeThumbnail('') }
   }, [youtubeLink])
 
   async function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0]; if (!file) return
     if (file.size > 10 * 1024 * 1024) { setError('Max image size is 10MB'); return }
     setUploading(true); setError('')
-
-    // Show local preview
     const reader = new FileReader()
     reader.onload = ev => setImagePreview(ev.target?.result as string)
     reader.readAsDataURL(file)
-
-    // Upload to Cloudinary
-    const form = new FormData()
-    form.append('file', file)
-    form.append('folder', 'posts')
+    const form = new FormData(); form.append('file', file); form.append('folder', 'posts')
     const res = await fetch('/api/upload', { method: 'POST', body: form })
     const data = await res.json()
     if (data.secure_url) setImageUrl(data.secure_url)
-    else setError('Image upload failed')
+    else setError('Image upload failed. Check Cloudinary config.')
     setUploading(false)
   }
 
-  function removeImage() { setImageUrl(''); setImagePreview('') }
-  function removeVideo() { setYoutubeLink(''); setYoutubeId(''); setYoutubeThumbnail('') }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!text.trim() && !imageUrl && !youtubeId) { setError('Add some text, an image, or a video link'); return }
+    if (!text.trim() && !imageUrl && !youtubeId) { setError('Add some text, image, or video'); return }
     setSubmitting(true); setError('')
-
     const res = await fetch('/api/posts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        text: text.trim(),
-        image_url: imageUrl || null,
-        prompt_text: promptText.trim() || null,
-        ai_tool: aiTool || null,
+        text: text.trim(), image_url: imageUrl || null,
+        prompt_text: promptText.trim() || null, ai_tool: aiTool || null,
         youtube_id: youtubeId || null,
         tags: tags.split(',').map(t => t.trim().toLowerCase().replace(/^#/, '')).filter(Boolean),
       }),
     })
-
     const data = await res.json()
     if (!res.ok) { setError(data.error || 'Failed to post'); setSubmitting(false); return }
     router.push('/feed')
@@ -99,176 +83,204 @@ export default function NewPostPage() {
   const canPost = (text.trim() || imageUrl || youtubeId) && !uploading && !submitting
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px 0 80px' }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    <div style={{ maxWidth: '580px', margin: '0 auto', padding: '32px 0 100px' }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '20px', padding: '4px' }}>←</button>
-        <h1 style={{ fontSize: '20px', fontWeight: 900, color: '#FAF3E1' }}>Create post</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontFamily: 'inherit', padding: '6px 0' }}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          Back
+        </button>
+        <h1 style={{ fontSize: '17px', fontWeight: 800, color: '#FAF3E1' }}>New post</h1>
+        <button type="submit" form="post-form" disabled={!canPost} style={{
+          background: canPost ? '#FF6D1F' : 'rgba(255,255,255,0.08)',
+          color: canPost ? '#fff' : '#555',
+          border: 'none', borderRadius: '10px', padding: '8px 18px',
+          fontSize: '14px', fontWeight: 700, cursor: canPost ? 'pointer' : 'not-allowed',
+          fontFamily: 'inherit', transition: 'all 0.2s',
+          display: 'flex', alignItems: 'center', gap: '6px',
+        }}>
+          {submitting
+            ? <><div style={{ width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />Posting</>
+            : 'Post'}
+        </button>
       </div>
 
       {error && (
-        <div style={{ background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '10px', padding: '12px 14px', marginBottom: '16px', fontSize: '13px', color: '#ff8080' }}>
+        <div style={{ background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '12px', padding: '12px 14px', marginBottom: '16px', fontSize: '13px', color: '#ff8080', animation: 'fadeUp 0.2s ease' }}>
           ⚠ {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        {/* Main card */}
-        <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden', marginBottom: '12px' }}>
+      <form id="post-form" onSubmit={handleSubmit}>
 
-          {/* Text area */}
-          <textarea
-            value={text}
-            onChange={e => setText(e.target.value)}
-            placeholder="Share something with the AI creator community..."
-            rows={4}
-            maxLength={2000}
-            style={{
-              width: '100%', background: 'transparent', border: 'none',
-              padding: '16px', fontSize: '15px', color: '#FAF3E1',
-              resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.6,
-            }}
-          />
-          <div style={{ padding: '0 16px 8px', textAlign: 'right' }}>
-            <span style={{ fontSize: '11px', color: text.length > 1800 ? '#ff8080' : '#9a8f7a' }}>{text.length}/2000</span>
+        {/* Composer card */}
+        <div style={{ background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', overflow: 'hidden' }}>
+
+          {/* Top row — avatar + textarea */}
+          <div style={{ display: 'flex', gap: '12px', padding: '18px 18px 10px' }}>
+            {/* Avatar */}
+            <div style={{ flexShrink: 0, marginTop: '2px' }}>
+              {userAvatar
+                ? <img src={userAvatar} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 700 }}>{userInitial}</div>
+              }
+            </div>
+            {/* Text */}
+            <div style={{ flex: 1 }}>
+              <textarea
+                value={text} onChange={e => setText(e.target.value)}
+                placeholder="What are you creating with AI today?"
+                rows={4} maxLength={2000}
+                style={{ width: '100%', background: 'transparent', border: 'none', padding: 0, fontSize: '16px', color: '#FAF3E1', resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.65, letterSpacing: '0.01em' }}
+              />
+              {text.length > 1800 && (
+                <p style={{ fontSize: '11px', color: text.length > 1950 ? '#ff8080' : '#9a8f7a', textAlign: 'right', margin: '4px 0 0' }}>{text.length}/2000</p>
+              )}
+            </div>
           </div>
 
           {/* Image preview */}
           {imagePreview && (
-            <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-              <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', display: 'block' }} />
+            <div style={{ position: 'relative', margin: '0 18px 14px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '360px', objectFit: 'cover', display: 'block' }} />
               {uploading && (
-                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                  <span style={{ color: '#FAF3E1', fontSize: '13px' }}>Uploading...</span>
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                  <div style={{ width: '28px', height: '28px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                  <span style={{ fontSize: '13px', color: '#FAF3E1', fontWeight: 600 }}>Uploading...</span>
                 </div>
               )}
               {!uploading && (
-                <button type="button" onClick={removeImage} style={{
-                  position: 'absolute', top: '10px', right: '10px',
-                  width: '30px', height: '30px', borderRadius: '50%',
-                  background: 'rgba(0,0,0,0.7)', border: 'none', color: '#fff',
-                  cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>×</button>
+                <button type="button" onClick={() => { setImageUrl(''); setImagePreview('') }} style={{ position: 'absolute', top: '10px', right: '10px', width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(0,0,0,0.65)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                </button>
               )}
             </div>
           )}
 
           {/* YouTube preview */}
           {youtubeId && (
-            <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#111' }}>
+            <div style={{ margin: '0 18px 14px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', position: 'relative', animation: 'fadeUp 0.25s ease' }}>
+              <div style={{ position: 'relative', paddingBottom: '56.25%' }}>
                 <img src={youtubeThumbnail} alt="Video" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}>
-                  <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(255,109,31,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: '#fff', fontSize: '20px', marginLeft: '3px' }}>▶</span>
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(255,109,31,0.4)' }}>
+                    <span style={{ color: '#fff', fontSize: '16px', marginLeft: '3px' }}>▶</span>
                   </div>
                 </div>
               </div>
-              <button type="button" onClick={removeVideo} style={{
-                position: 'absolute', top: '10px', right: '10px',
-                width: '30px', height: '30px', borderRadius: '50%',
-                background: 'rgba(0,0,0,0.7)', border: 'none', color: '#fff',
-                cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>×</button>
-              <div style={{ padding: '10px 14px', background: 'rgba(0,0,0,0.2)' }}>
-                <p style={{ fontSize: '12px', color: '#9a8f7a' }}>✓ YouTube video detected — will play on site</p>
+              <div style={{ padding: '10px 14px', background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '12px', color: '#9a8f7a' }}>✓ YouTube video — plays on site</span>
+                <button type="button" onClick={() => { setYoutubeLink(''); setYoutubeId(''); setYoutubeThumbnail('') }} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '13px' }}>Remove</button>
               </div>
             </div>
           )}
 
-          {/* Prompt section */}
-          {showPrompt && (
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '12px 16px', background: 'rgba(255,109,31,0.03)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 600, color: '#FF6D1F' }}>✦ AI Prompt</label>
-                <button type="button" onClick={() => setShowPrompt(false)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '14px' }}>×</button>
+          {/* YouTube input */}
+          {showVideo && !youtubeId && (
+            <div style={{ margin: '0 18px 14px', animation: 'fadeUp 0.2s ease' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '10px 12px' }}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                  <rect x="1" y="3" width="14" height="10" rx="2" stroke="#9a8f7a" strokeWidth="1.2"/>
+                  <path d="M6.5 5.5L10.5 8L6.5 10.5V5.5Z" fill="#9a8f7a"/>
+                </svg>
+                <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)}
+                  placeholder="Paste YouTube link..."
+                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: '13px', color: '#FAF3E1', fontFamily: 'inherit' }}
+                />
               </div>
-              <textarea
-                value={promptText}
-                onChange={e => setPromptText(e.target.value)}
+              {youtubeLink && !youtubeId && (
+                <p style={{ fontSize: '11px', color: '#ff8080', marginTop: '6px' }}>⚠ Couldn't detect a YouTube video ID</p>
+              )}
+            </div>
+          )}
+
+          {/* AI Prompt section */}
+          {showPrompt && (
+            <div style={{ margin: '0 18px 14px', background: 'rgba(255,109,31,0.04)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '12px', padding: '14px', animation: 'fadeUp 0.2s ease' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#FF6D1F', letterSpacing: '0.05em' }}>✦ AI PROMPT</span>
+                <button type="button" onClick={() => setShowPrompt(false)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '14px', padding: '2px' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                </button>
+              </div>
+              <textarea value={promptText} onChange={e => setPromptText(e.target.value)}
                 placeholder="Paste the exact prompt you used..."
                 rows={3}
-                style={{ ...inp, fontFamily: 'monospace', fontSize: '12px', resize: 'none', lineHeight: 1.6 }}
+                style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#F5E7C6', fontFamily: 'monospace', resize: 'none', outline: 'none', lineHeight: 1.6 }}
               />
-              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                <select value={aiTool} onChange={e => setAiTool(e.target.value)}
-                  style={{ ...inp, width: 'auto', flex: 1, fontSize: '12px', cursor: 'pointer' }}>
-                  <option value="">AI tool used...</option>
-                  {AI_TOOLS.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
+              <select value={aiTool} onChange={e => setAiTool(e.target.value)}
+                style={{ marginTop: '8px', width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: aiTool ? '#FAF3E1' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}>
+                <option value="">Select AI tool used...</option>
+                {AI_TOOLS.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
           )}
 
-          {/* Action bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)', background: 'rgba(0,0,0,0.15)' }}>
-
-            {/* Image */}
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImagePick} />
-            <button type="button" onClick={() => fileRef.current?.click()} disabled={!!youtubeId} title="Add image" style={{
-              background: imageUrl ? 'rgba(255,109,31,0.15)' : 'none', border: 'none',
-              borderRadius: '8px', padding: '8px 10px', cursor: youtubeId ? 'not-allowed' : 'pointer',
-              fontSize: '18px', opacity: youtubeId ? 0.3 : 1, transition: 'background 0.2s',
-            }}>🖼️</button>
-
-            {/* YouTube */}
-            <div style={{ position: 'relative' }}>
-              <button type="button" onClick={() => document.getElementById('yt-input')?.focus()} disabled={!!imageUrl} title="Add YouTube video" style={{
-                background: youtubeId ? 'rgba(255,109,31,0.15)' : 'none', border: 'none',
-                borderRadius: '8px', padding: '8px 10px', cursor: imageUrl ? 'not-allowed' : 'pointer',
-                fontSize: '18px', opacity: imageUrl ? 0.3 : 1,
-              }}>▶️</button>
-            </div>
-
-            {/* Prompt */}
-            <button type="button" onClick={() => setShowPrompt(!showPrompt)} title="Add AI prompt" style={{
-              background: showPrompt ? 'rgba(255,109,31,0.15)' : 'none', border: 'none',
-              borderRadius: '8px', padding: '8px 10px', cursor: 'pointer', fontSize: '18px',
-            }}>✨</button>
-
-            {/* Tags */}
-            <div style={{ flex: 1, marginLeft: '4px' }}>
-              <input
-                type="text" value={tags} onChange={e => setTags(e.target.value)}
-                placeholder="#tags, #separated, #by, #commas"
-                style={{ ...inp, padding: '6px 12px', fontSize: '12px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)' }}
-              />
-            </div>
+          {/* Tags row */}
+          <div style={{ margin: '0 18px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M1 1H6.5L13 7.5L7.5 13L1 6.5V1Z" stroke="#9a8f7a" strokeWidth="1.2" strokeLinejoin="round"/>
+              <circle cx="4" cy="4" r="1" fill="#9a8f7a"/>
+            </svg>
+            <input type="text" value={tags} onChange={e => setTags(e.target.value)}
+              placeholder="Add tags: midjourney, aiart, portrait"
+              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: '13px', color: '#9a8f7a', fontFamily: 'inherit' }}
+            />
           </div>
 
-          {/* YouTube URL input - shows when video button clicked */}
-          {!imageUrl && (
-            <div style={{ padding: '0 12px 12px', display: youtubeId ? 'none' : 'block' }}>
-              <input
-                id="yt-input"
-                type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)}
-                placeholder="Paste YouTube link to embed video... (optional)"
-                style={{ ...inp, fontSize: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}
-              />
-            </div>
-          )}
+          {/* Divider */}
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 0 0' }} />
+
+          {/* Bottom toolbar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '10px 14px' }}>
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImagePick} />
+
+            {/* Image button */}
+            <button type="button" onClick={() => fileRef.current?.click()} disabled={!!youtubeId || uploading} title="Add image"
+              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: youtubeId ? 'not-allowed' : 'pointer', background: imageUrl ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: youtubeId ? 0.35 : 1, transition: 'background 0.15s' }}
+              onMouseEnter={e => { if (!youtubeId) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = imageUrl ? 'rgba(255,109,31,0.15)' : 'transparent' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect x="1.5" y="3" width="15" height="12" rx="2" stroke={imageUrl ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
+                <circle cx="6" cy="7.5" r="1.5" stroke={imageUrl ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
+                <path d="M1.5 12L5.5 8.5L8.5 11.5L11.5 8.5L16.5 13" stroke={imageUrl ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {/* Video button */}
+            <button type="button" onClick={() => { setShowVideo(!showVideo); if (showVideo) { setYoutubeLink(''); setYoutubeId('') } }} disabled={!!imageUrl} title="Add YouTube video"
+              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: imageUrl ? 'not-allowed' : 'pointer', background: (showVideo || youtubeId) ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: imageUrl ? 0.35 : 1, transition: 'background 0.15s' }}
+              onMouseEnter={e => { if (!imageUrl) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = (showVideo || youtubeId) ? 'rgba(255,109,31,0.15)' : 'transparent' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect x="1.5" y="3.5" width="11" height="11" rx="2" stroke={(showVideo || youtubeId) ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
+                <path d="M12.5 6.5L16.5 4.5V13.5L12.5 11.5" stroke={(showVideo || youtubeId) ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {/* Prompt button */}
+            <button type="button" onClick={() => setShowPrompt(!showPrompt)} title="Add AI prompt"
+              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showPrompt ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = showPrompt ? 'rgba(255,109,31,0.2)' : 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = showPrompt ? 'rgba(255,109,31,0.15)' : 'transparent' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 1.5L10.8 6.5H16L11.6 9.5L13.4 14.5L9 11.5L4.6 14.5L6.4 9.5L2 6.5H7.2L9 1.5Z" stroke={showPrompt ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {/* Character count far right */}
+            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#555' }}>{text.length > 0 ? `${text.length}` : ''}</span>
+          </div>
         </div>
 
-        {/* Post button */}
-        <button type="submit" disabled={!canPost} style={{
-          width: '100%', padding: '14px', borderRadius: '12px',
-          background: canPost ? '#FF6D1F' : '#3a3a3a', border: 'none',
-          cursor: canPost ? 'pointer' : 'not-allowed',
-          fontSize: '15px', fontWeight: 700, color: canPost ? '#fff' : '#6a6a6a',
-          fontFamily: 'inherit', transition: 'all 0.2s',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-        }}>
-          {submitting
-            ? <><div style={{ width: '16px', height: '16px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> Publishing...</>
-            : '🚀 Post to AiCreatorFeed'
-          }
-        </button>
-
-        <p style={{ textAlign: 'center', fontSize: '12px', color: '#9a8f7a', marginTop: '10px' }}>
-          Share text · Add an image · Paste a YouTube link · Include your AI prompt
+        {/* Help text */}
+        <p style={{ textAlign: 'center', fontSize: '12px', color: '#555', marginTop: '14px', lineHeight: 1.5 }}>
+          🖼 image &nbsp;·&nbsp; ▶ YouTube &nbsp;·&nbsp; ✦ AI prompt &nbsp;·&nbsp; # tags — all optional
         </p>
       </form>
     </div>
