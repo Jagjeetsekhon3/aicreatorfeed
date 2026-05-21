@@ -199,8 +199,8 @@ export default function ExplorePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
           {postsWithLikes.map((post, i) => (
             <ExploreCard key={post.id} post={post} index={i} currentUserId={currentUserId} accessToken={accessToken}
-              onTagClick={(t) => setTag(t)}
-              onLike={(id, liked) => setLikedIds(prev => { const n = new Set(prev); liked ? n.add(id) : n.delete(id); return n })}
+              onTagClick={(t: string) => setTag(t)}
+              onLike={(id: string, liked: boolean) => setLikedIds(prev => { const n = new Set(prev); liked ? n.add(id) : n.delete(id); return n })}
             />
           ))}
         </div>
