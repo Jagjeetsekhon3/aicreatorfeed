@@ -154,11 +154,11 @@ function FeedIcon({ active }: { active: boolean }) {
   )
 }
 
-function PromptsIcon({ active }: { active: boolean }) {
+function ExploreIcon({ active }: { active: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="14" rx="2"/>
-      <path d="M3 21l4-4h11a2 2 0 0 0 2-2"/>
+      <circle cx="12" cy="12" r="9"/>
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill={active ? '#FF6D1F' : 'none'}/>
     </svg>
   )
 }
@@ -241,8 +241,9 @@ export default function Navbar() {
           {/* Nav links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             {[
-              { href: '/feed', label: 'Feed' },
-              { href: '/news', label: 'AI News' },
+              { href: '/feed',    label: 'Feed' },
+              { href: '/explore', label: 'Explore' },
+              { href: '/news',    label: 'AI News' },
               { href: '/tutorials', label: 'Tutorials' },
               { href: '/community', label: 'Community' },
             ].map(({ href, label }) => {
@@ -346,9 +347,10 @@ export default function Navbar() {
       }} className="mobile-bottom-nav">
         {[
           { href: '/feed',      label: 'Feed',      Icon: FeedIcon },
+          { href: '/explore',   label: 'Explore',   Icon: ExploreIcon },
           { href: '/post/new',  label: '',          Icon: PostIcon, isPost: true },
           { href: '/tutorials', label: 'Tutorials', Icon: TutorialsIcon },
-          { href: '/settings',  label: 'Settings',  Icon: CommunityIcon },
+          { href: '/settings',  label: 'Profile',   Icon: CommunityIcon },
         ].map(({ href, label, Icon, isPost }) => {
           const active = isPost ? pathname === href : pathname.startsWith(href)
           return (
