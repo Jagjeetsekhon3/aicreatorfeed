@@ -190,7 +190,7 @@ function SettingsForm() {
 
     // Check username not taken by someone else
     const { data: existing } = await supabase
-      .from('profiles').select('id').eq('username', username).single()
+      .from('profiles').select('id').eq('username', username).maybeSingle()
     if (existing && existing.id !== userId) {
       setUsernameError('That username is already taken')
       setProfileLoading(false); return

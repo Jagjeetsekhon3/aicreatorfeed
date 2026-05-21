@@ -75,7 +75,9 @@ function SignupForm() {
     if (!passwordStrong) { setError('Password must be at least 8 characters'); return }
     setLoading(true)
 
-    const { data: existing } = await supabase.from('profiles').select('id').eq('username', username).single()
+    // Check username not taken — use maybeSingle() so no error when not found
+    const { data: existing, error: checkError } = await supabase
+      .from('profiles').select('id').eq('username', username).maybeSingle()
     if (existing) { setError('That username is already taken'); setLoading(false); return }
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -89,7 +91,12 @@ function SignupForm() {
     if (signUpError) { setError(signUpError.message); setLoading(false); return }
 
     if (data.user) {
-      await supabase.from('profiles').upsert({ id: data.user.id, username, full_name: fullName })
+      // upsert so it never fails if row already exists
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        username,
+        full_name: fullName,
+      }, { onConflict: 'id' }).select().maybeSingle()
     }
 
     setSuccess(true)
