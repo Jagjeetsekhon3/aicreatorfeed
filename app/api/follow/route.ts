@@ -27,27 +27,16 @@ export async function POST(req: NextRequest) {
       .eq('follower_id', user.id)
       .eq('following_id', following_id)
 
-    // Manually update counts (in case trigger isn't firing)
-    await admin.rpc('decrement_follow_counts', {
-      follower: user.id,
-      following: following_id,
-    }).catch(async () => {
-      // Fallback: manual update
-      await admin.from('profiles')
-        .update({ followers_count: admin.from('profiles').select('followers_count') })
-        .eq('id', following_id)
+    // Recalculate exact counts
+    const { count: followerCount } = await admin.from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('following_id', following_id)
+    const { count: followingCount } = await admin.from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('follower_id', user.id)
 
-      // Recalculate exact counts
-      const { count: followerCount } = await admin.from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('following_id', following_id)
-      const { count: followingCount } = await admin.from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('follower_id', user.id)
-
-      await admin.from('profiles').update({ followers_count: followerCount || 0 }).eq('id', following_id)
-      await admin.from('profiles').update({ following_count: followingCount || 0 }).eq('id', user.id)
-    })
+    await admin.from('profiles').update({ followers_count: followerCount || 0 }).eq('id', following_id)
+    await admin.from('profiles').update({ following_count: followingCount || 0 }).eq('id', user.id)
 
     return NextResponse.json({ following: false })
   }

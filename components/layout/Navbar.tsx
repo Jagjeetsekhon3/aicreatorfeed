@@ -251,8 +251,8 @@ export default function Navbar() {
             {[
               { href: '/feed',      label: 'Feed' },
               { href: '/explore',   label: 'Explore' },
+              { href: '/community', label: 'Community' },
               { href: '/messages',  label: 'Messages' },
-              { href: '/news',      label: 'AI News' },
               { href: '/tutorials', label: 'Tutorials' },
             ].map(({ href, label }) => {
               const active = pathname.startsWith(href)
@@ -357,8 +357,8 @@ export default function Navbar() {
           { href: '/feed',      label: 'Feed',      Icon: FeedIcon },
           { href: '/explore',   label: 'Explore',   Icon: ExploreIcon },
           { href: '/post/new',  label: '',          Icon: PostIcon, isPost: true },
+          { href: '/community', label: 'Community', Icon: CommunityIcon },
           { href: '/messages',  label: 'Messages',  Icon: MessagesIcon },
-          { href: '/settings',  label: 'Profile',   Icon: CommunityIcon },
         ].map(({ href, label, Icon, isPost }) => {
           const active = isPost ? pathname === href : pathname.startsWith(href)
           return (
