@@ -40,6 +40,7 @@ type Profile = {
   bio: string | null; website: string | null; twitter: string | null
   instagram: string | null; youtube: string | null
   followers_count: number; following_count: number; posts_count: number
+  is_verified: boolean; is_official: boolean
 }
 
 type Post = {
