@@ -69,6 +69,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ settings: data || [], flags: flags || [] })
   }
 
+  if (type === 'news_admin') {
+    const { data } = await admin.from('news_items').select('*').order('published_at', { ascending: false }).limit(50)
+    return NextResponse.json({ news: data || [] })
+  }
+
   if (type === 'logs') {
     const { data } = await admin.from('admin_logs').select('*').order('created_at', { ascending: false }).limit(100)
     return NextResponse.json({ logs: data || [] })
@@ -83,6 +88,18 @@ export async function POST(req: NextRequest) {
   const action = searchParams.get('action')
   const admin = getAdmin()
   const body = await req.json()
+
+  if (action === 'publish_news') {
+    const { title, summary, source_name, source_url, image_url, tags } = body
+    await admin.from('news_items').insert({ title, summary, source_name, source_url, image_url: image_url || null, tags: tags || [] })
+    await admin.from('admin_logs').insert({ action: `Published news: ${title}` })
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'delete_news') {
+    await admin.from('news_items').delete().eq('id', body.news_id)
+    return NextResponse.json({ success: true })
+  }
 
   if (action === 'update_setting') {
     await admin.from('site_settings').upsert({ key: body.key, value: body.value, updated_at: new Date().toISOString() })

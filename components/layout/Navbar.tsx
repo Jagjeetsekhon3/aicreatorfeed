@@ -209,7 +209,100 @@ function NewsIcon({ active }: { active: boolean }) {
   )
 }
 
-export default function Navbar() {
+function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
+  const pathname = usePathname()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const allLinks = [
+    { href: '/feed',      label: 'Feed',        icon: '🏠' },
+    { href: '/explore',   label: 'Explore',     icon: '🔭' },
+    { href: '/community', label: 'Community',   icon: '👥' },
+    { href: '/news',      label: 'AI News',     icon: '📰' },
+    { href: '/tutorials', label: 'Tutorials',   icon: '🎬' },
+    { href: '/messages',  label: 'Messages',    icon: '💬' },
+    { href: '/settings',  label: 'Settings',    icon: '⚙️' },
+  ]
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(!open)} style={{
+        width: '36px', height: '36px', borderRadius: '8px',
+        background: open ? 'rgba(255,255,255,0.08)' : 'transparent',
+        border: 'none', cursor: 'pointer',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
+        transition: 'background 0.15s',
+      }}>
+        {[0, 1, 2].map(i => (
+          <span key={i} style={{
+            display: 'block', width: open ? (i === 1 ? '0' : '18px') : '18px', height: '2px',
+            background: '#9a8f7a', borderRadius: '2px', transition: 'all 0.2s',
+            transform: open ? (i === 0 ? 'translateY(6px) rotate(45deg)' : i === 2 ? 'translateY(-6px) rotate(-45deg)' : 'scaleX(0)') : 'none',
+          }} />
+        ))}
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 10px)', right: 0,
+          width: '220px', background: '#2a2a2a',
+          border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px',
+          overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          zIndex: 200, animation: 'dropIn 0.15s ease',
+        }}>
+          <style>{`@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}`}</style>
+
+          <div style={{ padding: '6px' }}>
+            {allLinks.map(({ href, label, icon }) => (
+              <Link key={href} href={href} onClick={() => setOpen(false)} style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
+                background: pathname.startsWith(href) ? 'rgba(255,109,31,0.1)' : 'transparent',
+                color: pathname.startsWith(href) ? '#FF6D1F' : '#F5E7C6',
+                fontSize: '14px', fontWeight: pathname.startsWith(href) ? 600 : 400,
+                transition: 'background 0.15s',
+              }}
+                onMouseEnter={e => { if (!pathname.startsWith(href)) (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.06)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = pathname.startsWith(href) ? 'rgba(255,109,31,0.1)' : 'transparent' }}
+              >
+                <span style={{ fontSize: '15px' }}>{icon}</span>
+                {label}
+              </Link>
+            ))}
+          </div>
+
+          {user && (
+            <>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)' }} />
+              <div style={{ padding: '6px' }}>
+                <button onClick={() => { setOpen(false); signOut() }} style={{
+                  display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                  padding: '10px 12px', borderRadius: '8px', background: 'none',
+                  border: 'none', cursor: 'pointer', color: '#ff8080', fontSize: '14px',
+                  fontFamily: 'inherit', textAlign: 'left',
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,80,80,0.08)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M5.5 2.5H3C2.448 2.5 2 2.948 2 3.5V11.5C2 12.052 2.448 12.5 3 12.5H5.5M10 5L13 7.5L10 10M13 7.5H6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  Sign out
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
   const pathname = usePathname()
   const { user, signOut } = useAuth()
 
@@ -252,7 +345,7 @@ export default function Navbar() {
               { href: '/feed',      label: 'Feed' },
               { href: '/explore',   label: 'Explore' },
               { href: '/community', label: 'Community' },
-              { href: '/messages',  label: 'Messages' },
+              { href: '/news',      label: 'AI News' },
               { href: '/tutorials', label: 'Tutorials' },
             ].map(({ href, label }) => {
               const active = pathname.startsWith(href)
@@ -268,45 +361,25 @@ export default function Navbar() {
           </div>
 
           {/* Right */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Link href="/post/new" title="Create post" style={{
+              width: '36px', height: '36px', borderRadius: '10px',
+              background: '#FF6D1F', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              textDecoration: 'none', flexShrink: 0,
+              boxShadow: '0 2px 8px rgba(255,109,31,0.35)',
+            }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 3.5V14.5M3.5 9H14.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
+              </svg>
+            </Link>
+            <BurgerMenu user={user} signOut={signOut} />
             {user ? (
-              <>
-                <Link href="/post/new" title="Create post" style={{
-                  width: '36px', height: '36px', borderRadius: '10px',
-                  background: '#FF6D1F', color: '#fff',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  textDecoration: 'none', flexShrink: 0,
-                  boxShadow: '0 2px 8px rgba(255,109,31,0.35)',
-                  transition: 'transform 0.15s, box-shadow 0.15s',
-                }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.08)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 14px rgba(255,109,31,0.5)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 8px rgba(255,109,31,0.35)' }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M9 3.5V14.5M3.5 9H14.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
-                  </svg>
-                </Link>
-                <ProfileDropdown user={user} signOut={signOut} />
-              </>
+              <ProfileDropdown user={user} signOut={signOut} />
             ) : (
               <>
-                <Link href="/post/new" title="Create post" style={{
-                  width: '36px', height: '36px', borderRadius: '10px',
-                  background: '#FF6D1F', color: '#fff',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  textDecoration: 'none', flexShrink: 0,
-                  boxShadow: '0 2px 8px rgba(255,109,31,0.35)',
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M9 3.5V14.5M3.5 9H14.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
-                  </svg>
-                </Link>
                 <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
-                <Link href="/auth/signup" style={{
-                  fontSize: '13px', fontWeight: 600,
-                  background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)',
-                  color: '#FF6D1F', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none',
-                }}>Join free</Link>
+                <Link href="/auth/signup" style={{ fontSize: '13px', fontWeight: 600, background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)', color: '#FF6D1F', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none' }}>Join free</Link>
               </>
             )}
           </div>

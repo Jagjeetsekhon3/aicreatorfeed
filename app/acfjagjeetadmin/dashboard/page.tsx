@@ -19,6 +19,7 @@ const SIDEBAR_ITEMS = [
   { key: 'overview',  icon: '📊', label: 'Overview' },
   { key: 'users',     icon: '👥', label: 'Users' },
   { key: 'posts',     icon: '📝', label: 'Posts' },
+  { key: 'news',      icon: '📰', label: 'AI News' },
   { key: 'settings',  icon: '🎨', label: 'Site Settings' },
   { key: 'features',  icon: '🔧', label: 'Features' },
   { key: 'tickets',   icon: '🎫', label: 'Support Tickets' },
@@ -37,6 +38,10 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([])
   const [posts, setPosts] = useState<Post[]>([])
   const [tickets, setTickets] = useState<Ticket[]>([])
+  const [newsItems, setNewsItems] = useState<any[]>([])
+  const [showNewsForm, setShowNewsForm] = useState(false)
+  const [newsForm, setNewsForm] = useState({ title: '', summary: '', source_name: '', source_url: '', image_url: '', tags: '' })
+  const [newsLoading, setNewsLoading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [userSearch, setUserSearch] = useState('')
   const [ticketFilter, setTicketFilter] = useState('open')
@@ -67,12 +72,32 @@ export default function AdminDashboard() {
     if (tab === 'settings') api('settings').then(d => { if (d) { setSettings(d.settings); setFlags(d.flags) } })
     if (tab === 'users') api('users').then(d => { if (d) setUsers(d.users) })
     if (tab === 'posts') api('posts').then(d => { if (d) setPosts(d.posts) })
+    if (tab === 'news') api('news_admin').then(d => { if (d) setNewsItems(d.news) })
     if (tab === 'tickets') api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
   }, [tab, ticketFilter])
 
   async function searchUsers() {
     const d = await api('users', `&search=${userSearch}`)
     if (d) setUsers(d.users)
+  }
+
+  async function publishNews() {
+    if (!newsForm.title || !newsForm.summary || !newsForm.source_name || !newsForm.source_url) { showToast('Fill all required fields'); return }
+    setNewsLoading(true)
+    await action('publish_news', { ...newsForm, tags: newsForm.tags.split(',').map((t: string) => t.trim()).filter(Boolean) })
+    setNewsForm({ title: '', summary: '', source_name: '', source_url: '', image_url: '', tags: '' })
+    setShowNewsForm(false)
+    const d = await api('news_admin')
+    if (d) setNewsItems(d.news)
+    showToast('News published!')
+    setNewsLoading(false)
+  }
+
+  async function deleteNews(id: string) {
+    if (!confirm('Delete this news item?')) return
+    await action('delete_news', { news_id: id })
+    setNewsItems(prev => prev.filter(n => n.id !== id))
+    showToast('Deleted')
   }
 
   async function saveSetting(key: string, value: string) {
@@ -549,6 +574,93 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── AI NEWS ──────────────────────────────────────────────────── */}
+        {tab === 'news' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 900 }}>AI News</h1>
+              <button onClick={() => setShowNewsForm(!showNewsForm)} style={btn()}>+ Add news</button>
+            </div>
+
+            {/* Add news form */}
+            {showNewsForm && (
+              <div style={{ ...card, marginBottom: '20px', border: '1px solid rgba(255,109,31,0.2)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>Publish news item</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Title *</label>
+                    <input value={newsForm.title} onChange={e => setNewsForm(p => ({ ...p, title: e.target.value }))} placeholder="Article title..." style={inp} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Source name *</label>
+                    <input value={newsForm.source_name} onChange={e => setNewsForm(p => ({ ...p, source_name: e.target.value }))} placeholder="TechCrunch, The Verge..." style={inp} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Summary *</label>
+                    <textarea value={newsForm.summary} onChange={e => setNewsForm(p => ({ ...p, summary: e.target.value }))} placeholder="Brief summary of the article..." rows={3} style={{ ...inp, resize: 'none' as any }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Source URL *</label>
+                    <input value={newsForm.source_url} onChange={e => setNewsForm(p => ({ ...p, source_url: e.target.value }))} placeholder="https://..." style={inp} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Image URL (optional)</label>
+                    <input value={newsForm.image_url} onChange={e => setNewsForm(p => ({ ...p, image_url: e.target.value }))} placeholder="https://image.jpg" style={inp} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Tags (comma separated)</label>
+                    <input value={newsForm.tags} onChange={e => setNewsForm(p => ({ ...p, tags: e.target.value }))} placeholder="Models, Tools, Research..." style={inp} />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => setShowNewsForm(false)} style={btn(false)}>Cancel</button>
+                  <button onClick={publishNews} disabled={newsLoading} style={btn()}>
+                    {newsLoading ? 'Publishing...' : 'Publish'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* News list */}
+            <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                    {['Title', 'Source', 'Tags', 'Published', 'Actions'].map(h => (
+                      <th key={h} style={{ padding: '12px 14px', textAlign: 'left', color: '#9a8f7a', fontWeight: 600, fontSize: '12px' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {newsItems.map(item => (
+                    <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '12px 14px', maxWidth: '280px' }}>
+                        <p style={{ margin: 0, color: '#F5E7C6', fontSize: '13px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{item.title}</p>
+                      </td>
+                      <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap' }}>{item.source_name}</td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                          {(item.tags || []).slice(0, 2).map((t: string) => (
+                            <span key={t} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: '#FF6D1F' }}>{t}</span>
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap', fontSize: '12px' }}>{new Date(item.published_at).toLocaleDateString()}</td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <a href={item.source_url} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                          <button onClick={() => deleteNews(item.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {newsItems.length === 0 && <p style={{ textAlign: 'center', padding: '40px', color: '#9a8f7a' }}>No news published yet. Click "+ Add news" to start.</p>}
+            </div>
           </div>
         )}
 
