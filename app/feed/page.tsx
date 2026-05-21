@@ -100,7 +100,9 @@ export default function FeedPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {postsWithLikes.map((post, i) => (
             <div key={post.id} style={{ animation: `fadeIn 0.3s ease ${i * 0.05}s both` }}>
-              <PostCard post={post} currentUserId={currentUserId} accessToken={accessToken} />
+              <PostCard post={post} currentUserId={currentUserId} accessToken={accessToken}
+                onDelete={(id) => setPosts(prev => prev.filter(p => p.id !== id))}
+              />
             </div>
           ))}
         </div>
