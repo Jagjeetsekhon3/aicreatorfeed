@@ -5,6 +5,35 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
 
+function MessageButton({ profileId, username, currentUserId }: { profileId: string; username: string; currentUserId: string }) {
+  const router = useRouter()
+  const supabase = createClient()
+  const [loading, setLoading] = useState(false)
+  const [accessToken, setAccessToken] = useState('')
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => { if (data.session) setAccessToken(data.session.access_token) })
+  }, [])
+  async function handleMessage() {
+    if (!currentUserId) { router.push('/auth/login'); return }
+    setLoading(true)
+    const res = await fetch(`/api/messages?type=conversation&user_id=${profileId}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+    const data = await res.json()
+    if (data.conversation) { router.push(`/messages/${data.conversation.id}`); return }
+    const startRes = await fetch('/api/messages?action=start', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({ other_user_id: profileId, message: `Hey @${username}! 👋` }),
+    })
+    const startData = await startRes.json()
+    if (startData.conversation_id) router.push(`/messages/${startData.conversation_id}`)
+    setLoading(false)
+  }
+  return (
+    <button onClick={handleMessage} disabled={loading} style={{ padding: '7px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', fontFamily: 'inherit', background: 'transparent', color: '#F5E7C6', display: 'flex', alignItems: 'center', gap: '5px' }}>
+      {loading ? '...' : '💬 Message'}
+    </button>
+  )
+}
+
 type Profile = {
   id: string; username: string; full_name: string; avatar_url: string | null
   bio: string | null; website: string | null; twitter: string | null
@@ -125,14 +154,17 @@ export default function ProfilePage() {
                 Edit profile
               </Link>
             ) : (
-              <button onClick={handleFollow} disabled={followLoading} style={{
-                padding: '7px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: 700,
-                border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
-                background: isFollowing ? 'rgba(255,255,255,0.08)' : '#FF6D1F',
-                color: isFollowing ? '#F5E7C6' : '#fff',
-              }}>
-                {followLoading ? '...' : isFollowing ? 'Following' : '+ Follow'}
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={handleFollow} disabled={followLoading} style={{
+                  padding: '7px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: 700,
+                  border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
+                  background: isFollowing ? 'rgba(255,255,255,0.08)' : '#FF6D1F',
+                  color: isFollowing ? '#F5E7C6' : '#fff',
+                }}>
+                  {followLoading ? '...' : isFollowing ? 'Following' : '+ Follow'}
+                </button>
+                <MessageButton profileId={profile?.id || ''} username={profile?.username || ''} currentUserId={currentUserId} />
+              </div>
             )}
           </div>
 

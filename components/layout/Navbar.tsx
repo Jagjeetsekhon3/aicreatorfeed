@@ -154,6 +154,14 @@ function FeedIcon({ active }: { active: boolean }) {
   )
 }
 
+function MessagesIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill={active ? 'rgba(255,109,31,0.2)' : 'none'}/>
+    </svg>
+  )
+}
+
 function ExploreIcon({ active }: { active: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -241,11 +249,11 @@ export default function Navbar() {
           {/* Nav links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             {[
-              { href: '/feed',    label: 'Feed' },
-              { href: '/explore', label: 'Explore' },
-              { href: '/news',    label: 'AI News' },
+              { href: '/feed',      label: 'Feed' },
+              { href: '/explore',   label: 'Explore' },
+              { href: '/messages',  label: 'Messages' },
+              { href: '/news',      label: 'AI News' },
               { href: '/tutorials', label: 'Tutorials' },
-              { href: '/community', label: 'Community' },
             ].map(({ href, label }) => {
               const active = pathname.startsWith(href)
               return (
@@ -349,7 +357,7 @@ export default function Navbar() {
           { href: '/feed',      label: 'Feed',      Icon: FeedIcon },
           { href: '/explore',   label: 'Explore',   Icon: ExploreIcon },
           { href: '/post/new',  label: '',          Icon: PostIcon, isPost: true },
-          { href: '/tutorials', label: 'Tutorials', Icon: TutorialsIcon },
+          { href: '/messages',  label: 'Messages',  Icon: MessagesIcon },
           { href: '/settings',  label: 'Profile',   Icon: CommunityIcon },
         ].map(({ href, label, Icon, isPost }) => {
           const active = isPost ? pathname === href : pathname.startsWith(href)
