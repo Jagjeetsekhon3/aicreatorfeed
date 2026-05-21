@@ -16,14 +16,15 @@ const inp: React.CSSProperties = { background: '#222', border: '1px solid rgba(2
 const btn = (active = true): React.CSSProperties => ({ background: active ? '#FF6D1F' : '#2a2a2a', color: active ? '#fff' : '#9a8f7a', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' })
 
 const SIDEBAR_ITEMS = [
-  { key: 'overview',  icon: '📊', label: 'Overview' },
-  { key: 'users',     icon: '👥', label: 'Users' },
-  { key: 'posts',     icon: '📝', label: 'Posts' },
-  { key: 'news',      icon: '📰', label: 'AI News' },
-  { key: 'settings',  icon: '🎨', label: 'Site Settings' },
-  { key: 'features',  icon: '🔧', label: 'Features' },
-  { key: 'tickets',   icon: '🎫', label: 'Support Tickets' },
-  { key: 'logs',      icon: '📋', label: 'Activity Log' },
+  { key: 'overview',   icon: '📊', label: 'Overview' },
+  { key: 'users',      icon: '👥', label: 'Users' },
+  { key: 'posts',      icon: '📝', label: 'Posts' },
+  { key: 'news',       icon: '📰', label: 'AI News' },
+  { key: 'community',  icon: '💬', label: 'Community' },
+  { key: 'settings',   icon: '🎨', label: 'Site Settings' },
+  { key: 'features',   icon: '🔧', label: 'Features' },
+  { key: 'tickets',    icon: '🎫', label: 'Support Tickets' },
+  { key: 'logs',       icon: '📋', label: 'Activity Log' },
 ]
 
 const STATUS_COLORS: Record<string, string> = { open: '#FF6D1F', in_progress: '#facc15', resolved: '#4ade80', closed: '#9a8f7a' }
@@ -42,6 +43,14 @@ export default function AdminDashboard() {
   const [showNewsForm, setShowNewsForm] = useState(false)
   const [newsForm, setNewsForm] = useState({ title: '', summary: '', source_name: '', source_url: '', image_url: '', tags: '' })
   const [newsLoading, setNewsLoading] = useState(false)
+
+  // Community state
+  const [spaces, setSpaces] = useState<any[]>([])
+  const [spacePosts, setSpacePosts] = useState<any[]>([])
+  const [selectedSpace, setSelectedSpace] = useState<any>(null)
+  const [communityTab, setCommunityTab] = useState<'spaces' | 'posts'>('spaces')
+  const [editingSpace, setEditingSpace] = useState<any>(null)
+  const [spaceEditForm, setSpaceEditForm] = useState({ display_name: '', description: '', icon: '', cover_color: '', rules: '', is_official: false })
   const [loading, setLoading] = useState(true)
   const [userSearch, setUserSearch] = useState('')
   const [ticketFilter, setTicketFilter] = useState('open')
@@ -73,6 +82,7 @@ export default function AdminDashboard() {
     if (tab === 'users') api('users').then(d => { if (d) setUsers(d.users) })
     if (tab === 'posts') api('posts').then(d => { if (d) setPosts(d.posts) })
     if (tab === 'news') api('news_admin').then(d => { if (d) setNewsItems(d.news) })
+    if (tab === 'community') api('spaces_admin').then(d => { if (d) setSpaces(d.spaces) })
     if (tab === 'tickets') api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
   }, [tab, ticketFilter])
 
@@ -98,6 +108,54 @@ export default function AdminDashboard() {
     await action('delete_news', { news_id: id })
     setNewsItems(prev => prev.filter(n => n.id !== id))
     showToast('Deleted')
+  }
+
+  async function loadSpacePosts(spaceId: string) {
+    const d = await api('space_posts_admin', `&space_id=${spaceId}`)
+    if (d) setSpacePosts(d.posts)
+  }
+
+  async function handleSelectSpace(space: any) {
+    setSelectedSpace(space)
+    setCommunityTab('posts')
+    loadSpacePosts(space.id)
+  }
+
+  async function handleEditSpace(space: any) {
+    setEditingSpace(space)
+    setSpaceEditForm({ display_name: space.display_name, description: space.description || '', icon: space.icon, cover_color: space.cover_color, rules: space.rules || '', is_official: space.is_official })
+  }
+
+  async function saveSpaceEdit() {
+    setSaving(true)
+    await action('edit_space', { space_id: editingSpace.id, ...spaceEditForm })
+    setSpaces(prev => prev.map(s => s.id === editingSpace.id ? { ...s, ...spaceEditForm } : s))
+    if (selectedSpace?.id === editingSpace.id) setSelectedSpace((s: any) => ({ ...s, ...spaceEditForm }))
+    setEditingSpace(null)
+    showToast('Space updated!')
+    setSaving(false)
+  }
+
+  async function deleteSpace(id: string, name: string) {
+    if (!confirm(`Delete space "${name}" and all its posts? This cannot be undone.`)) return
+    await action('delete_space', { space_id: id })
+    setSpaces(prev => prev.filter(s => s.id !== id))
+    if (selectedSpace?.id === id) { setSelectedSpace(null); setCommunityTab('spaces') }
+    showToast('Space deleted')
+  }
+
+  async function deleteSpacePost(id: string) {
+    if (!confirm('Delete this post?')) return
+    await action('delete_space_post', { post_id: id })
+    setSpacePosts(prev => prev.filter(p => p.id !== id))
+    setSpaces(prev => prev.map(s => s.id === selectedSpace?.id ? { ...s, post_count: Math.max(0, s.post_count - 1) } : s))
+    showToast('Post deleted')
+  }
+
+  async function pinSpacePost(id: string, pinned: boolean) {
+    await action('pin_space_post', { post_id: id, is_pinned: !pinned })
+    setSpacePosts(prev => prev.map(p => p.id === id ? { ...p, is_pinned: !pinned } : p))
+    showToast(!pinned ? '📌 Post pinned' : 'Post unpinned')
   }
 
   async function saveSetting(key: string, value: string) {
@@ -660,6 +718,162 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
               {newsItems.length === 0 && <p style={{ textAlign: 'center', padding: '40px', color: '#9a8f7a' }}>No news published yet. Click "+ Add news" to start.</p>}
+            </div>
+          </div>
+        )}
+
+        {/* ── COMMUNITY ────────────────────────────────────────────────── */}
+        {tab === 'community' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>Community</h1>
+
+            {/* Space edit modal */}
+            {editingSpace && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '480px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Edit Space: {editingSpace.display_name}</h3>
+                    <button onClick={() => setEditingSpace(null)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '18px' }}>×</button>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {[
+                      { label: 'Display name', key: 'display_name', type: 'text' },
+                      { label: 'Icon (emoji)', key: 'icon', type: 'text' },
+                      { label: 'Cover color', key: 'cover_color', type: 'color' },
+                    ].map(({ label, key, type }) => (
+                      <div key={key}>
+                        <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>{label}</label>
+                        <input type={type} value={(spaceEditForm as any)[key]}
+                          onChange={e => setSpaceEditForm(p => ({ ...p, [key]: e.target.value }))}
+                          style={{ ...inp, ...(type === 'color' ? { height: '40px', padding: '4px', cursor: 'pointer' } : {}) }} />
+                      </div>
+                    ))}
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Description</label>
+                      <textarea value={spaceEditForm.description} onChange={e => setSpaceEditForm(p => ({ ...p, description: e.target.value }))} rows={2} style={{ ...inp, resize: 'none' as any }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Rules</label>
+                      <textarea value={spaceEditForm.rules} onChange={e => setSpaceEditForm(p => ({ ...p, rules: e.target.value }))} rows={2} style={{ ...inp, resize: 'none' as any }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <button onClick={() => setSpaceEditForm(p => ({ ...p, is_official: !p.is_official }))} style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: spaceEditForm.is_official ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s' }}>
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: spaceEditForm.is_official ? '21px' : '3px', transition: 'left 0.2s' }} />
+                      </button>
+                      <span style={{ fontSize: '13px', color: '#F5E7C6' }}>Official space (AiCreatorFeed badge)</span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '18px', justifyContent: 'flex-end' }}>
+                    <button onClick={() => setEditingSpace(null)} style={btn(false)}>Cancel</button>
+                    <button onClick={saveSpaceEdit} disabled={saving} style={btn()}>
+                      {saving ? 'Saving...' : 'Save changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '16px', alignItems: 'start' }}>
+              {/* Spaces list */}
+              <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+                <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 700, margin: 0 }}>Spaces ({spaces.length})</h3>
+                </div>
+                <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                  {spaces.map(space => (
+                    <div key={space.id}
+                      onClick={() => handleSelectSpace(space)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.04)', background: selectedSpace?.id === space.id ? 'rgba(255,109,31,0.08)' : 'transparent', transition: 'background 0.15s' }}
+                      onMouseEnter={e => { if (selectedSpace?.id !== space.id) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = selectedSpace?.id === space.id ? 'rgba(255,109,31,0.08)' : 'transparent' }}
+                    >
+                      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${space.cover_color}22`, border: `1px solid ${space.cover_color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>{space.icon}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          {space.display_name}
+                          {space.is_official && <span style={{ fontSize: '9px', color: '#FF6D1F', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '999px', fontWeight: 700 }}>Official</span>}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{space.member_count} members · {space.post_count} posts</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '4px' }} onClick={e => e.stopPropagation()}>
+                        <button onClick={() => handleEditSpace(space)} title="Edit" style={{ background: 'rgba(255,255,255,0.06)', border: 'none', color: '#9a8f7a', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer', fontSize: '12px' }}>✏️</button>
+                        <button onClick={() => deleteSpace(space.id, space.display_name)} title="Delete" style={{ background: 'rgba(255,80,80,0.08)', border: 'none', color: '#ff8080', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer', fontSize: '12px' }}>🗑</button>
+                      </div>
+                    </div>
+                  ))}
+                  {spaces.length === 0 && <p style={{ textAlign: 'center', padding: '30px', color: '#9a8f7a', fontSize: '13px' }}>No spaces yet</p>}
+                </div>
+              </div>
+
+              {/* Right panel */}
+              <div>
+                {!selectedSpace ? (
+                  <div style={{ ...card, textAlign: 'center', padding: '40px' }}>
+                    <div style={{ fontSize: '36px', marginBottom: '10px' }}>💬</div>
+                    <p style={{ color: '#9a8f7a', fontSize: '14px' }}>Select a space to view and manage its posts</p>
+                  </div>
+                ) : (
+                  <div>
+                    {/* Space header */}
+                    <div style={{ ...card, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: `${selectedSpace.cover_color}22`, border: `2px solid ${selectedSpace.cover_color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>{selectedSpace.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '16px', fontWeight: 800, color: '#FAF3E1', marginBottom: '2px' }}>{selectedSpace.display_name}</div>
+                        <div style={{ fontSize: '12px', color: '#9a8f7a' }}>{selectedSpace.member_count} members · {selectedSpace.post_count} posts · /{selectedSpace.name}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => handleEditSpace(selectedSpace)} style={btn()}>✏️ Edit</button>
+                        <a href={`/community/${selectedSpace.name}`} target="_blank" rel="noopener" style={{ ...btn(), textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>View →</a>
+                      </div>
+                    </div>
+
+                    {/* Posts table */}
+                    <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+                      <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                        <h3 style={{ fontSize: '14px', fontWeight: 700, margin: 0 }}>Posts in {selectedSpace.display_name}</h3>
+                      </div>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                            {['Title', 'By', 'Upvotes', 'Replies', 'Pinned', 'Date', 'Actions'].map(h => (
+                              <th key={h} style={{ padding: '10px 14px', textAlign: 'left', color: '#9a8f7a', fontWeight: 600, fontSize: '12px' }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {spacePosts.map(post => (
+                            <tr key={post.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+                              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >
+                              <td style={{ padding: '10px 14px', maxWidth: '200px' }}>
+                                <p style={{ margin: 0, color: '#F5E7C6', fontSize: '12px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{post.title}</p>
+                              </td>
+                              <td style={{ padding: '10px 14px', color: '#9a8f7a', fontSize: '12px', whiteSpace: 'nowrap' }}>@{post.user?.username}</td>
+                              <td style={{ padding: '10px 14px', color: '#F5E7C6' }}>▲ {post.upvotes}</td>
+                              <td style={{ padding: '10px 14px', color: '#F5E7C6' }}>💬 {post.reply_count}</td>
+                              <td style={{ padding: '10px 14px' }}>
+                                <span style={{ fontSize: '12px', color: post.is_pinned ? '#FF6D1F' : '#555' }}>{post.is_pinned ? '📌' : '—'}</span>
+                              </td>
+                              <td style={{ padding: '10px 14px', color: '#9a8f7a', fontSize: '11px', whiteSpace: 'nowrap' }}>{new Date(post.created_at).toLocaleDateString()}</td>
+                              <td style={{ padding: '10px 14px' }}>
+                                <div style={{ display: 'flex', gap: '5px' }}>
+                                  <button onClick={() => pinSpacePost(post.id, post.is_pinned)} title={post.is_pinned ? 'Unpin' : 'Pin'} style={{ fontSize: '12px', padding: '3px 8px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: post.is_pinned ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.06)', color: post.is_pinned ? '#FF6D1F' : '#9a8f7a' }}>
+                                    {post.is_pinned ? 'Unpin' : '📌 Pin'}
+                                  </button>
+                                  <a href={`/community/${selectedSpace.name}/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', padding: '3px 8px', borderRadius: '5px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                                  <button onClick={() => deleteSpacePost(post.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '5px', padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Del</button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {spacePosts.length === 0 && <p style={{ textAlign: 'center', padding: '30px', color: '#9a8f7a', fontSize: '13px' }}>No posts in this space yet</p>}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

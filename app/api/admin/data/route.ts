@@ -69,6 +69,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ settings: data || [], flags: flags || [] })
   }
 
+  if (type === 'spaces_admin') {
+    const { data } = await admin.from('spaces').select('*').order('is_official', { ascending: false }).order('member_count', { ascending: false })
+    return NextResponse.json({ spaces: data || [] })
+  }
+
+  if (type === 'space_posts_admin') {
+    const space_id = searchParams.get('space_id')
+    const { data } = await admin.from('space_posts')
+      .select('*, user:profiles!space_posts_user_id_fkey(username, full_name)')
+      .eq('space_id', space_id)
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
+    return NextResponse.json({ posts: data || [] })
+  }
+
   if (type === 'news_admin') {
     const { data } = await admin.from('news_items').select('*').order('published_at', { ascending: false }).limit(50)
     return NextResponse.json({ news: data || [] })
@@ -88,6 +103,32 @@ export async function POST(req: NextRequest) {
   const action = searchParams.get('action')
   const admin = getAdmin()
   const body = await req.json()
+
+  if (action === 'edit_space') {
+    const { space_id, display_name, description, icon, cover_color, rules, is_official } = body
+    await admin.from('spaces').update({ display_name, description, icon, cover_color, rules: rules || null, is_official }).eq('id', space_id)
+    await admin.from('admin_logs').insert({ action: `Admin edited space: ${display_name}` })
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'delete_space') {
+    const { data: space } = await admin.from('spaces').select('display_name').eq('id', body.space_id).single()
+    await admin.from('spaces').delete().eq('id', body.space_id)
+    await admin.from('admin_logs').insert({ action: `Admin deleted space: ${space?.display_name}` })
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'delete_space_post') {
+    await admin.from('space_posts').delete().eq('id', body.post_id)
+    await admin.from('admin_logs').insert({ action: `Admin deleted space post: ${body.post_id}` })
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'pin_space_post') {
+    await admin.from('space_posts').update({ is_pinned: body.is_pinned }).eq('id', body.post_id)
+    await admin.from('admin_logs').insert({ action: `Admin ${body.is_pinned ? 'pinned' : 'unpinned'} space post: ${body.post_id}` })
+    return NextResponse.json({ success: true })
+  }
 
   if (action === 'publish_news') {
     const { title, summary, source_name, source_url, image_url, tags } = body
