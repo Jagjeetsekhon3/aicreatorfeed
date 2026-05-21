@@ -61,6 +61,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [currentUserId, setCurrentUserId] = useState('')
+  const [accessToken, setAccessToken] = useState('')
   const [isFollowing, setIsFollowing] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'posts' | 'prompts'>('posts')
@@ -68,7 +69,10 @@ export default function ProfilePage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setCurrentUserId(data.session.user.id)
+      if (data.session) {
+        setCurrentUserId(data.session.user.id)
+        setAccessToken(data.session.access_token)
+      }
     })
   }, [])
 
@@ -84,26 +88,38 @@ export default function ProfilePage() {
       setPosts(userPosts || [])
 
       if (currentUserId && currentUserId !== prof.id) {
-        const { data: follow } = await supabase.from('follows')
-          .select('follower_id').eq('follower_id', currentUserId).eq('following_id', prof.id).single()
-        setIsFollowing(!!follow)
+        const res = await fetch(`/api/follow?following_id=${prof.id}`, {
+          headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {}
+        })
+        const fdata = await res.json()
+        setIsFollowing(fdata.following)
       }
       setLoading(false)
     }
     load()
-  }, [username, currentUserId])
+  }, [username, currentUserId, accessToken])
 
   async function handleFollow() {
     if (!currentUserId) { router.push('/auth/login'); return }
     setFollowLoading(true)
-    if (isFollowing) {
-      await supabase.from('follows').delete().eq('follower_id', currentUserId).eq('following_id', profile!.id)
-      setIsFollowing(false)
-      setProfile(p => p ? { ...p, followers_count: Math.max(0, p.followers_count - 1) } : p)
+    const wasFollowing = isFollowing
+
+    // Optimistic update
+    setIsFollowing(!wasFollowing)
+    setProfile(p => p ? { ...p, followers_count: wasFollowing ? Math.max(0, p.followers_count - 1) : p.followers_count + 1 } : p)
+
+    const res = await fetch('/api/follow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({ following_id: profile!.id, action: wasFollowing ? 'unfollow' : 'follow' }),
+    })
+    const data = await res.json()
+    if (data.error) {
+      setIsFollowing(wasFollowing)
+      setProfile(p => p ? { ...p, followers_count: wasFollowing ? p.followers_count + 1 : Math.max(0, p.followers_count - 1) } : p)
     } else {
-      await supabase.from('follows').insert({ follower_id: currentUserId, following_id: profile!.id })
-      setIsFollowing(true)
-      setProfile(p => p ? { ...p, followers_count: p.followers_count + 1 } : p)
+      const { data: fresh } = await supabase.from('profiles').select('followers_count, following_count').eq('id', profile!.id).single()
+      if (fresh) setProfile(p => p ? { ...p, followers_count: fresh.followers_count } : p)
     }
     setFollowLoading(false)
   }

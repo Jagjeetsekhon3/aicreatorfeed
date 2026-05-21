@@ -113,8 +113,12 @@ export default function FeedPage() {
   }, [filter, followingIds, isLoggedIn])
 
   async function handleFollow(userId: string) {
-    if (!currentUserId) return
-    await supabase.from('follows').insert({ follower_id: currentUserId, following_id: userId })
+    if (!currentUserId) { window.location.href = '/auth/login'; return }
+    await fetch('/api/follow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({ following_id: userId, action: 'follow' }),
+    })
     setFollowingIds(prev => [...prev, userId])
     setSuggestedUsers(prev => prev.filter(u => u.id !== userId))
   }
