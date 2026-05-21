@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 type Stats = { totalUsers: number; totalPosts: number; totalComments: number; totalTickets: number; newUsersThisWeek: number; newPostsThisWeek: number }
 type Setting = { key: string; value: string }
 type Flag = { id: string; name: string; enabled: boolean; description: string }
-type User = { id: string; username: string; full_name: string; avatar_url: string | null; bio: string | null; followers_count: number; posts_count: number; created_at: string }
+type User = { id: string; username: string; full_name: string; avatar_url: string | null; bio: string | null; followers_count: number; posts_count: number; created_at: string; is_verified: boolean; is_official: boolean }
 type Post = { id: string; caption: string; media_type: string; likes_count: number; comments_count: number; created_at: string; user: { username: string; full_name: string } }
 type Ticket = { id: string; user_email: string; subject: string; message: string; status: string; priority: string; admin_reply: string | null; created_at: string; user: { username: string } | null }
 
