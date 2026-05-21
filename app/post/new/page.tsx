@@ -27,11 +27,13 @@ export default function NewPostPage() {
   const [error, setError] = useState('')
   const [userAvatar, setUserAvatar] = useState('')
   const [userInitial, setUserInitial] = useState('?')
+  const [accessToken, setAccessToken] = useState('')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) { router.replace('/auth/login?redirect=/post/new'); return }
       const u = data.session.user
+      setAccessToken(data.session.access_token)
       setUserInitial((u.user_metadata?.full_name || u.email || '?')[0].toUpperCase())
       supabase.from('profiles').select('avatar_url, full_name').eq('id', u.id).single().then(({ data: p }) => {
         if (p?.avatar_url) setUserAvatar(p.avatar_url)
@@ -67,7 +69,11 @@ export default function NewPostPage() {
     if (!text.trim() && !imageUrl && !youtubeId) { setError('Add some text, image, or video'); return }
     setSubmitting(true); setError('')
     const res = await fetch('/api/posts', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
       body: JSON.stringify({
         text: text.trim(), image_url: imageUrl || null,
         prompt_text: promptText.trim() || null, ai_tool: aiTool || null,

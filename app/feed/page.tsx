@@ -21,12 +21,13 @@ export default function FeedPage() {
   const [hasMore, setHasMore] = useState(true)
   const [currentUserId, setCurrentUserId] = useState<string | undefined>()
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set())
+  const [accessToken, setAccessToken] = useState<string>('')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
         setCurrentUserId(data.session.user.id)
-        // Load user's liked posts
+        setAccessToken(data.session.access_token)
         supabase.from('likes').select('post_id').eq('user_id', data.session.user.id)
           .then(({ data: likes }) => {
             if (likes) setLikedIds(new Set(likes.map((l: any) => l.post_id)))
@@ -115,7 +116,7 @@ export default function FeedPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {postsWithLikes.map((post, i) => (
                 <div key={post.id} style={{ animation: `fadeIn 0.3s ease ${i * 0.05}s both` }}>
-                  <PostCard post={post} currentUserId={currentUserId} />
+                  <PostCard post={post} currentUserId={currentUserId} accessToken={accessToken} />
                 </div>
               ))}
             </div>

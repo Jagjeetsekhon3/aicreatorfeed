@@ -1,12 +1,31 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdmin } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+
+async function getUserFromRequest(req: NextRequest) {
+  // Try Authorization header first (most reliable on Vercel)
+  const authHeader = req.headers.get('Authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.replace('Bearer ', '')
+    const admin = createAdmin(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+    const { data: { user } } = await admin.auth.getUser(token)
+    if (user) return user
+  }
+  // Fallback to cookie-based session
+  const supabase = createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.user ?? null
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    const user = await getUserFromRequest(req)
+    if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
+    const supabase = createClient()
     const body = await req.json()
     const { text, image_url, prompt_text, ai_tool, youtube_id, tags } = body
 
@@ -14,13 +33,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Post must have text, image, or video' }, { status: 400 })
     }
 
-    // Determine media type
     let media_type = 'text'
     if (youtube_id) media_type = 'video'
     else if (image_url) media_type = 'image'
 
-    const { data, error } = await supabase.from('posts').insert({
-      user_id: session.user.id,
+    // Use admin client to bypass RLS for insert
+    const admin = createAdmin(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
+    const { data, error } = await admin.from('posts').insert({
+      user_id: user.id,
       caption: text || '',
       prompt_text: prompt_text || null,
       media_type,
@@ -28,17 +52,12 @@ export async function POST(req: NextRequest) {
       video_url: youtube_id || null,
       ai_tool: ai_tool || null,
       tags: tags || [],
-    }).select(`
-      *,
-      user:profiles(id, username, full_name, avatar_url)
-    `).single()
+    }).select(`*, user:profiles(id, username, full_name, avatar_url)`).single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    // Increment post count
-    await supabase.from('profiles')
-      .update({ posts_count: supabase.rpc('increment', { x: 1 }) })
-      .eq('id', session.user.id)
+    // Update post count
+    await admin.rpc('increment_posts_count', { user_id: user.id }).catch(() => {})
 
     return NextResponse.json({ post: data })
   } catch (err) {

@@ -23,7 +23,7 @@ const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
   'Flux':             { bg: 'rgba(255,109,31,0.08)',  color: '#FF9050' },
 }
 
-export default function PostCard({ post, currentUserId }: { post: Post; currentUserId?: string }) {
+export default function PostCard({ post, currentUserId, accessToken }: { post: Post; currentUserId?: string; accessToken?: string }) {
   const [liked, setLiked] = useState(post.is_liked || false)
   const [likeCount, setLikeCount] = useState(post.likes_count || 0)
   const [copied, setCopied] = useState(false)
@@ -36,7 +36,10 @@ export default function PostCard({ post, currentUserId }: { post: Post; currentU
     setLikeCount(prev ? likeCount - 1 : likeCount + 1)
     await fetch('/api/posts/like', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+      },
       body: JSON.stringify({ post_id: post.id }),
     })
   }
