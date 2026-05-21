@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       // Notify post owner
       const { data: post } = await admin.from('posts').select('user_id').eq('id', post_id).single()
       if (post?.user_id && post.user_id !== userId) {
-        const { createNotification } = await import('@/app/api/notifications/route')
+        const { createNotification } = await import('@/lib/notifications')
         await createNotification({ user_id: post.user_id, actor_id: userId, type: 'like', post_id })
       }
       return NextResponse.json({ liked: true })

@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
   await admin.from('profiles').update({ following_count: followingCount || 0 }).eq('id', user.id)
 
   // Notify the person being followed
-  const { createNotification } = await import('@/app/api/notifications/route')
+  const { createNotification } = await import('@/lib/notifications')
   await createNotification({ user_id: following_id, actor_id: user.id, type: 'follow' })
 
   return NextResponse.json({ following: true })

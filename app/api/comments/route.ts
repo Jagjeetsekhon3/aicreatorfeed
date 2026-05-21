@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   // Notify post owner
   const { data: post } = await admin.from('posts').select('user_id, caption').eq('id', post_id).single()
   if (post?.user_id && post.user_id !== user.id) {
-    const { createNotification } = await import('@/app/api/notifications/route')
+    const { createNotification } = await import('@/lib/notifications')
     await createNotification({ user_id: post.user_id, actor_id: user.id, type: 'comment', post_id, comment_id: data.id, message: content.trim().slice(0, 100) })
   }
 
