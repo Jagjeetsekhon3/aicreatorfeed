@@ -102,6 +102,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  if (action === 'toggle_verified') {
+    await admin.from('profiles').update({ is_verified: body.is_verified, verified_at: body.is_verified ? new Date().toISOString() : null }).eq('id', body.user_id)
+    await admin.from('admin_logs').insert({ action: `Admin ${body.is_verified ? 'verified' : 'unverified'} user: ${body.user_id}` })
+    return NextResponse.json({ success: true })
+  }
+
   if (action === 'ban_user') {
     await admin.auth.admin.updateUserById(body.user_id, { ban_duration: body.unban ? 'none' : '87600h' })
     await admin.from('admin_logs').insert({ action: `Admin ${body.unban ? 'unbanned' : 'banned'} user: ${body.user_id}` })

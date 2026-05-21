@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
+import VerifiedBadge from '@/components/ui/VerifiedBadge'
 
 const SORTS = [
   { key: 'trending',  label: '🔥 Trending' },
@@ -48,7 +49,7 @@ export default function ExplorePage() {
 
     let query = supabase
       .from('posts')
-      .select('*, user:profiles!posts_user_id_fkey(id, username, full_name, avatar_url)')
+      .select('*, user:profiles!posts_user_id_fkey(id, username, full_name, avatar_url, is_verified, is_official)')
       .range(p * limit, (p + 1) * limit - 1)
 
     // Sort
@@ -258,6 +259,7 @@ function ExploreCard({ post, index, currentUserId, accessToken, onTagClick, onLi
             }
           </Link>
           <Link href={`/profile/${post.user.username}`} style={{ fontSize: '12px', fontWeight: 600, color: '#F5E7C6', textDecoration: 'none' }}>{post.user.full_name}</Link>
+          {(post.user.is_official || post.user.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={12} />}
           {post.ai_tool && <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.12)', color: '#FF6D1F' }}>{post.ai_tool}</span>}
         </div>
 

@@ -102,6 +102,12 @@ export default function AdminDashboard() {
     showToast(`User ${unban ? 'unbanned' : 'banned'}`)
   }
 
+  async function toggleVerified(id: string, current: boolean) {
+    await action('toggle_verified', { user_id: id, is_verified: !current })
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, is_verified: !current } : u))
+    showToast(!current ? '✓ User verified' : 'Verification removed')
+  }
+
   async function replyTicket() {
     if (!selectedTicket || !replyText.trim()) return
     setSaving(true)
@@ -283,8 +289,12 @@ export default function AdminDashboard() {
                       <td style={{ padding: '12px 14px', color: '#F5E7C6' }}>{user.followers_count}</td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a' }}>{new Date(user.created_at).toLocaleDateString()}</td>
                       <td style={{ padding: '12px 14px' }}>
-                        <div style={{ display: 'flex', gap: '6px' }}>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          {user.is_verified && <span style={{ fontSize: '14px' }} title="Verified">✓</span>}
                           <a href={`/profile/${user.username}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                          <button onClick={() => toggleVerified(user.id, user.is_verified)} style={{ fontSize: '12px', color: user.is_verified ? '#9a8f7a' : '#4ade80', background: user.is_verified ? 'rgba(255,255,255,0.05)' : 'rgba(74,222,128,0.1)', border: `1px solid ${user.is_verified ? 'rgba(255,255,255,0.1)' : 'rgba(74,222,128,0.2)'}`, borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                            {user.is_verified ? 'Unverify' : 'Verify'}
+                          </button>
                           <button onClick={() => banUser(user.id)} style={{ fontSize: '12px', color: '#facc15', background: 'rgba(250,204,21,0.1)', border: '1px solid rgba(250,204,21,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Ban</button>
                         </div>
                       </td>

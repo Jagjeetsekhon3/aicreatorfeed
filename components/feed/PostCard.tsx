@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
 
-type PostUser = { id: string; username: string; full_name: string; avatar_url: string | null }
+import VerifiedBadge from '@/components/ui/VerifiedBadge'
+
+type PostUser = { id: string; username: string; full_name: string; avatar_url: string | null; is_verified?: boolean; is_official?: boolean }
 type Post = {
   id: string; user_id: string; user: PostUser;
   caption: string; prompt_text: string | null;
@@ -155,7 +157,11 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete }:
             }
           </Link>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <Link href={`/profile/${post.user.username}`} style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{post.user.full_name}</Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Link href={`/profile/${post.user.username}`} style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{post.user.full_name}</Link>
+              {post.user.is_official && <VerifiedBadge isOfficial size={15} />}
+              {!post.user.is_official && post.user.is_verified && <VerifiedBadge size={15} />}
+            </div>
             <div style={{ fontSize: '11px', color: '#9a8f7a' }}>@{post.user.username} · {timeAgo}</div>
           </div>
 

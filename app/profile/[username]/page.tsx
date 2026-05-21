@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
+import VerifiedBadge from '@/components/ui/VerifiedBadge'
 
 function MessageButton({ profileId, username, currentUserId }: { profileId: string; username: string; currentUserId: string }) {
   const router = useRouter()
@@ -146,8 +147,10 @@ export default function ProfilePage() {
         {/* Info */}
         <div style={{ flex: 1, minWidth: '200px' }}>
           {/* Name + actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
             <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#FAF3E1', margin: 0 }}>{profile?.full_name}</h1>
+            {profile?.is_official && <VerifiedBadge isOfficial size={20} />}
+            {!profile?.is_official && profile?.is_verified && <VerifiedBadge size={20} />}
             <span style={{ fontSize: '15px', color: '#9a8f7a' }}>@{profile?.username}</span>
             {isOwnProfile ? (
               <Link href="/settings" style={{ padding: '6px 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontSize: '13px', color: '#F5E7C6', textDecoration: 'none', fontWeight: 600 }}>

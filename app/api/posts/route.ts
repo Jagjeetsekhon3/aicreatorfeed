@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       video_url: youtube_id || null,
       ai_tool: ai_tool || null,
       tags: tags || [],
-    }).select(`*, user:profiles!posts_user_id_fkey(id, username, full_name, avatar_url)`).single()
+    }).select(`*, user:profiles!posts_user_id_fkey(id, username, full_name, avatar_url, is_verified, is_official)`).single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 
     let query = supabase
       .from('posts')
-      .select(`*, user:profiles!posts_user_id_fkey(id, username, full_name, avatar_url)`)
+      .select(`*, user:profiles!posts_user_id_fkey(id, username, full_name, avatar_url, is_verified, is_official)`)
       .order('created_at', { ascending: false })
       .range(page * limit, (page + 1) * limit - 1)
 
