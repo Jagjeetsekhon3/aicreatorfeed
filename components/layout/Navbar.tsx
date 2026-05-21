@@ -2,6 +2,128 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
+import { useState, useEffect, useRef } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
+function ProfileDropdown({ user, signOut }: { user: any; signOut: () => void }) {
+  const [open, setOpen] = useState(false)
+  const [username, setUsername] = useState('')
+  const [avatar, setAvatar] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single()
+      .then(({ data }) => { if (data) { setUsername(data.username); setAvatar(data.avatar_url || '') } })
+  }, [user.id])
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const initial = (user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      {/* Avatar button */}
+      <button onClick={() => setOpen(!open)} style={{
+        width: '36px', height: '36px', borderRadius: '50%',
+        background: avatar ? 'transparent' : 'rgba(255,109,31,0.2)',
+        border: `2px solid ${open ? '#FF6D1F' : 'rgba(255,109,31,0.4)'}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', padding: 0, overflow: 'hidden',
+        transition: 'border-color 0.2s',
+      }}>
+        {avatar
+          ? <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <span style={{ fontSize: '13px', fontWeight: 700, color: '#FF6D1F' }}>{initial}</span>
+        }
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 10px)', right: 0,
+          width: '200px', background: '#2a2a2a',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '14px', overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          zIndex: 200,
+          animation: 'dropIn 0.15s ease',
+        }}>
+          <style>{`@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}`}</style>
+
+          {/* User info */}
+          <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>
+              {user.user_metadata?.full_name || 'Creator'}
+            </div>
+            <div style={{ fontSize: '12px', color: '#9a8f7a', marginTop: '2px' }}>
+              @{username || '...'}
+            </div>
+          </div>
+
+          {/* Menu items */}
+          <div style={{ padding: '6px' }}>
+            <Link href={`/profile/${username}`} onClick={() => setOpen(false)} style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
+              color: '#F5E7C6', fontSize: '14px', transition: 'background 0.15s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                <circle cx="8.5" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M2 14.5C2 11.738 5.5 9.5 8.5 9.5C11.5 9.5 15 11.738 15 14.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+              Profile
+            </Link>
+
+            <Link href="/settings" onClick={() => setOpen(false)} style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
+              color: '#F5E7C6', fontSize: '14px', transition: 'background 0.15s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                <circle cx="8.5" cy="8.5" r="2.5" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M8.5 1.5V3M8.5 14V15.5M15.5 8.5H14M3 8.5H1.5M13.4 3.6L12.3 4.7M4.7 12.3L3.6 13.4M13.4 13.4L12.3 12.3M4.7 4.7L3.6 3.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+              Settings
+            </Link>
+
+            <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+
+            <button onClick={() => { setOpen(false); signOut() }} style={{
+              display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+              padding: '10px 12px', borderRadius: '8px',
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#ff8080', fontSize: '14px', fontFamily: 'inherit',
+              textAlign: 'left', transition: 'background 0.15s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,80,80,0.08)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                <path d="M6.5 2.5H3.5C2.948 2.5 2.5 2.948 2.5 3.5V13.5C2.5 14.052 2.948 14.5 3.5 14.5H6.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                <path d="M11 5.5L14.5 8.5L11 11.5M14.5 8.5H6.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const navLinks = [
   { href: '/feed',      label: 'Feed',      icon: FeedIcon },
@@ -155,17 +277,7 @@ export default function Navbar() {
                     <path d="M9 3.5V14.5M3.5 9H14.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
                   </svg>
                 </Link>
-                <Link href="/settings" title="Settings" style={{
-                  width: '34px', height: '34px', borderRadius: '50%',
-                  background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '13px', fontWeight: 700, color: '#FF6D1F', textDecoration: 'none',
-                }}>
-                  {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
-                </Link>
-                <button onClick={signOut} style={{
-                  fontSize: '13px', color: '#9a8f7a', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                }}>Sign out</button>
+                <ProfileDropdown user={user} signOut={signOut} />
               </>
             ) : (
               <>
@@ -210,14 +322,7 @@ export default function Navbar() {
         </Link>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {user ? (
-            <Link href="/settings" title="Settings" style={{
-              width: '32px', height: '32px', borderRadius: '50%',
-              background: 'rgba(255,109,31,0.2)', border: '2px solid #FF6D1F',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '12px', fontWeight: 700, color: '#FF6D1F', textDecoration: 'none',
-            }}>
-              {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
-            </Link>
+            <ProfileDropdown user={user} signOut={signOut} />
           ) : (
             <>
               <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
