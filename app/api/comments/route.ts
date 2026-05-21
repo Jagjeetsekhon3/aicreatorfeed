@@ -48,6 +48,14 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Notify post owner
+  const { data: post } = await admin.from('posts').select('user_id, caption').eq('id', post_id).single()
+  if (post?.user_id && post.user_id !== user.id) {
+    const { createNotification } = await import('@/app/api/notifications/route')
+    await createNotification({ user_id: post.user_id, actor_id: user.id, type: 'comment', post_id, comment_id: data.id, message: content.trim().slice(0, 100) })
+  }
+
   return NextResponse.json({ comment: data })
 }
 

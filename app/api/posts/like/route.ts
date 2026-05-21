@@ -33,6 +33,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ liked: false })
     } else {
       await admin.from('likes').insert({ user_id: userId, post_id })
+      // Notify post owner
+      const { data: post } = await admin.from('posts').select('user_id').eq('id', post_id).single()
+      if (post?.user_id && post.user_id !== userId) {
+        const { createNotification } = await import('@/app/api/notifications/route')
+        await createNotification({ user_id: post.user_id, actor_id: userId, type: 'like', post_id })
+      }
       return NextResponse.json({ liked: true })
     }
   } catch (err) {

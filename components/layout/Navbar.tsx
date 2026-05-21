@@ -155,14 +155,15 @@ function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
   }, [])
 
   const links = [
-    { href: '/feed',      label: 'Feed',        icon: '🏠' },
-    { href: '/explore',   label: 'Explore',     icon: '🔭' },
-    { href: '/search',    label: 'Search',      icon: '🔍' },
-    { href: '/community', label: 'Community',   icon: '👥' },
-    { href: '/news',      label: 'AI News',     icon: '📰' },
-    { href: '/tutorials', label: 'Tutorials',   icon: '🎬' },
-    { href: '/messages',  label: 'Messages',    icon: '💬' },
-    { href: '/settings',  label: 'Settings',    icon: '⚙️' },
+    { href: '/feed',          label: 'Feed',          icon: '🏠' },
+    { href: '/explore',       label: 'Explore',       icon: '🔭' },
+    { href: '/search',        label: 'Search',        icon: '🔍' },
+    { href: '/notifications', label: 'Notifications', icon: '🔔' },
+    { href: '/community',     label: 'Community',     icon: '👥' },
+    { href: '/news',          label: 'AI News',       icon: '📰' },
+    { href: '/tutorials',     label: 'Tutorials',     icon: '🎬' },
+    { href: '/messages',      label: 'Messages',      icon: '💬' },
+    { href: '/settings',      label: 'Settings',      icon: '⚙️' },
   ]
 
   return (
@@ -237,6 +238,33 @@ function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
 export default function Navbar() {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
+  const supabase = createClient()
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [accessToken, setAccessToken] = useState('')
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setAccessToken(data.session.access_token)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!accessToken || !user) return
+    // Load initial count
+    fetch('/api/notifications?type=count', { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(r => r.json()).then(d => setUnreadCount(d.count || 0))
+    // Realtime updates
+    const channel = supabase.channel('notif-badge')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, () => {
+        setUnreadCount(c => c + 1)
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'notifications' }, () => {
+        fetch('/api/notifications?type=count', { headers: { Authorization: `Bearer ${accessToken}` } })
+          .then(r => r.json()).then(d => setUnreadCount(d.count || 0))
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [accessToken, user])
 
   const desktopLinks = [
     { href: '/feed',      label: 'Feed' },
@@ -313,6 +341,12 @@ export default function Navbar() {
                 <path d="M11 11L14 14" stroke="#9a8f7a" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </Link>
+            {user && (
+              <Link href="/notifications" title="Notifications" onClick={() => setUnreadCount(0)} style={{ position: "relative", width: "36px", height: "36px", borderRadius: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#9a8f7a" strokeWidth="1.5" strokeLinecap="round"><path d="M8.5 2a5.5 5.5 0 0 1 5.5 5.5c0 2.5.5 3.5 1 4.5H2c.5-1 1-2 1-4.5A5.5 5.5 0 0 1 8.5 2Z"/><path d="M7 14.5a1.5 1.5 0 0 0 3 0"/></svg>
+                {unreadCount > 0 && <span style={{ position: "absolute", top: "-3px", right: "-3px", background: "#FF6D1F", color: "#fff", fontSize: "10px", fontWeight: 800, width: "17px", height: "17px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #222" }}>{unreadCount > 9 ? "9+" : unreadCount}</span>}
+              </Link>
+            )}
             <Link href="/post/new" title="Create post" style={{
               width: '36px', height: '36px', borderRadius: '10px', background: '#FF6D1F',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
