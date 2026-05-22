@@ -65,16 +65,41 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ following: true })
 }
 
-// GET — check if following a user
+// GET — check if following a user, or list followers/following
 export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const type = searchParams.get('type') // 'followers' | 'following' | null (check)
+  const profile_id = searchParams.get('profile_id')
+
+  const admin = createAdmin(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+
+  // List followers of a profile
+  if (type === 'followers' && profile_id) {
+    const { data } = await admin.from('follows')
+      .select('follower_id, profiles!follows_follower_id_fkey(id, username, full_name, avatar_url, is_verified, is_official)')
+      .eq('following_id', profile_id)
+      .order('created_at', { ascending: false })
+      .limit(100)
+    return NextResponse.json({ users: (data || []).map((r: any) => r.profiles).filter(Boolean) })
+  }
+
+  // List users a profile is following
+  if (type === 'following' && profile_id) {
+    const { data } = await admin.from('follows')
+      .select('following_id, profiles!follows_following_id_fkey(id, username, full_name, avatar_url, is_verified, is_official)')
+      .eq('follower_id', profile_id)
+      .order('created_at', { ascending: false })
+      .limit(100)
+    return NextResponse.json({ users: (data || []).map((r: any) => r.profiles).filter(Boolean) })
+  }
+
+  // Check if current user follows someone
   const user = await getUserFromRequest(req)
   if (!user) return NextResponse.json({ following: false })
 
-  const { searchParams } = new URL(req.url)
   const following_id = searchParams.get('following_id')
   if (!following_id) return NextResponse.json({ following: false })
 
-  const admin = createAdmin(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   const { data } = await admin.from('follows')
     .select('follower_id')
     .eq('follower_id', user.id)

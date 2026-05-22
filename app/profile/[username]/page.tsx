@@ -66,6 +66,9 @@ export default function ProfilePage() {
   const [followLoading, setFollowLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'posts' | 'prompts'>('posts')
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+  const [followModal, setFollowModal] = useState<'followers' | 'following' | null>(null)
+  const [followModalUsers, setFollowModalUsers] = useState<any[]>([])
+  const [followModalLoading, setFollowModalLoading] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -122,6 +125,16 @@ export default function ProfilePage() {
       if (fresh) setProfile(p => p ? { ...p, followers_count: fresh.followers_count } : p)
     }
     setFollowLoading(false)
+  }
+
+  async function openFollowModal(type: 'followers' | 'following') {
+    if (!profile) return
+    setFollowModal(type)
+    setFollowModalLoading(true)
+    const res = await fetch(`/api/follow?type=${type}&profile_id=${profile.id}`)
+    const data = await res.json()
+    setFollowModalUsers(data.users || [])
+    setFollowModalLoading(false)
   }
 
   const isOwnProfile = currentUserId === profile?.id
@@ -191,13 +204,19 @@ export default function ProfilePage() {
           {/* Stats */}
           <div style={{ display: 'flex', gap: '24px', marginBottom: '14px' }}>
             {[
-              { num: posts.length, label: 'posts' },
-              { num: profile?.followers_count || 0, label: 'followers' },
-              { num: profile?.following_count || 0, label: 'following' },
-            ].map(({ num, label }) => (
-              <div key={label} style={{ textAlign: 'center' }}>
+              { num: posts.length, label: 'posts', onClick: null },
+              { num: profile?.followers_count || 0, label: 'followers', onClick: () => openFollowModal('followers') },
+              { num: profile?.following_count || 0, label: 'following', onClick: () => openFollowModal('following') },
+            ].map(({ num, label, onClick }) => (
+              <div
+                key={label}
+                onClick={onClick || undefined}
+                style={{ textAlign: 'center', cursor: onClick ? 'pointer' : 'default' }}
+                onMouseEnter={e => { if (onClick) e.currentTarget.style.opacity = '0.75' }}
+                onMouseLeave={e => { if (onClick) e.currentTarget.style.opacity = '1' }}
+              >
                 <div style={{ fontSize: '18px', fontWeight: 800, color: '#FAF3E1' }}>{num.toLocaleString()}</div>
-                <div style={{ fontSize: '12px', color: '#9a8f7a' }}>{label}</div>
+                <div style={{ fontSize: '12px', color: onClick ? '#FF6D1F' : '#9a8f7a' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -330,6 +349,65 @@ export default function ProfilePage() {
                 <span style={{ fontSize: '14px', color: '#9a8f7a' }}>💬 {selectedPost.comments_count}</span>
                 <button onClick={() => setSelectedPost(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#9a8f7a', fontFamily: 'inherit' }}>Close</button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Followers / Following modal */}
+      {followModal && (
+        <div
+          onClick={() => { setFollowModal(null); setFollowModalUsers([]) }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.15s ease' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', width: '100%', maxWidth: '420px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+          >
+            {/* Modal header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FAF3E1', textTransform: 'capitalize' }}>{followModal}</h3>
+              <button
+                onClick={() => { setFollowModal(null); setFollowModalUsers([]) }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', fontSize: '20px', lineHeight: 1, fontFamily: 'inherit', padding: '0 4px' }}
+              >×</button>
+            </div>
+
+            {/* Modal body */}
+            <div style={{ overflowY: 'auto', flex: 1 }}>
+              {followModalLoading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+                  <div style={{ width: '30px', height: '30px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                </div>
+              ) : followModalUsers.length === 0 ? (
+                <div style={{ padding: '40px 20px', textAlign: 'center', color: '#9a8f7a', fontSize: '14px' }}>
+                  {followModal === 'followers' ? 'No followers yet' : 'Not following anyone yet'}
+                </div>
+              ) : (
+                followModalUsers.map(u => (
+                  <Link
+                    key={u.id}
+                    href={`/profile/${u.username}`}
+                    onClick={() => { setFollowModal(null); setFollowModalUsers([]) }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.04)', transition: 'background 0.1s' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    {u.avatar_url
+                      ? <img src={u.avatar_url} alt={u.full_name} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                      : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
+                    }
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name}</span>
+                        {u.is_official && <span style={{ fontSize: '12px', color: '#FF6D1F' }}>●</span>}
+                        {!u.is_official && u.is_verified && <span style={{ fontSize: '12px', color: '#FF6D1F' }}>✓</span>}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#9a8f7a' }}>@{u.username}</div>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>
