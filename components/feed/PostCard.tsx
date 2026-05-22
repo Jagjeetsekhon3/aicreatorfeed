@@ -29,12 +29,15 @@ const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
   'Flux':             { bg: 'rgba(255,109,31,0.08)',  color: '#FF9050' },
 }
 
-export default function PostCard({ post, currentUserId, accessToken, onDelete }: {
-  post: Post; currentUserId?: string; accessToken?: string; onDelete?: (id: string) => void
+export default function PostCard({ post, currentUserId, accessToken, onDelete, initialBookmarked }: {
+  post: Post; currentUserId?: string; accessToken?: string; onDelete?: (id: string) => void; initialBookmarked?: boolean
 }) {
   const [liked, setLiked] = useState(post.is_liked || false)
   const [likeCount, setLikeCount] = useState(post.likes_count || 0)
   const [copied, setCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
+  const [bookmarked, setBookmarked] = useState(initialBookmarked || false)
+  const [bookmarking, setBookmarking] = useState(false)
   const [showFullPrompt, setShowFullPrompt] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [comments, setComments] = useState<Comment[]>([])
@@ -119,6 +122,27 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete }:
     if (res.ok) { setDeleted(true); onDelete?.(post.id) }
     else setDeleting(false)
     setShowMenu(false)
+  }
+
+  async function handleBookmark() {
+    if (!currentUserId) return
+    setBookmarking(true)
+    const prev = bookmarked
+    setBookmarked(!prev) // optimistic
+    const res = await fetch('/api/bookmarks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
+      body: JSON.stringify({ post_id: post.id }),
+    })
+    if (!res.ok) setBookmarked(prev) // revert on error
+    setBookmarking(false)
+  }
+
+  async function handleCopyLink() {
+    const url = `${window.location.origin}/post/${post.id}`
+    await navigator.clipboard.writeText(url)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
   }
 
   if (deleted) return null
@@ -259,7 +283,26 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete }:
             <span>{commentCount}</span>
           </button>
 
-          <button style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: '#9a8f7a' }}>🔖</button>
+          <button onClick={handleCopyLink} title="Copy link" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: linkCopied ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit', padding: '4px 0', transition: 'color 0.15s' }}>
+            {linkCopied ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M3 8l3 3 7-7"/></svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2H6a1 1 0 00-1 1v10a1 1 0 001 1h6a1 1 0 001-1V5l-3-3z"/><path d="M10 2v3h3"/></svg>
+            )}
+          </button>
+
+          <button
+            onClick={handleBookmark}
+            disabled={bookmarking || !currentUserId}
+            title={bookmarked ? 'Remove bookmark' : 'Save post'}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: currentUserId ? 'pointer' : 'default', fontSize: '16px', color: bookmarked ? '#FF6D1F' : '#9a8f7a', padding: '4px', transition: 'color 0.15s, transform 0.1s', transform: bookmarking ? 'scale(0.85)' : 'scale(1)' }}
+          >
+            {bookmarked ? '🔖' : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 2h10v13l-5-3-5 3V2z"/>
+              </svg>
+            )}
+          </button>
         </div>
 
         {/* Inline comments — Instagram style */}

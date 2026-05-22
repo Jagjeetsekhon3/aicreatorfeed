@@ -22,6 +22,7 @@ export default function FeedPage() {
   const [hasMore, setHasMore] = useState(true)
   const [currentUserId, setCurrentUserId] = useState<string | undefined>()
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set())
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set())
   const [accessToken, setAccessToken] = useState('')
   const [followingIds, setFollowingIds] = useState<string[]>([])
   const [suggestedUsers, setSuggestedUsers] = useState<any[]>([])
@@ -46,6 +47,11 @@ export default function FeedPage() {
           .then(({ data: likes }) => {
             if (likes) setLikedIds(new Set(likes.map((l: any) => l.post_id)))
           })
+
+        // Load bookmarked posts
+        fetch('/api/bookmarks', { headers: { Authorization: `Bearer ${data.session.access_token}` } })
+          .then(r => r.json())
+          .then(d => { if (d.posts) setBookmarkedIds(new Set(d.posts.map((p: any) => p.id))) })
       } else {
         setIsLoggedIn(false)
         setLoading(false)
@@ -123,7 +129,7 @@ export default function FeedPage() {
     setSuggestedUsers(prev => prev.filter(u => u.id !== userId))
   }
 
-  const postsWithLikes = posts.map(p => ({ ...p, is_liked: likedIds.has(p.id) }))
+  const postsWithLikes = posts.map(p => ({ ...p, is_liked: likedIds.has(p.id), is_bookmarked: bookmarkedIds.has(p.id) }))
 
   // Not logged in
   if (!isLoggedIn) return (
@@ -225,6 +231,7 @@ export default function FeedPage() {
             <div key={post.id} style={{ animation: `fadeIn 0.3s ease ${i * 0.04}s both` }}>
               <PostCard post={post} currentUserId={currentUserId} accessToken={accessToken}
                 onDelete={(id) => setPosts(prev => prev.filter(p => p.id !== id))}
+                initialBookmarked={(post as any).is_bookmarked}
               />
             </div>
           ))}

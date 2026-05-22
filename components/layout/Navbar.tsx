@@ -157,6 +157,7 @@ function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
   const links = [
     { href: '/feed',          label: 'Feed',          icon: '🏠' },
     { href: '/explore',       label: 'Explore',       icon: '🔭' },
+    { href: '/saved',         label: 'Saved',         icon: '🔖' },
     { href: '/search',        label: 'Search',        icon: '🔍' },
     { href: '/notifications', label: 'Notifications', icon: '🔔' },
     { href: '/community',     label: 'Community',     icon: '👥' },
