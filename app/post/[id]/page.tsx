@@ -22,6 +22,18 @@ export default function PostPage() {
   const [copied, setCopied] = useState(false)
   const [currentUserId, setCurrentUserId] = useState('')
   const [accessToken, setAccessToken] = useState('')
+  const [showMenu, setShowMenu] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Close menu on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -100,6 +112,17 @@ export default function PostPage() {
     setPost((p: any) => ({ ...p, comments_count: Math.max(0, (p.comments_count || 0) - 1) }))
   }
 
+  async function handleDeletePost() {
+    if (!confirm('Delete this post? This cannot be undone.')) return
+    setDeleting(true)
+    const res = await fetch(`/api/posts/${id}`, {
+      method: 'DELETE',
+      headers: { ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
+    })
+    if (res.ok) { router.push('/feed') }
+    else setDeleting(false)
+  }
+
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -149,6 +172,27 @@ export default function PostPage() {
               <Link href={`/profile/${post.user.username}`} style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{post.user.full_name}</Link>
               <div style={{ fontSize: '12px', color: '#9a8f7a' }}>@{post.user.username} · {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</div>
             </div>
+
+            {/* 3-dot menu — post owner only */}
+            {currentUserId === post.user.id && (
+              <div ref={menuRef} style={{ position: 'relative', marginLeft: 'auto' }}>
+                <button onClick={() => setShowMenu(m => !m)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', padding: '4px 8px', borderRadius: '8px', fontSize: '18px', fontFamily: 'inherit', lineHeight: 1 }}>⋯</button>
+                {showMenu && (
+                  <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: '4px', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '6px', width: '150px', zIndex: 50, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
+                    <Link href={`/post/${id}/edit`} onClick={() => setShowMenu(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 12px', borderRadius: '8px', fontSize: '13px', color: '#FAF3E1', textDecoration: 'none', fontWeight: 500 }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      ✏️ Edit post
+                    </Link>
+                    <button onClick={handleDeletePost} disabled={deleting} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '9px 12px', borderRadius: '8px', fontSize: '13px', color: '#ff8080', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 500 }}
+                      onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,80,80,0.08)')}
+                      onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}>
+                      🗑 {deleting ? 'Deleting…' : 'Delete post'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Caption */}

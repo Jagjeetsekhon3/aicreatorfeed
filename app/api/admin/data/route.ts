@@ -111,6 +111,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  if (action === 'create_space') {
+    const { name, display_name, description, icon, cover_color, rules, is_official } = body
+    const slug = name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+    const { data, error } = await admin.from('spaces').insert({
+      name: slug, display_name, description: description || null,
+      icon: icon || '✨', cover_color: cover_color || '#FF6D1F',
+      rules: rules || null, is_official: is_official || false,
+      member_count: 0, post_count: 0,
+    }).select().single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await admin.from('admin_logs').insert({ action: `Admin created space: ${display_name}` })
+    return NextResponse.json({ space: data })
+  }
+
   if (action === 'delete_space') {
     const { data: space } = await admin.from('spaces').select('display_name').eq('id', body.space_id).single()
     await admin.from('spaces').delete().eq('id', body.space_id)

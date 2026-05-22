@@ -31,54 +31,51 @@ Last updated: May 22, 2026
 - spaces, space_members, space_posts, space_replies, space_post_votes, space_reply_votes
 - notifications ← run supabase-notifications-schema.sql if not done
 
+## site_settings keys used
+- accent_color, bg_color, text_primary, site_name, tagline
+- maintenance_mode, allow_signups, allow_posts, allow_comments, require_approval
+- meta_title, meta_description, meta_keywords (NEW)
+- og_title, og_description (NEW)
+- favicon_url (NEW)
+
 ## Features Built ✅
 - Auth: signup/login (email OR username), email confirmation, password reset
 - Feed: followers-only + official posts, filters, follow suggestions
 - Posts: text/image/video(YouTube inline)/AI prompt, likes, inline comments, edit/delete
 - Explore: search, sort trending/top/latest, tool filters, tag filters
 - Search: /search page, live results, covers users/posts/spaces/news/tutorials/tags
-- Profile: followers/following counts, bio, links, verified badge, 3-col grid
+- Profile: followers/following modal on click, bio, links, verified badge, 3-col grid
 - Follow system: /api/follow route with exact count recalculation
 - Settings: 3 tabs (profile/account/password), avatar upload
 - DMs: message requests, real-time chat, inbox with unread counts
 - Community: spaces listing, space page, post+replies, upvotes, create space
 - AI News: curated feed, tag filters, featured story, admin manages
 - Notifications: follow/like/comment, bell with unread badge, real-time
-- Admin panel: users(verify/ban), posts, news, community, settings, feature flags, tickets, logs
+- Admin panel: users(verify/ban), posts, news, tutorials, community+create space, settings, SEO, features, tickets, logs
 - Verified badges: orange checkmark (verified) / filled circle (official)
-- Burger menu: all nav links in dropdown
-- Navbar: desktop + mobile bottom nav + mobile top bar
-- Tutorials page: live Supabase data, search, tag filters, featured latest ← NEW
-- Followers/Following modal: click counts on profile to see full list ← NEW
-- SEO: full Open Graph + Twitter cards on all pages, dynamic OG per profile/post ← NEW
-- Dynamic OG image: /api/og route generates SVG-based share images ← NEW
+- Post detail page: edit/delete menu for owner (3-dot ⋯ menu) ← NEW
+- Tutorials: live Supabase data, search, tag filters, featured latest
+- Followers/Following modal on profile
+- SEO: full Open Graph + Twitter cards, dynamic per profile/post
+- SEO admin panel: meta title, description, keywords, OG, favicon URL ← NEW
+- Favicon: dynamic from site_settings.favicon_url ← NEW
+- Admin: Tutorials tab (add/delete), Create Space modal, SEO & Meta tab ← NEW
 
 ## Files changed in last session
-- app/api/tutorials/route.ts (NEW — GET/POST/DELETE)
-- app/api/og/route.ts (NEW — dynamic OG image SVG)
-- app/tutorials/page.tsx (REWRITTEN — live Supabase data, search, tag filters)
-- app/api/follow/route.ts (UPDATED — added type=followers/following list query)
-- app/profile/[username]/page.tsx (UPDATED — followers/following modal on count click)
-- app/layout.tsx (UPDATED — full SEO metadata, OG, Twitter cards)
-- app/profile/[username]/layout.tsx (NEW — dynamic OG per profile)
-- app/post/[id]/layout.tsx (NEW — dynamic OG per post)
-- app/feed/layout.tsx (NEW)
-- app/explore/layout.tsx (NEW)
-- app/news/layout.tsx (NEW)
-- app/tutorials/layout.tsx (NEW)
-- app/community/layout.tsx (NEW)
-- app/search/layout.tsx (NEW)
+- app/post/[id]/page.tsx (UPDATED — 3-dot edit/delete menu for owner)
+- app/acfjagjeetadmin/dashboard/page.tsx (UPDATED — tutorials tab, create space, SEO tab)
+- app/api/admin/data/route.ts (UPDATED — create_space action)
+- app/api/tutorials/route.ts (already existed, unchanged)
+- app/layout.tsx (UPDATED — dynamic SEO from site_settings, favicon support)
 
 ## Pending / TODO
 - [ ] Run supabase-notifications-schema.sql in Supabase (if not done)
 - [ ] Connect domain aicreatorfeed.com in Vercel → Settings → Domains
-- [ ] Add tutorials via Admin panel (currently empty — hardcoded data removed)
+- [ ] Upload favicon.ico to /public folder (or set URL in Admin → SEO & Meta)
 - [ ] Weekly Challenges (Community Phase 2)
 - [ ] Q&A threads (Community Phase 3)
 - [ ] Paid verification subscription flow
 - [ ] Email notifications (optional)
-- [ ] Post page /post/[id] — add Suspense boundary (low priority, works fine)
-- [ ] Admin panel: add Tutorials tab to manage tutorials from dashboard
 
 ## Key Patterns (IMPORTANT for next session)
 1. ALL API routes use Bearer token auth — never cookies
@@ -89,6 +86,7 @@ Last updated: May 22, 2026
 6. Admin uses service role key to bypass RLS
 7. Follow counts use exact COUNT query, not triggers
 8. All 'use client' pages use per-route layout.tsx for metadata (server component)
+9. site_settings table stores all SEO/meta/favicon values as key-value pairs
 
 ## Project location on Claude's machine
 /home/claude/nexusai/

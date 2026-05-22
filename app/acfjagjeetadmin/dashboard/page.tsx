@@ -19,9 +19,11 @@ const SIDEBAR_ITEMS = [
   { key: 'overview',   icon: '📊', label: 'Overview' },
   { key: 'users',      icon: '👥', label: 'Users' },
   { key: 'posts',      icon: '📝', label: 'Posts' },
+  { key: 'tutorials',  icon: '🎬', label: 'Tutorials' },
   { key: 'news',       icon: '📰', label: 'AI News' },
   { key: 'community',  icon: '💬', label: 'Community' },
   { key: 'settings',   icon: '🎨', label: 'Site Settings' },
+  { key: 'seo',        icon: '🔍', label: 'SEO & Meta' },
   { key: 'features',   icon: '🔧', label: 'Features' },
   { key: 'tickets',    icon: '🎫', label: 'Support Tickets' },
   { key: 'logs',       icon: '📋', label: 'Activity Log' },
@@ -44,6 +46,12 @@ export default function AdminDashboard() {
   const [newsForm, setNewsForm] = useState({ title: '', summary: '', source_name: '', source_url: '', image_url: '', tags: '' })
   const [newsLoading, setNewsLoading] = useState(false)
 
+  // Tutorials state
+  const [tutorials, setTutorials] = useState<any[]>([])
+  const [showTutorialForm, setShowTutorialForm] = useState(false)
+  const [tutorialForm, setTutorialForm] = useState({ title: '', description: '', youtube_video_id: '', duration_minutes: '', tags: '' })
+  const [tutorialLoading, setTutorialLoading] = useState(false)
+
   // Community state
   const [spaces, setSpaces] = useState<any[]>([])
   const [spacePosts, setSpacePosts] = useState<any[]>([])
@@ -51,6 +59,16 @@ export default function AdminDashboard() {
   const [communityTab, setCommunityTab] = useState<'spaces' | 'posts'>('spaces')
   const [editingSpace, setEditingSpace] = useState<any>(null)
   const [spaceEditForm, setSpaceEditForm] = useState({ display_name: '', description: '', icon: '', cover_color: '', rules: '', is_official: false })
+  const [showCreateSpace, setShowCreateSpace] = useState(false)
+  const [createSpaceForm, setCreateSpaceForm] = useState({ name: '', display_name: '', description: '', icon: '✨', cover_color: '#FF6D1F', rules: '', is_official: false })
+  const [createSpaceLoading, setCreateSpaceLoading] = useState(false)
+
+  // SEO state
+  const [seoSettings, setSeoSettings] = useState({
+    meta_title: '', meta_description: '', meta_keywords: '',
+    og_title: '', og_description: '', favicon_url: '',
+  })
+
   const [loading, setLoading] = useState(true)
   const [userSearch, setUserSearch] = useState('')
   const [ticketFilter, setTicketFilter] = useState('open')
@@ -82,8 +100,22 @@ export default function AdminDashboard() {
     if (tab === 'users') api('users').then(d => { if (d) setUsers(d.users) })
     if (tab === 'posts') api('posts').then(d => { if (d) setPosts(d.posts) })
     if (tab === 'news') api('news_admin').then(d => { if (d) setNewsItems(d.news) })
+    if (tab === 'tutorials') fetch('/api/tutorials').then(r => r.json()).then(d => setTutorials(d.tutorials || []))
     if (tab === 'community') api('spaces_admin').then(d => { if (d) setSpaces(d.spaces) })
     if (tab === 'tickets') api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
+    if (tab === 'seo') api('settings').then(d => {
+      if (d?.settings) {
+        const s = (d.settings as Setting[]).reduce((acc: any, s) => { acc[s.key] = s.value; return acc }, {} as any)
+        setSeoSettings({
+          meta_title: s.meta_title || '',
+          meta_description: s.meta_description || '',
+          meta_keywords: s.meta_keywords || '',
+          og_title: s.og_title || '',
+          og_description: s.og_description || '',
+          favicon_url: s.favicon_url || '',
+        })
+      }
+    })
   }, [tab, ticketFilter])
 
   async function searchUsers() {
@@ -101,6 +133,63 @@ export default function AdminDashboard() {
     if (d) setNewsItems(d.news)
     showToast('News published!')
     setNewsLoading(false)
+  }
+
+  async function publishTutorial() {
+    if (!tutorialForm.title || !tutorialForm.youtube_video_id) { showToast('Title and YouTube ID are required'); return }
+    setTutorialLoading(true)
+    const res = await fetch('/api/tutorials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...tutorialForm,
+        duration_minutes: parseInt(tutorialForm.duration_minutes) || 0,
+        tags: tutorialForm.tags.split(',').map((t: string) => t.trim()).filter(Boolean),
+      }),
+    })
+    if (res.ok) {
+      setTutorialForm({ title: '', description: '', youtube_video_id: '', duration_minutes: '', tags: '' })
+      setShowTutorialForm(false)
+      const d = await fetch('/api/tutorials').then(r => r.json())
+      setTutorials(d.tutorials || [])
+      showToast('Tutorial added!')
+    } else showToast('Failed to add tutorial')
+    setTutorialLoading(false)
+  }
+
+  async function deleteTutorial(id: string) {
+    if (!confirm('Delete this tutorial?')) return
+    await fetch('/api/tutorials', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+    setTutorials(prev => prev.filter((t: any) => t.id !== id))
+    showToast('Deleted')
+  }
+
+  async function createSpace() {
+    if (!createSpaceForm.name || !createSpaceForm.display_name) { showToast('Slug and display name are required'); return }
+    setCreateSpaceLoading(true)
+    await action('create_space', createSpaceForm)
+    setCreateSpaceForm({ name: '', display_name: '', description: '', icon: '✨', cover_color: '#FF6D1F', rules: '', is_official: false })
+    setShowCreateSpace(false)
+    const d = await api('spaces_admin')
+    if (d) setSpaces(d.spaces)
+    showToast('Space created!')
+    setCreateSpaceLoading(false)
+  }
+
+  async function saveSeoSetting(key: string, value: string) {
+    setSaving(true)
+    await action('update_setting', { key, value })
+    showToast('Saved!')
+    setSaving(false)
+  }
+
+  async function saveAllSeo() {
+    setSaving(true)
+    for (const [key, value] of Object.entries(seoSettings)) {
+      await action('update_setting', { key, value })
+    }
+    showToast('SEO settings saved!')
+    setSaving(false)
   }
 
   async function deleteNews(id: string) {
@@ -635,6 +724,84 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ── TUTORIALS ────────────────────────────────────────────────── */}
+        {tab === 'tutorials' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 900 }}>Tutorials</h1>
+              <button onClick={() => setShowTutorialForm(!showTutorialForm)} style={btn()}>+ Add tutorial</button>
+            </div>
+
+            {/* Add tutorial form */}
+            {showTutorialForm && (
+              <div style={{ ...card, marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>🎬 New Tutorial</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Title *</label>
+                    <input value={tutorialForm.title} onChange={e => setTutorialForm(p => ({ ...p, title: e.target.value }))} placeholder="Mastering Midjourney v7..." style={inp} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>YouTube Video ID * (e.g. dQw4w9WgXcQ)</label>
+                    <input value={tutorialForm.youtube_video_id} onChange={e => setTutorialForm(p => ({ ...p, youtube_video_id: e.target.value.trim() }))} placeholder="dQw4w9WgXcQ" style={inp} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Duration (minutes)</label>
+                    <input type="number" value={tutorialForm.duration_minutes} onChange={e => setTutorialForm(p => ({ ...p, duration_minutes: e.target.value }))} placeholder="25" style={inp} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Description</label>
+                    <textarea value={tutorialForm.description} onChange={e => setTutorialForm(p => ({ ...p, description: e.target.value }))} rows={2} placeholder="What will viewers learn..." style={{ ...inp, resize: 'none' as any }} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Tags (comma separated)</label>
+                    <input value={tutorialForm.tags} onChange={e => setTutorialForm(p => ({ ...p, tags: e.target.value }))} placeholder="Midjourney, prompting, workflow" style={inp} />
+                  </div>
+                </div>
+                {tutorialForm.youtube_video_id && (
+                  <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src={`https://img.youtube.com/vi/${tutorialForm.youtube_video_id}/hqdefault.jpg`} alt="Preview" style={{ width: '120px', height: '68px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} />
+                    <span style={{ fontSize: '12px', color: '#9a8f7a' }}>Thumbnail preview</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '8px', marginTop: '16px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => setShowTutorialForm(false)} style={btn(false)}>Cancel</button>
+                  <button onClick={publishTutorial} disabled={tutorialLoading} style={btn()}>
+                    {tutorialLoading ? 'Adding...' : 'Add tutorial'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Tutorials list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {tutorials.length === 0 && (
+                <div style={{ ...card, textAlign: 'center', padding: '40px', color: '#9a8f7a' }}>
+                  <div style={{ fontSize: '32px', marginBottom: '8px' }}>🎬</div>
+                  No tutorials yet. Add your first one above!
+                </div>
+              )}
+              {tutorials.map((t: any) => (
+                <div key={t.id} style={{ ...card, display: 'flex', gap: '14px', alignItems: 'center' }}>
+                  <img src={t.thumbnail_url || `https://img.youtube.com/vi/${t.youtube_video_id}/hqdefault.jpg`} alt={t.title} style={{ width: '100px', height: '56px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.08)' }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', marginBottom: '3px' }}>{t.title}</div>
+                    <div style={{ fontSize: '12px', color: '#9a8f7a', display: 'flex', gap: '12px' }}>
+                      <span>⏱ {t.duration_minutes}m</span>
+                      <span>👁 {(t.views_count || 0).toLocaleString()}</span>
+                      {t.tags?.length > 0 && <span>{t.tags.slice(0, 3).join(', ')}</span>}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                    <a href={`https://youtube.com/watch?v=${t.youtube_video_id}`} target="_blank" rel="noopener" style={{ ...btn(false), textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '6px 10px' }}>▶ View</a>
+                    <button onClick={() => deleteTutorial(t.id)} style={{ ...btn(false), color: '#ff8080', background: 'rgba(255,80,80,0.08)', padding: '6px 10px' }}>🗑</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ── AI NEWS ──────────────────────────────────────────────────── */}
         {tab === 'news' && (
           <div style={{ animation: 'slideIn 0.2s ease' }}>
@@ -725,7 +892,75 @@ export default function AdminDashboard() {
         {/* ── COMMUNITY ────────────────────────────────────────────────── */}
         {tab === 'community' && (
           <div style={{ animation: 'slideIn 0.2s ease' }}>
-            <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>Community</h1>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 900 }}>Community</h1>
+              <button onClick={() => setShowCreateSpace(true)} style={btn()}>+ Create space</button>
+            </div>
+
+            {/* Create Space modal */}
+            {showCreateSpace && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Create New Space</h3>
+                    <button onClick={() => setShowCreateSpace(false)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '20px' }}>×</button>
+                  </div>
+
+                  {/* Live preview */}
+                  {createSpaceForm.display_name && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: 'rgba(255,255,255,0.04)', borderRadius: '10px', marginBottom: '16px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: `${createSpaceForm.cover_color}22`, border: `2px solid ${createSpaceForm.cover_color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>{createSpaceForm.icon}</div>
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>{createSpaceForm.display_name}</div>
+                        <div style={{ fontSize: '12px', color: '#9a8f7a' }}>/{createSpaceForm.name || 'slug'}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Display Name *</label>
+                      <input value={createSpaceForm.display_name} onChange={e => setCreateSpaceForm(p => ({ ...p, display_name: e.target.value }))} placeholder="AI Image Generation" style={inp} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>URL Slug * (letters, numbers, hyphens)</label>
+                      <input value={createSpaceForm.name} onChange={e => setCreateSpaceForm(p => ({ ...p, name: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))} placeholder="ai-image-generation" style={inp} />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Icon (emoji)</label>
+                        <input value={createSpaceForm.icon} onChange={e => setCreateSpaceForm(p => ({ ...p, icon: e.target.value }))} placeholder="✨" style={{ ...inp }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Cover color</label>
+                        <input type="color" value={createSpaceForm.cover_color} onChange={e => setCreateSpaceForm(p => ({ ...p, cover_color: e.target.value }))} style={{ ...inp, width: '60px', height: '38px', padding: '4px', cursor: 'pointer' }} />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Description</label>
+                      <textarea value={createSpaceForm.description} onChange={e => setCreateSpaceForm(p => ({ ...p, description: e.target.value }))} rows={2} placeholder="What is this space about..." style={{ ...inp, resize: 'none' as any }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Rules (optional)</label>
+                      <textarea value={createSpaceForm.rules} onChange={e => setCreateSpaceForm(p => ({ ...p, rules: e.target.value }))} rows={2} placeholder="1. Be respectful..." style={{ ...inp, resize: 'none' as any }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <button onClick={() => setCreateSpaceForm(p => ({ ...p, is_official: !p.is_official }))} style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: createSpaceForm.is_official ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: createSpaceForm.is_official ? '21px' : '3px', transition: 'left 0.2s' }} />
+                      </button>
+                      <span style={{ fontSize: '13px', color: '#F5E7C6' }}>Official space</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '20px', justifyContent: 'flex-end' }}>
+                    <button onClick={() => setShowCreateSpace(false)} style={btn(false)}>Cancel</button>
+                    <button onClick={createSpace} disabled={createSpaceLoading} style={btn()}>
+                      {createSpaceLoading ? 'Creating...' : 'Create space'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Space edit modal */}
             {editingSpace && (
@@ -874,6 +1109,119 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── SEO & META ───────────────────────────────────────────────── */}
+        {tab === 'seo' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '4px' }}>SEO & Meta Tags</h1>
+                <p style={{ fontSize: '13px', color: '#9a8f7a', margin: 0 }}>These settings control how AiCreatorFeed appears in search results and social shares.</p>
+              </div>
+              <button onClick={saveAllSeo} disabled={saving} style={btn()}>
+                {saving ? 'Saving...' : '💾 Save all SEO settings'}
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+
+              {/* Page title & description */}
+              <div style={{ ...card, gridColumn: '1 / -1' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>🔍 Search Engine (Google)</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Meta Title <span style={{ color: '#555' }}>(recommended: 50–60 chars)</span></label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input value={seoSettings.meta_title} onChange={e => setSeoSettings(p => ({ ...p, meta_title: e.target.value }))} placeholder="AiCreatorFeed — Where AI Creators Connect" style={{ ...inp, flex: 1 }} maxLength={70} />
+                      <button onClick={() => saveSeoSetting('meta_title', seoSettings.meta_title)} style={btn()} disabled={saving}>Save</button>
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '4px' }}>{seoSettings.meta_title.length}/70 characters</div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Meta Description <span style={{ color: '#555' }}>(recommended: 150–160 chars)</span></label>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      <textarea value={seoSettings.meta_description} onChange={e => setSeoSettings(p => ({ ...p, meta_description: e.target.value }))} rows={2} placeholder="Follow AI creators, share image & video prompts, discover AI tools, news, and tutorials." style={{ ...inp, flex: 1, resize: 'none' as any }} maxLength={200} />
+                      <button onClick={() => saveSeoSetting('meta_description', seoSettings.meta_description)} style={btn()} disabled={saving}>Save</button>
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '4px' }}>{seoSettings.meta_description.length}/200 characters</div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Keywords <span style={{ color: '#555' }}>(comma separated)</span></label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input value={seoSettings.meta_keywords} onChange={e => setSeoSettings(p => ({ ...p, meta_keywords: e.target.value }))} placeholder="AI creators, AI prompts, Midjourney, Stable Diffusion, AI art" style={{ ...inp, flex: 1 }} />
+                      <button onClick={() => saveSeoSetting('meta_keywords', seoSettings.meta_keywords)} style={btn()} disabled={saving}>Save</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Open Graph */}
+              <div style={card}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>📣 Open Graph (Social Sharing)</h3>
+                <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '14px' }}>Controls how pages look when shared on Twitter, Facebook, Discord etc. Leave blank to use meta title/description.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>OG Title</label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input value={seoSettings.og_title} onChange={e => setSeoSettings(p => ({ ...p, og_title: e.target.value }))} placeholder="Same as meta title..." style={{ ...inp, flex: 1 }} />
+                      <button onClick={() => saveSeoSetting('og_title', seoSettings.og_title)} style={btn()} disabled={saving}>Save</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>OG Description</label>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      <textarea value={seoSettings.og_description} onChange={e => setSeoSettings(p => ({ ...p, og_description: e.target.value }))} rows={2} placeholder="Same as meta description..." style={{ ...inp, flex: 1, resize: 'none' as any }} />
+                      <button onClick={() => saveSeoSetting('og_description', seoSettings.og_description)} style={btn()} disabled={saving}>Save</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OG Image preview */}
+                <div style={{ marginTop: '14px', padding: '12px', background: '#222', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  <div style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '8px', fontWeight: 600 }}>OG IMAGE PREVIEW</div>
+                  <img src="/api/og" alt="OG preview" style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }} />
+                  <p style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '8px', margin: '8px 0 0' }}>Auto-generated at /api/og — no upload needed.</p>
+                </div>
+              </div>
+
+              {/* Favicon */}
+              <div style={card}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>🌐 Favicon</h3>
+                <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px' }}>The small icon shown in browser tabs. Paste a URL to an .ico, .png, or .svg file (32×32 recommended).</p>
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '14px' }}>
+                  {seoSettings.favicon_url ? (
+                    <img src={seoSettings.favicon_url} alt="favicon" style={{ width: '32px', height: '32px', objectFit: 'contain', background: '#333', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }} />
+                  ) : (
+                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#333', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>✦</div>
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '12px', color: seoSettings.favicon_url ? '#4ade80' : '#9a8f7a' }}>
+                      {seoSettings.favicon_url ? '✓ Favicon set' : 'No favicon set — using default'}
+                    </div>
+                  </div>
+                </div>
+
+                <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Favicon URL</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input value={seoSettings.favicon_url} onChange={e => setSeoSettings(p => ({ ...p, favicon_url: e.target.value }))} placeholder="https://yourdomain.com/favicon.ico" style={{ ...inp, flex: 1 }} />
+                  <button onClick={() => saveSeoSetting('favicon_url', seoSettings.favicon_url)} style={btn()} disabled={saving}>Save</button>
+                </div>
+
+                <div style={{ marginTop: '14px', padding: '12px', background: '#222', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  <div style={{ fontSize: '11px', color: '#FF6D1F', fontWeight: 700, marginBottom: '6px' }}>HOW TO ADD A FAVICON</div>
+                  <ol style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.7, paddingLeft: '16px', margin: 0 }}>
+                    <li>Create a 32×32px or 64×64px icon (PNG or ICO)</li>
+                    <li>Upload it to Cloudinary or any CDN</li>
+                    <li>Paste the URL above and click Save</li>
+                    <li>Add it to your Next.js layout: place favicon.ico in the /public folder — Vercel serves it automatically</li>
+                  </ol>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
