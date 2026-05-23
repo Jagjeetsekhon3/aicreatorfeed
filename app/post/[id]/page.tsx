@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
+import { RenderWithMentions } from '@/components/ui/MentionInput'
 
 export default function PostPage() {
   const { id } = useParams()
@@ -196,7 +197,7 @@ export default function PostPage() {
           </div>
 
           {/* Caption */}
-          {post.caption && <p style={{ fontSize: '15px', color: '#F5E7C6', lineHeight: 1.65, marginBottom: '14px', whiteSpace: 'pre-wrap' }}>{post.caption}</p>}
+          {post.caption && <p style={{ fontSize: '15px', color: '#F5E7C6', lineHeight: 1.65, marginBottom: '14px', whiteSpace: 'pre-wrap' }}><RenderWithMentions text={post.caption} /></p>}
 
           {/* Prompt */}
           {post.prompt_text && (

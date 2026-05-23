@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { extractYouTubeId, getYouTubeThumbnail } from '@/lib/youtube'
+import MentionInput from '@/components/ui/MentionInput'
 
 export default function NewPostPage() {
   const router = useRouter()
@@ -172,11 +173,12 @@ export default function NewPostPage() {
             </div>
             {/* Text */}
             <div style={{ flex: 1 }}>
-              <textarea
-                value={text} onChange={e => setText(e.target.value)}
-                placeholder="What are you creating with AI today?"
-                rows={4} maxLength={2000}
-                style={{ width: '100%', background: 'transparent', border: 'none', padding: 0, fontSize: '16px', color: '#FAF3E1', resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.65, letterSpacing: '0.01em' }}
+              <MentionInput
+                value={text}
+                onChange={setText}
+                placeholder="What are you creating with AI today? (@mention someone)"
+                rows={4}
+                style={{ background: 'transparent', border: 'none', padding: 0, fontSize: '16px', lineHeight: 1.65, letterSpacing: '0.01em', borderRadius: 0 }}
               />
               {text.length > 1800 && (
                 <p style={{ fontSize: '11px', color: text.length > 1950 ? '#ff8080' : '#9a8f7a', textAlign: 'right', margin: '4px 0 0' }}>{text.length}/2000</p>

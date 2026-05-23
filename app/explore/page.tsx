@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
+import { RenderWithMentions } from '@/components/ui/MentionInput'
 import VerifiedBadge from '@/components/ui/VerifiedBadge'
 
 const SORTS = [
@@ -267,9 +268,9 @@ function ExploreCard({ post, index, currentUserId, accessToken, onTagClick, onLi
 
         {/* Caption */}
         {post.caption && (
-          <Link href={`/post/${post.id}`} style={{ textDecoration: 'none' }}>
-            <p style={{ fontSize: '13px', color: '#F5E7C6', lineHeight: 1.5, marginBottom: '8px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{post.caption}</p>
-          </Link>
+          <p style={{ fontSize: '13px', color: '#F5E7C6', lineHeight: 1.5, marginBottom: '8px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
+            <RenderWithMentions text={post.caption} />
+          </p>
         )}
 
         {/* Prompt snippet */}

@@ -191,3 +191,39 @@ insert into public.site_settings (key, value) values
   ('social_linkedin',      ''),
   ('social_linkedin_label','Connect with us')
 on conflict (key) do nothing;
+
+
+-- ─── COMMENT REPLIES (run once) ──────────────────────────────────────────────
+alter table public.comments add column if not exists parent_id uuid references public.comments(id) on delete cascade;
+create index if not exists comments_parent_id_idx on public.comments(parent_id);
+
+-- ─── COLLECTIONS (run once) ──────────────────────────────────────────────────
+create table if not exists public.collections (
+  id          uuid default uuid_generate_v4() primary key,
+  user_id     uuid references public.profiles(id) on delete cascade not null,
+  name        text not null default 'Saved',
+  description text,
+  is_default  boolean default false,
+  cover_url   text,
+  post_count  int default 0,
+  created_at  timestamptz default now()
+);
+
+create table if not exists public.collection_posts (
+  id            uuid default uuid_generate_v4() primary key,
+  collection_id uuid references public.collections(id) on delete cascade not null,
+  post_id       uuid references public.posts(id) on delete cascade not null,
+  user_id       uuid references public.profiles(id) on delete cascade not null,
+  created_at    timestamptz default now(),
+  unique(collection_id, post_id)
+);
+
+alter table public.collections enable row level security;
+alter table public.collection_posts enable row level security;
+
+create policy "Users manage own collections" on public.collections for all using (auth.uid() = user_id);
+create policy "Users manage own collection_posts" on public.collection_posts for all using (auth.uid() = user_id);
+create policy "Collections are viewable by owner" on public.collections for select using (auth.uid() = user_id);
+
+create index if not exists collection_posts_user_id_idx on public.collection_posts(user_id);
+create index if not exists collection_posts_post_id_idx on public.collection_posts(post_id);

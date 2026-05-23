@@ -1,10 +1,110 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
 import VerifiedBadge from '@/components/ui/VerifiedBadge'
+import MentionInput, { RenderWithMentions } from '@/components/ui/MentionInput'
+
+// ── Saved Collections Tab ───────────────────────────────────────────────────
+function SavedCollectionsTab({ userId, accessToken }: { userId: string; accessToken: string }) {
+  const [collections, setCollections] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCol, setSelectedCol] = useState<any>(null)
+  const [colPosts, setColPosts] = useState<any[]>([])
+  const [loadingPosts, setLoadingPosts] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [creating, setCreating] = useState(false)
+
+  useEffect(() => {
+    fetch(`/api/collections?user_id=${userId}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(r => r.json()).then(d => { setCollections(d.collections || []); setLoading(false) })
+  }, [userId, accessToken])
+
+  async function openCollection(col: any) {
+    setSelectedCol(col); setLoadingPosts(true)
+    const res = await fetch(`/api/collections?collection_id=${col.id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+    const d = await res.json()
+    setColPosts(d.posts || []); setLoadingPosts(false)
+  }
+
+  async function createCollection() {
+    if (!newName.trim()) return
+    setCreating(true)
+    const res = await fetch('/api/collections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({ name: newName.trim() }),
+    })
+    const d = await res.json()
+    if (d.collection) { setCollections(p => [...p, d.collection]); setNewName('') }
+    setCreating(false)
+  }
+
+  async function deleteCollection(id: string) {
+    if (!confirm('Delete this collection?')) return
+    await fetch('/api/collections', { method: 'DELETE', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` }, body: JSON.stringify({ id }) })
+    setCollections(p => p.filter(c => c.id !== id))
+    if (selectedCol?.id === id) setSelectedCol(null)
+  }
+
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '28px', height: '28px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+
+  if (selectedCol) return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+        <button onClick={() => setSelectedCol(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', fontSize: '20px' }}>←</button>
+        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FAF3E1' }}>📁 {selectedCol.name}</h3>
+        <span style={{ fontSize: '12px', color: '#9a8f7a' }}>{colPosts.length} posts</span>
+      </div>
+      {loadingPosts ? <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+        : colPosts.length === 0 ? <p style={{ color: '#9a8f7a', textAlign: 'center', padding: '40px 0' }}>No posts saved here yet</p>
+        : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px' }}>
+          {colPosts.map((post: any) => (
+            <Link key={post.id} href={`/post/${post.id}`} style={{ display: 'block', position: 'relative', paddingBottom: '100%', background: '#2a2a2a', overflow: 'hidden', textDecoration: 'none' }}>
+              {post.image_url && <img src={post.image_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
+              {!post.image_url && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontSize: '11px', color: '#9a8f7a', padding: '8px', textAlign: 'center' }}>{post.caption?.slice(0,50)}</span></div>}
+            </Link>
+          ))}
+        </div>
+      }
+    </div>
+  )
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        <input value={newName} onChange={e => setNewName(e.target.value)} onKeyDown={e => e.key === 'Enter' && createCollection()}
+          placeholder="New collection name..." style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '9px 12px', fontFamily: 'inherit', outline: 'none' }} />
+        <button onClick={createCollection} disabled={creating || !newName.trim()} style={{ background: '#FF6D1F', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+          {creating ? '...' : '+ Create'}
+        </button>
+      </div>
+      {collections.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+          <div style={{ fontSize: '40px', marginBottom: '12px' }}>📁</div>
+          <p style={{ color: '#9a8f7a', fontSize: '14px' }}>No collections yet. Create one above, then save posts to it using the bookmark icon.</p>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
+          {collections.map(col => (
+            <div key={col.id} style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', overflow: 'hidden' }}>
+              <div onClick={() => openCollection(col)} style={{ padding: '28px 16px 16px', cursor: 'pointer' }}>
+                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📁</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', marginBottom: '3px' }}>{col.name}</div>
+                <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{col.post_count || 0} posts</div>
+              </div>
+              <div style={{ padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'flex-end' }}>
+                <button onClick={() => deleteCollection(col.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,80,80,0.5)', fontSize: '12px', fontFamily: 'inherit' }}>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function MessageButton({ profileId, username, currentUserId }: { profileId: string; username: string; currentUserId: string }) {
   const router = useRouter()
@@ -64,8 +164,7 @@ export default function ProfilePage() {
   const [accessToken, setAccessToken] = useState('')
   const [isFollowing, setIsFollowing] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<'posts' | 'prompts'>('posts')
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+  const [activeTab, setActiveTab] = useState<'posts' | 'prompts' | 'saved'>('posts')
   const [editingPost, setEditingPost] = useState<Post | null>(null)
   const [editForm, setEditForm] = useState({ caption: '', prompt_text: '', ai_tool: '', tags: '' })
   const [editSaving, setEditSaving] = useState(false)
@@ -279,7 +378,7 @@ export default function ProfilePage() {
           {/* Bio */}
           {profile?.bio && (
             <p style={{ fontSize: '14px', color: '#F5E7C6', lineHeight: 1.6, marginBottom: '10px', whiteSpace: 'pre-wrap', maxWidth: '400px' }}>
-              {profile.bio}
+              <RenderWithMentions text={profile.bio} />
             </p>
           )}
 
@@ -311,148 +410,113 @@ export default function ProfilePage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.07)', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.07)', marginBottom: '24px', gap: '0' }}>
         {[
-          { key: 'posts', label: `Posts (${posts.length})` },
-          { key: 'prompts', label: `Prompts (${promptPosts.length})` },
-        ].map(({ key, label }) => (
+          { key: 'posts',       label: 'Posts',       icon: '⊞' },
+          { key: 'prompts',     label: 'Prompts',     icon: '✦' },
+          ...(isOwnProfile ? [{ key: 'saved', label: 'Saved', icon: '🔖' }] : []),
+        ].map(({ key, label, icon }) => (
           <button key={key} onClick={() => setActiveTab(key as any)} style={{
             padding: '12px 20px', background: 'none', border: 'none', cursor: 'pointer',
-            fontSize: '14px', fontWeight: 600, fontFamily: 'inherit',
+            fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '5px',
             color: activeTab === key ? '#FF6D1F' : '#9a8f7a',
             borderBottom: `2px solid ${activeTab === key ? '#FF6D1F' : 'transparent'}`,
             marginBottom: '-1px', transition: 'all 0.15s',
-          }}>{label}</button>
+          }}>
+            <span>{icon}</span>{label}
+          </button>
         ))}
       </div>
 
-      {/* Posts grid */}
-      {displayPosts.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div style={{ fontSize: '40px', marginBottom: '12px' }}>{activeTab === 'prompts' ? '✨' : '📸'}</div>
-          <p style={{ color: '#9a8f7a', fontSize: '15px' }}>
-            {isOwnProfile
-              ? activeTab === 'prompts' ? 'Share your first AI prompt' : 'Share your first post'
-              : `No ${activeTab} yet`
-            }
-          </p>
-          {isOwnProfile && (
-            <Link href="/post/new" style={{ display: 'inline-block', marginTop: '16px', background: '#FF6D1F', color: '#fff', padding: '9px 22px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>
-              + Create post
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px' }}>
-          {displayPosts.map(post => (
-            <div key={post.id} style={{ position: 'relative', paddingBottom: '100%', background: '#2a2a2a', overflow: 'hidden' }}
-              onMouseEnter={e => {
-                (e.currentTarget.querySelector('.overlay') as HTMLElement).style.opacity = '1'
-                if (isOwnProfile) (e.currentTarget.querySelector('.post-menu-btn') as HTMLElement | null)?.style && ((e.currentTarget.querySelector('.post-menu-btn') as HTMLElement).style.opacity = '1')
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget.querySelector('.overlay') as HTMLElement).style.opacity = '0'
-                if (isOwnProfile) (e.currentTarget.querySelector('.post-menu-btn') as HTMLElement | null)?.style && ((e.currentTarget.querySelector('.post-menu-btn') as HTMLElement).style.opacity = '0')
-              }}
-            >
-              {/* Thumbnail */}
-              <div onClick={() => setSelectedPost(post)} style={{ position: 'absolute', inset: 0, cursor: 'pointer' }}>
-                {post.media_type === 'image' && post.image_url
-                  ? <img src={post.image_url} alt={post.caption} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : post.media_type === 'video' && post.video_url
-                    ? <div style={{ position: 'absolute', inset: 0, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '6px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <span style={{ color: '#fff', fontSize: '14px', marginLeft: '3px' }}>▶</span>
-                        </div>
-                      </div>
-                    : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px' }}>
-                        <p style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.5, textAlign: 'center', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as const }}>
-                          {post.caption}
-                        </p>
-                      </div>
-                }
-              </div>
-
-              {/* Type badges */}
-              {post.media_type === 'video' && <span style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '14px', pointerEvents: 'none' }}>▶</span>}
-              {post.prompt_text && <span style={{ position: 'absolute', top: '6px', left: '6px', background: 'rgba(255,109,31,0.8)', borderRadius: '4px', padding: '1px 5px', fontSize: '10px', color: '#fff', fontWeight: 700, pointerEvents: 'none' }}>✦</span>}
-
-              {/* Hover overlay (stats) */}
-              <div className="overlay" onClick={() => setSelectedPost(post)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', opacity: 0, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', cursor: 'pointer' }}>
-                <span style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>♥ {post.likes_count}</span>
-                <span style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>💬 {post.comments_count}</span>
-              </div>
-
-              {/* Own post: ⋯ menu button */}
-              {isOwnProfile && (
-                <button
-                  className="post-menu-btn"
-                  onClick={e => { e.stopPropagation(); openEditPost(post) }}
-                  style={{ position: 'absolute', top: '6px', right: '6px', opacity: 0, transition: 'opacity 0.15s', background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', color: '#fff', fontSize: '14px', fontWeight: 700, lineHeight: 1, zIndex: 10 }}
-                  title="Edit or delete post"
-                >⋯</button>
-              )}
-
-              {/* Deleting spinner */}
-              {deletingPostId === post.id && (
-                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,255,255,0.2)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+      {/* Saved / Collections tab */}
+      {activeTab === 'saved' && isOwnProfile && (
+        <SavedCollectionsTab userId={profile!.id} accessToken={accessToken} />
       )}
 
-      {/* Post view modal */}
-      {selectedPost && (
-        <div onClick={() => setSelectedPost(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.15s ease' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#2a2a2a', borderRadius: '16px', overflow: 'hidden', maxWidth: '480px', width: '100%', maxHeight: '90vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
-            {selectedPost.media_type === 'image' && selectedPost.image_url && (
-              <img src={selectedPost.image_url} alt={selectedPost.caption} style={{ width: '100%', display: 'block' }} />
+      {/* Posts grid — click navigates to post detail */}
+      {(activeTab === 'posts' || activeTab === 'prompts') && (
+        <>
+        {displayPosts.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>{activeTab === 'prompts' ? '✨' : '📸'}</div>
+            <p style={{ color: '#9a8f7a', fontSize: '15px' }}>
+              {isOwnProfile
+                ? activeTab === 'prompts' ? 'Share your first AI prompt' : 'Share your first post'
+                : `No ${activeTab} yet`}
+            </p>
+            {isOwnProfile && (
+              <Link href="/post/new" style={{ display: 'inline-block', marginTop: '16px', background: '#FF6D1F', color: '#fff', padding: '9px 22px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>
+                + Create post
+              </Link>
             )}
-            {selectedPost.media_type === 'video' && selectedPost.video_url && (
-              <YouTubePlayer videoId={selectedPost.video_url} />
-            )}
-            <div style={{ padding: '16px' }}>
-              {selectedPost.caption && <p style={{ fontSize: '14px', color: '#F5E7C6', lineHeight: 1.6, marginBottom: '12px' }}>{selectedPost.caption}</p>}
-              {selectedPost.prompt_text && (
-                <div style={{ background: 'rgba(255,109,31,0.06)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F', marginBottom: '6px' }}>✦ AI PROMPT {selectedPost.ai_tool ? `· ${selectedPost.ai_tool}` : ''}</div>
-                  <p style={{ fontSize: '12px', color: '#9a8f7a', fontFamily: 'monospace', lineHeight: 1.6, margin: 0 }}>"{selectedPost.prompt_text}"</p>
-                </div>
-              )}
-              {selectedPost.tags?.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
-                  {selectedPost.tags.map(t => <span key={t} style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>#{t}</span>)}
-                </div>
-              )}
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-                <span style={{ fontSize: '14px', color: '#9a8f7a' }}>♥ {selectedPost.likes_count}</span>
-                <span style={{ fontSize: '14px', color: '#9a8f7a' }}>💬 {selectedPost.comments_count}</span>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
-                  {isOwnProfile && (
-                    <>
-                      <button
-                        onClick={() => openEditPost(selectedPost)}
-                        style={{ background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.25)', color: '#FF6D1F', padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-                      >✏️ Edit</button>
-                      <button
-                        onClick={() => handleDeletePost(selectedPost.id)}
-                        disabled={deletingPostId === selectedPost.id}
-                        style={{ background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', color: '#ff8080', padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-                      >🗑 Delete</button>
-                    </>
-                  )}
-                  <button onClick={() => setSelectedPost(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#9a8f7a', fontFamily: 'inherit' }}>Close</button>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px' }}>
+            {displayPosts.map(post => (
+              <div key={post.id} style={{ position: 'relative', paddingBottom: '100%', background: '#2a2a2a', overflow: 'hidden' }}
+                onMouseEnter={e => {
+                  const overlay = e.currentTarget.querySelector('.overlay') as HTMLElement
+                  if (overlay) overlay.style.opacity = '1'
+                  if (isOwnProfile) {
+                    const btn = e.currentTarget.querySelector('.post-menu-btn') as HTMLElement
+                    if (btn) btn.style.opacity = '1'
+                  }
+                }}
+                onMouseLeave={e => {
+                  const overlay = e.currentTarget.querySelector('.overlay') as HTMLElement
+                  if (overlay) overlay.style.opacity = '0'
+                  if (isOwnProfile) {
+                    const btn = e.currentTarget.querySelector('.post-menu-btn') as HTMLElement
+                    if (btn) btn.style.opacity = '0'
+                  }
+                }}
+              >
+                {/* Thumbnail — click goes to /post/[id] */}
+                <Link href={`/post/${post.id}`} style={{ position: 'absolute', inset: 0, display: 'block' }}>
+                  {post.media_type === 'image' && post.image_url
+                    ? <img src={post.image_url} alt={post.caption} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : post.media_type === 'video'
+                      ? <div style={{ position: 'absolute', inset: 0, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ color: '#fff', fontSize: '14px', marginLeft: '3px' }}>▶</span>
+                          </div>
+                        </div>
+                      : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
+                          <p style={{ fontSize: '11px', color: '#9a8f7a', lineHeight: 1.5, textAlign: 'center', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as const }}>{post.caption}</p>
+                        </div>
+                  }
+                </Link>
 
-      {/* Edit post modal */}
+                {/* Badges */}
+                {post.media_type === 'video' && <span style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '12px', pointerEvents: 'none' }}>▶</span>}
+                {post.prompt_text && <span style={{ position: 'absolute', top: '6px', left: '6px', background: 'rgba(255,109,31,0.85)', borderRadius: '4px', padding: '1px 5px', fontSize: '10px', color: '#fff', fontWeight: 700, pointerEvents: 'none' }}>✦</span>}
+
+                {/* Hover overlay */}
+                <Link href={`/post/${post.id}`} className="overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', opacity: 0, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+                  <span style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>♥ {post.likes_count}</span>
+                  <span style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>💬 {post.comments_count}</span>
+                </Link>
+
+                {/* Own post edit button */}
+                {isOwnProfile && (
+                  <button className="post-menu-btn" onClick={e => { e.stopPropagation(); openEditPost(post) }}
+                    style={{ position: 'absolute', top: '6px', right: '6px', opacity: 0, transition: 'opacity 0.15s', background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', color: '#fff', fontSize: '14px', fontWeight: 700, lineHeight: 1, zIndex: 10 }}
+                    title="Edit or delete">⋯</button>
+                )}
+
+                {/* Deleting overlay */}
+                {deletingPostId === post.id && (
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,255,255,0.2)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        </>
+      )}
+        {/* Edit post modal */}
       {editingPost && (
         <div onClick={() => setEditingPost(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 310, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.15s ease' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#2a2a2a', borderRadius: '16px', width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -474,12 +538,11 @@ export default function ProfilePage() {
               {/* Caption */}
               <div>
                 <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>Caption</label>
-                <textarea
+                <MentionInput
                   value={editForm.caption}
-                  onChange={e => setEditForm(p => ({ ...p, caption: e.target.value }))}
+                  onChange={v => setEditForm(p => ({ ...p, caption: v }))}
                   rows={3}
                   placeholder="What's this about?"
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none' }}
                 />
               </div>
 
