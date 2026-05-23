@@ -164,7 +164,7 @@ export default function NewPostPage() {
     setSubmitting(true); setError('')
 
     const imageData = slides.map(s => ({ url: s.url, prompt_text: s.prompt_text || null, ai_tool: s.ai_tool || null }))
-    const allTools = [...new Set(slides.map(s => s.ai_tool).filter(Boolean))]
+    const allTools = Array.from(new Set(slides.map(s => s.ai_tool).filter(Boolean)))
 
     const res = await fetch('/api/posts', {
       method: 'POST',
