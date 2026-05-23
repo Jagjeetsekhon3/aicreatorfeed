@@ -34,7 +34,7 @@ export default function ContactPage() {
     fetch('/api/site-settings').then(r => r.json()).then(d => {
       const s = d.settings || {}
       setContactEmail(s.contact_email || '')
-      setContactMessage(s.contact_message || 'Have a question, idea, or issue? We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.')
+      setContactMessage(s.contact_message || "Have a question, idea, or issue? We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.")
 
       const links: SocialLink[] = []
       if (s.social_twitter)  links.push({ icon: '𝕏', label: 'Twitter / X', handle: `@${s.social_twitter}`, url: `https://twitter.com/${s.social_twitter}`, color: '#1d9bf0' })
@@ -176,7 +176,7 @@ export default function ContactPage() {
               <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(74,222,128,0.1)', border: '2px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '28px' }}>✓</div>
               <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#FAF3E1', marginBottom: '10px' }}>Message sent!</h3>
               <p style={{ fontSize: '14px', color: '#9a8f7a', lineHeight: 1.7, marginBottom: '24px' }}>
-                Thanks for reaching out. We'll get back to you at <strong style={{ color: '#FAF3E1' }}>{email}</strong> within 24–48 hours.
+                Thanks for reaching out. We&apos;ll get back to you at <strong style={{ color: '#FAF3E1' }}>{email}</strong> within 24–48 hours.
               </p>
               <button onClick={() => { setSubmitted(false); setSubject(''); setMessage(''); setCategory('general') }}
                 style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5E7C6', padding: '10px 24px', borderRadius: '10px', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
@@ -248,7 +248,7 @@ export default function ContactPage() {
                 </button>
 
                 <p style={{ fontSize: '11px', color: '#555', textAlign: 'center', margin: 0 }}>
-                  Your message creates a support ticket. We'll reply to your email.
+                  Your message creates a support ticket. We&apos;ll reply to your email.
                 </p>
               </div>
             </>
