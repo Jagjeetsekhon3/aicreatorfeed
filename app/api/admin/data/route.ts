@@ -180,6 +180,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  if (action === 'edit_user') {
+    const { user_id, full_name, username, bio, is_verified, is_official, twitter, instagram, youtube } = body
+    const { error } = await admin.from('profiles').update({
+      full_name, username, bio: bio || null,
+      is_verified: is_verified || false,
+      is_official: is_official || false,
+      twitter: twitter || null,
+      instagram: instagram || null,
+      youtube: youtube || null,
+      updated_at: new Date().toISOString(),
+    }).eq('id', user_id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await admin.from('admin_logs').insert({ action: `Admin edited user profile: ${username}` })
+    return NextResponse.json({ success: true })
+  }
+
   if (action === 'ban_user') {
     await admin.auth.admin.updateUserById(body.user_id, { ban_duration: body.unban ? 'none' : '87600h' })
     await admin.from('admin_logs').insert({ action: `Admin ${body.unban ? 'unbanned' : 'banned'} user: ${body.user_id}` })

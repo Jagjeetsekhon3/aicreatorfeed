@@ -46,6 +46,12 @@ export default function AdminDashboard() {
   const [newsForm, setNewsForm] = useState({ title: '', summary: '', source_name: '', source_url: '', image_url: '', tags: '' })
   const [newsLoading, setNewsLoading] = useState(false)
 
+  // User edit/delete state
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [editUserForm, setEditUserForm] = useState({ full_name: '', username: '', bio: '', is_verified: false, is_official: false, twitter: '', instagram: '', youtube: '' })
+  const [deleteConfirmUser, setDeleteConfirmUser] = useState<User | null>(null)
+  const [userActionLoading, setUserActionLoading] = useState(false)
+
   // Tutorials state
   const [tutorials, setTutorials] = useState<any[]>([])
   const [showTutorialForm, setShowTutorialForm] = useState(false)
@@ -121,6 +127,40 @@ export default function AdminDashboard() {
   async function searchUsers() {
     const d = await api('users', `&search=${userSearch}`)
     if (d) setUsers(d.users)
+  }
+
+  function openEditUser(user: User) {
+    setEditingUser(user)
+    setEditUserForm({
+      full_name: user.full_name || '',
+      username: user.username || '',
+      bio: (user as any).bio || '',
+      is_verified: user.is_verified || false,
+      is_official: user.is_official || false,
+      twitter: (user as any).twitter || '',
+      instagram: (user as any).instagram || '',
+      youtube: (user as any).youtube || '',
+    })
+  }
+
+  async function saveEditUser() {
+    if (!editingUser) return
+    if (!editUserForm.full_name.trim() || !editUserForm.username.trim()) { showToast('Name and username are required'); return }
+    setUserActionLoading(true)
+    await action('edit_user', { user_id: editingUser.id, ...editUserForm })
+    setUsers(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...editUserForm } : u))
+    setEditingUser(null)
+    showToast('User updated!')
+    setUserActionLoading(false)
+  }
+
+  async function deleteUser(user: User) {
+    setUserActionLoading(true)
+    await action('delete_user', { user_id: user.id })
+    setUsers(prev => prev.filter(u => u.id !== user.id))
+    setDeleteConfirmUser(null)
+    showToast('User deleted')
+    setUserActionLoading(false)
   }
 
   async function publishNews() {
@@ -427,6 +467,105 @@ export default function AdminDashboard() {
         {tab === 'users' && (
           <div style={{ animation: 'slideIn 0.2s ease' }}>
             <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>Users</h1>
+
+            {/* Edit User Modal */}
+            {editingUser && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                    {editingUser.avatar_url
+                      ? <img src={editingUser.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
+                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{editingUser.full_name?.[0]}</div>
+                    }
+                    <div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Edit User</h3>
+                      <div style={{ fontSize: '12px', color: '#9a8f7a' }}>ID: {editingUser.id.slice(0, 8)}…</div>
+                    </div>
+                    <button onClick={() => setEditingUser(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '20px' }}>×</button>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Full Name *</label>
+                      <input value={editUserForm.full_name} onChange={e => setEditUserForm(p => ({ ...p, full_name: e.target.value }))} style={inp} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Username *</label>
+                      <input value={editUserForm.username} onChange={e => setEditUserForm(p => ({ ...p, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }))} style={inp} />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Bio</label>
+                      <textarea value={editUserForm.bio} onChange={e => setEditUserForm(p => ({ ...p, bio: e.target.value }))} rows={2} style={{ ...inp, resize: 'none' as any }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Twitter handle</label>
+                      <input value={editUserForm.twitter} onChange={e => setEditUserForm(p => ({ ...p, twitter: e.target.value }))} placeholder="username" style={inp} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Instagram handle</label>
+                      <input value={editUserForm.instagram} onChange={e => setEditUserForm(p => ({ ...p, instagram: e.target.value }))} placeholder="username" style={inp} />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>YouTube channel URL</label>
+                      <input value={editUserForm.youtube} onChange={e => setEditUserForm(p => ({ ...p, youtube: e.target.value }))} placeholder="https://youtube.com/@..." style={inp} />
+                    </div>
+                  </div>
+
+                  {/* Toggles */}
+                  <div style={{ display: 'flex', gap: '20px', marginTop: '16px', padding: '14px', background: '#222', borderRadius: '10px' }}>
+                    {[
+                      { key: 'is_verified', label: 'Verified', desc: 'Orange ✓ badge' },
+                      { key: 'is_official', label: 'Official', desc: 'Filled ● badge' },
+                    ].map(({ key, label, desc }) => (
+                      <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+                        <button
+                          onClick={() => setEditUserForm(p => ({ ...p, [key]: !(p as any)[key] }))}
+                          style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: (editUserForm as any)[key] ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
+                        >
+                          <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: (editUserForm as any)[key] ? '21px' : '3px', transition: 'left 0.2s' }} />
+                        </button>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1' }}>{label}</div>
+                          <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '20px', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <button onClick={() => { setEditingUser(null); setDeleteConfirmUser(editingUser) }} style={{ ...btn(false), color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)' }}>
+                      🗑 Delete user
+                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button onClick={() => setEditingUser(null)} style={btn(false)}>Cancel</button>
+                      <button onClick={saveEditUser} disabled={userActionLoading} style={btn()}>
+                        {userActionLoading ? 'Saving...' : 'Save changes'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Delete Confirm Modal */}
+            {deleteConfirmUser && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,80,80,0.3)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '380px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '40px', marginBottom: '12px' }}>⚠️</div>
+                  <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#FAF3E1', marginBottom: '8px' }}>Delete @{deleteConfirmUser.username}?</h3>
+                  <p style={{ fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6, marginBottom: '24px' }}>
+                    This will permanently delete their account, all posts, comments, and data. <strong style={{ color: '#ff8080' }}>This cannot be undone.</strong>
+                  </p>
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                    <button onClick={() => setDeleteConfirmUser(null)} style={btn(false)}>Cancel</button>
+                    <button onClick={() => deleteUser(deleteConfirmUser)} disabled={userActionLoading} style={{ ...btn(), background: '#dc2626' }}>
+                      {userActionLoading ? 'Deleting...' : 'Yes, delete permanently'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               <input value={userSearch} onChange={e => setUserSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && searchUsers()}
                 placeholder="Search by name or username..." style={{ ...inp, flex: 1 }} />
@@ -461,13 +600,12 @@ export default function AdminDashboard() {
                       <td style={{ padding: '12px 14px', color: '#F5E7C6' }}>{user.followers_count}</td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a' }}>{new Date(user.created_at).toLocaleDateString()}</td>
                       <td style={{ padding: '12px 14px' }}>
-                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                           {user.is_verified && <span style={{ fontSize: '14px' }} title="Verified">✓</span>}
-                          <a href={`/profile/${user.username}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
-                          <button onClick={() => toggleVerified(user.id, user.is_verified)} style={{ fontSize: '12px', color: user.is_verified ? '#9a8f7a' : '#4ade80', background: user.is_verified ? 'rgba(255,255,255,0.05)' : 'rgba(74,222,128,0.1)', border: `1px solid ${user.is_verified ? 'rgba(255,255,255,0.1)' : 'rgba(74,222,128,0.2)'}`, borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>
-                            {user.is_verified ? 'Unverify' : 'Verify'}
-                          </button>
-                          <button onClick={() => banUser(user.id)} style={{ fontSize: '12px', color: '#facc15', background: 'rgba(250,204,21,0.1)', border: '1px solid rgba(250,204,21,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Ban</button>
+                          {user.is_official && <span style={{ fontSize: '11px', color: '#FF6D1F', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>Official</span>}
+                          <a href={`/profile/${user.username}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#9a8f7a', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>View</a>
+                          <button onClick={() => openEditUser(user)} style={{ fontSize: '12px', color: '#FF6D1F', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.25)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>✏️ Edit</button>
+                          <button onClick={() => setDeleteConfirmUser(user)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>🗑</button>
                         </div>
                       </td>
                     </tr>
@@ -603,6 +741,64 @@ export default function AdminDashboard() {
                   })}
                 </div>
               </div>
+
+              {/* Favicon */}
+              <div style={{ ...card, gridColumn: '1 / -1' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>🌐 Favicon</h3>
+                <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px', marginTop: 0 }}>The small icon shown in browser tabs and bookmarks.</p>
+
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                  {/* Preview */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '12px', background: '#333', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                      {settingVal('favicon_url')
+                        ? <img src={settingVal('favicon_url')} alt="favicon" style={{ width: '48px', height: '48px', objectFit: 'contain' }} onError={e => ((e.target as HTMLImageElement).style.display = 'none')} />
+                        : <span style={{ fontSize: '28px' }}>✦</span>
+                      }
+                    </div>
+                    <span style={{ fontSize: '10px', color: settingVal('favicon_url') ? '#4ade80' : '#9a8f7a', fontWeight: 600 }}>
+                      {settingVal('favicon_url') ? '✓ Set' : 'Default'}
+                    </span>
+                  </div>
+
+                  {/* Input */}
+                  <div style={{ flex: 1, minWidth: '240px' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>
+                      Favicon URL <span style={{ color: '#555' }}>(.ico, .png, or .svg — 32×32px recommended)</span>
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        value={settingVal('favicon_url')}
+                        onChange={e => setSettings(prev => {
+                          const exists = prev.find(s => s.key === 'favicon_url')
+                          return exists
+                            ? prev.map(s => s.key === 'favicon_url' ? { ...s, value: e.target.value } : s)
+                            : [...prev, { key: 'favicon_url', value: e.target.value }]
+                        })}
+                        placeholder="https://yourdomain.com/favicon.png"
+                        style={{ ...inp, flex: 1 }}
+                      />
+                      <button onClick={() => saveSetting('favicon_url', settingVal('favicon_url'))} style={btn()} disabled={saving}>
+                        Save
+                      </button>
+                    </div>
+
+                    <div style={{ marginTop: '12px', padding: '12px', background: '#222', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F', marginBottom: '6px' }}>HOW TO ADD A FAVICON</div>
+                      <ol style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.8, paddingLeft: '16px', margin: 0 }}>
+                        <li>Create a 32×32 or 64×64px icon (PNG works great)</li>
+                        <li>Upload it to <strong style={{ color: '#FAF3E1' }}>Cloudinary</strong> (same account you use for posts)</li>
+                        <li>Copy the Cloudinary URL and paste above</li>
+                        <li>Click Save — takes effect on next page load</li>
+                      </ol>
+                      <div style={{ marginTop: '8px', fontSize: '11px', color: '#555' }}>
+                        Alternative: drop favicon.ico into your /public folder and redeploy on Vercel
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
