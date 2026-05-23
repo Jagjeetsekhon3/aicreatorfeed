@@ -427,6 +427,6 @@ export default function AnalyticsTab() {
 
 function getFlagEmoji(code: string) {
   if (!code || code.length !== 2) return '🌐'
-  const chars = [...code.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65)
-  return String.fromCodePoint(...chars)
+  const chars = Array.from(code.toUpperCase()).map(c => 0x1F1E6 + c.charCodeAt(0) - 65)
+  return String.fromCodePoint(chars[0], chars[1])
 }
