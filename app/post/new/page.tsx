@@ -24,6 +24,7 @@ export default function NewPostPage() {
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [dragOver, setDragOver] = useState(false)
   const [userAvatar, setUserAvatar] = useState('')
   const [userInitial, setUserInitial] = useState('?')
   const [accessToken, setAccessToken] = useState('')
@@ -55,19 +56,49 @@ export default function NewPostPage() {
     else { setYoutubeId(''); setYoutubeThumbnail('') }
   }, [youtubeLink])
 
-  async function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]; if (!file) return
-    if (file.size > 10 * 1024 * 1024) { setError('Max image size is 10MB'); return }
+  async function uploadFile(file: File) {
+    if (!file.type.startsWith('image/')) { setError('Only image files are allowed (JPG, PNG, WebP, GIF)'); return }
+    if (file.size > 10 * 1024 * 1024) { setError(`File too large: ${(file.size / 1024 / 1024).toFixed(1)}MB. Max is 10MB.`); return }
+
     setUploading(true); setError('')
+
+    // Show local preview instantly
     const reader = new FileReader()
     reader.onload = ev => setImagePreview(ev.target?.result as string)
     reader.readAsDataURL(file)
-    const form = new FormData(); form.append('file', file); form.append('folder', 'posts')
+
+    const form = new FormData()
+    form.append('file', file)
+    form.append('folder', 'posts')
+    form.append('type', 'post')
+
     const res = await fetch('/api/upload', { method: 'POST', body: form })
     const data = await res.json()
-    if (data.secure_url) setImageUrl(data.secure_url)
-    else setError('Image upload failed. Check Cloudinary config.')
+
+    if (data.secure_url) {
+      setImageUrl(data.secure_url)
+    } else if (data.setup) {
+      setError('Cloudinary is not set up yet. Add your Cloudinary credentials in Vercel environment variables.')
+      setImagePreview('')
+    } else {
+      setError(data.error || 'Upload failed. Please try again.')
+      setImagePreview('')
+    }
     setUploading(false)
+  }
+
+  async function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) await uploadFile(file)
+    e.target.value = '' // reset so same file can be re-picked
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setDragOver(false)
+    if (youtubeId) return
+    const file = e.dataTransfer.files?.[0]
+    if (file) uploadFile(file)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -153,23 +184,58 @@ export default function NewPostPage() {
             </div>
           </div>
 
-          {/* Image preview */}
-          {imagePreview && (
-            <div style={{ position: 'relative', margin: '0 18px 14px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '360px', objectFit: 'cover', display: 'block' }} />
-              {uploading && (
-                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                  <div style={{ width: '28px', height: '28px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                  <span style={{ fontSize: '13px', color: '#FAF3E1', fontWeight: 600 }}>Uploading...</span>
-                </div>
-              )}
-              {!uploading && (
-                <button type="button" onClick={() => { setImageUrl(''); setImagePreview('') }} style={{ position: 'absolute', top: '10px', right: '10px', width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(0,0,0,0.65)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
-                </button>
-              )}
-            </div>
-          )}
+          {/* Image drop zone / preview */}
+          <div
+            onDragOver={e => { e.preventDefault(); if (!youtubeId) setDragOver(true) }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            style={{ margin: '0 0 4px' }}
+          >
+            {imagePreview ? (
+              <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: `1px solid ${dragOver ? 'rgba(255,109,31,0.5)' : 'rgba(255,255,255,0.07)'}`, transition: 'border-color 0.15s' }}>
+                <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', display: 'block' }} />
+
+                {/* Uploading overlay */}
+                {uploading && (
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                    <span style={{ fontSize: '13px', color: '#FAF3E1', fontWeight: 600 }}>Uploading to Cloudinary...</span>
+                  </div>
+                )}
+
+                {/* Uploaded badge + remove button */}
+                {!uploading && (
+                  <>
+                    <div style={{ position: 'absolute', bottom: '10px', left: '10px', background: 'rgba(0,0,0,0.7)', borderRadius: '6px', padding: '3px 8px', fontSize: '11px', color: '#4ade80', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      ✓ Uploaded
+                    </div>
+                    <button type="button" onClick={() => { setImageUrl(''); setImagePreview('') }}
+                      style={{ position: 'absolute', top: '10px', right: '10px', width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(0,0,0,0.65)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                    </button>
+                    <button type="button" onClick={() => fileRef.current?.click()}
+                      style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0,0,0,0.65)', border: 'none', borderRadius: '8px', padding: '4px 10px', color: '#fff', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit', fontWeight: 600 }}>
+                      Change
+                    </button>
+                  </>
+                )}
+              </div>
+            ) : !youtubeId && (
+              /* Drop zone — only visible when no image/video */
+              <div
+                onClick={() => fileRef.current?.click()}
+                style={{ border: `2px dashed ${dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)'}`, borderRadius: '12px', padding: '28px 20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', background: dragOver ? 'rgba(255,109,31,0.04)' : 'transparent' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.4)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)')}
+              >
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', fontSize: '20px' }}>🖼</div>
+                <p style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', margin: '0 0 4px' }}>
+                  {dragOver ? 'Drop to upload' : 'Click or drag image here'}
+                </p>
+                <p style={{ fontSize: '12px', color: '#9a8f7a', margin: 0 }}>JPG, PNG, WebP, GIF — max 10MB</p>
+              </div>
+            )}
+          </div>
 
           {/* YouTube preview */}
           {youtubeId && (

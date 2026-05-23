@@ -60,6 +60,9 @@ export default function AdminDashboard() {
   const [toolSaving, setToolSaving] = useState(false)
   const [editingTool, setEditingTool] = useState<any | null>(null)
 
+  // Cloudinary status
+  const [cloudinaryStatus, setCloudinaryStatus] = useState<any>(null)
+
   // Tutorials state
   const [tutorials, setTutorials] = useState<any[]>([])
   const [showTutorialForm, setShowTutorialForm] = useState(false)
@@ -110,7 +113,10 @@ export default function AdminDashboard() {
   }, [])
 
   useEffect(() => {
-    if (tab === 'settings') api('settings').then(d => { if (d) { setSettings(d.settings); setFlags(d.flags) } })
+    if (tab === 'settings') {
+      api('settings').then(d => { if (d) { setSettings(d.settings); setFlags(d.flags) } })
+      fetch('/api/admin/cloudinary-check').then(r => r.json()).then(d => setCloudinaryStatus(d)).catch(() => {})
+    }
     if (tab === 'users') api('users').then(d => { if (d) setUsers(d.users) })
     if (tab === 'posts') api('posts').then(d => { if (d) setPosts(d.posts) })
     if (tab === 'news') api('news_admin').then(d => { if (d) setNewsItems(d.news) })
@@ -843,6 +849,55 @@ export default function AdminDashboard() {
         {tab === 'settings' && (
           <div style={{ animation: 'slideIn 0.2s ease' }}>
             <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '24px' }}>Site Settings</h1>
+
+            {/* Cloudinary Status */}
+            <div style={{ ...card, marginBottom: '16px', gridColumn: '1 / -1' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>☁️</div>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', marginBottom: '2px' }}>Cloudinary — Image Storage</div>
+                    {!cloudinaryStatus ? (
+                      <div style={{ fontSize: '12px', color: '#9a8f7a' }}>Checking connection...</div>
+                    ) : cloudinaryStatus.configured ? (
+                      <div style={{ fontSize: '12px', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span>●</span> Connected — cloud: <strong>{cloudinaryStatus.cloud_name}</strong>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '12px', color: '#ff8080', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span>●</span> {cloudinaryStatus.status} {cloudinaryStatus.error ? `— ${cloudinaryStatus.error}` : ''}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button onClick={() => fetch('/api/admin/cloudinary-check').then(r => r.json()).then(d => setCloudinaryStatus(d))}
+                  style={{ ...btn(false), padding: '6px 14px', fontSize: '12px' }}>↺ Recheck</button>
+              </div>
+
+              {/* Missing vars guide */}
+              {cloudinaryStatus && !cloudinaryStatus.configured && (
+                <div style={{ marginTop: '14px', padding: '14px', background: '#1a1a1a', borderRadius: '10px', border: '1px solid rgba(255,80,80,0.15)' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#ff8080', marginBottom: '10px' }}>
+                    {cloudinaryStatus.missing?.length > 0 ? '⚠️ Missing environment variables:' : '⚠️ Connection error — check your credentials'}
+                  </div>
+                  {cloudinaryStatus.missing?.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+                      {cloudinaryStatus.missing.map((v: string) => (
+                        <code key={v} style={{ fontSize: '12px', background: 'rgba(255,80,80,0.1)', color: '#ff8080', padding: '3px 8px', borderRadius: '5px', fontFamily: 'monospace' }}>{v}</code>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.8 }}>
+                    <strong style={{ color: '#FAF3E1' }}>How to fix:</strong><br/>
+                    1. Go to <a href="https://cloudinary.com/console" target="_blank" rel="noopener" style={{ color: '#FF6D1F' }}>cloudinary.com/console</a> → Dashboard<br/>
+                    2. Copy your Cloud name, API Key, and API Secret<br/>
+                    3. Add them in <a href="https://vercel.com/dashboard" target="_blank" rel="noopener" style={{ color: '#FF6D1F' }}>Vercel</a> → Your project → Settings → Environment Variables<br/>
+                    4. Redeploy (Vercel → Deployments → Redeploy)
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
               {/* Brand colors */}
