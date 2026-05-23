@@ -18,6 +18,7 @@ export default function NewsPage() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(0)
   const [hasMore, setHasMore] = useState(true)
+  const [selectedArticle, setSelectedArticle] = useState<any>(null)
 
   useEffect(() => {
     setPage(0); setNews([]); loadNews(0, true)
@@ -43,7 +44,76 @@ export default function NewsPage() {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 0 80px' }}>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        .news-article-content h2{font-size:20px;font-weight:800;color:#FAF3E1;margin:20px 0 8px}
+        .news-article-content h3{font-size:16px;font-weight:700;color:#FAF3E1;margin:16px 0 6px}
+        .news-article-content p{color:#F5E7C6;line-height:1.75;margin:0 0 12px;font-size:15px}
+        .news-article-content ul,.news-article-content ol{color:#F5E7C6;padding-left:22px;margin:10px 0}
+        .news-article-content li{margin-bottom:6px;line-height:1.65;font-size:15px}
+        .news-article-content a{color:#FF6D1F;text-decoration:underline}
+        .news-article-content blockquote{border-left:3px solid #FF6D1F;margin:14px 0;padding:10px 16px;background:rgba(255,109,31,0.05);border-radius:0 8px 8px 0;color:#9a8f7a;font-style:italic}
+        .news-article-content strong,.news-article-content b{color:#FAF3E1;font-weight:700}
+        .news-article-content img{max-width:100%;border-radius:10px;margin:12px 0}
+      `}</style>
+
+      {/* ── Inline Article Reader ── */}
+      {selectedArticle && (
+        <div style={{ marginBottom: '36px', animation: 'fadeIn 0.25s ease' }}>
+          <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '20px', overflow: 'hidden' }}>
+            {/* Cover image */}
+            {selectedArticle.image_url && (
+              <img src={selectedArticle.image_url} alt={selectedArticle.title} style={{ width: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block' }} />
+            )}
+
+            <div style={{ padding: '28px' }}>
+              {/* Source + tags */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: `${sourceColor(selectedArticle.source_name)}22`, color: sourceColor(selectedArticle.source_name), border: `1px solid ${sourceColor(selectedArticle.source_name)}44` }}>
+                  {selectedArticle.source_name}
+                </span>
+                {(selectedArticle.tags || []).map((t: string) => (
+                  <span key={t} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>#{t}</span>
+                ))}
+                <span style={{ fontSize: '12px', color: '#9a8f7a', marginLeft: 'auto' }}>
+                  {format(new Date(selectedArticle.published_at), 'MMM d, yyyy')}
+                </span>
+              </div>
+
+              {/* Title */}
+              <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#FAF3E1', lineHeight: 1.3, marginBottom: '14px' }}>
+                {selectedArticle.title}
+              </h1>
+
+              {/* Summary */}
+              <p style={{ fontSize: '15px', color: '#9a8f7a', lineHeight: 1.7, marginBottom: selectedArticle.content ? '24px' : '0', fontStyle: 'italic' }}>
+                {selectedArticle.summary}
+              </p>
+
+              {/* Full rich content */}
+              {selectedArticle.content && (
+                <div
+                  className="news-article-content"
+                  dangerouslySetInnerHTML={{ __html: selectedArticle.content }}
+                  style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '20px' }}
+                />
+              )}
+
+              {/* Footer actions */}
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', paddingTop: '20px', marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.07)', flexWrap: 'wrap' }}>
+                <a href={selectedArticle.source_url} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '9px 18px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px' }}>
+                  Read original ↗
+                </a>
+                <button onClick={() => setSelectedArticle(null)}
+                  style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#9a8f7a', padding: '9px 18px', borderRadius: '10px', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                  ← Back to news
+                </button>
+              </div>
+            </div>
+          </div>
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '32px 0' }} />
+        </div>
+      )}
 
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
@@ -96,10 +166,11 @@ export default function NewsPage() {
       {/* Featured top story */}
       {news.length > 0 && (
         <>
-          <a href={news[0].source_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block', marginBottom: '16px', animation: 'fadeIn 0.3s ease' }}>
-            <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden', transition: 'border-color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.3)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+          <div onClick={() => { setSelectedArticle(news[0]); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+            style={{ textDecoration: 'none', display: 'block', marginBottom: '16px', animation: 'fadeIn 0.3s ease', cursor: 'pointer' }}>
+            <div style={{ background: '#2f2f2f', border: `1px solid ${selectedArticle?.id === news[0].id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'}`, borderRadius: '16px', overflow: 'hidden', transition: 'border-color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.4)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = selectedArticle?.id === news[0].id ? '#FF6D1F' : 'rgba(255,255,255,0.07)')}
             >
               {news[0].image_url && (
                 <div style={{ height: '220px', overflow: 'hidden', background: '#1a1a1a' }}>
@@ -107,36 +178,40 @@ export default function NewsPage() {
                 </div>
               )}
               <div style={{ padding: '20px 22px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: `${sourceColor(news[0].source_name)}22`, color: sourceColor(news[0].source_name) }}>{news[0].source_name}</span>
                   <span style={{ fontSize: '11px', color: '#9a8f7a' }}>{formatDistanceToNow(new Date(news[0].published_at), { addSuffix: true })}</span>
                   <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: '#FF6D1F' }}>Featured</span>
+                  {news[0].content && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>Full article</span>}
                 </div>
                 <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#FAF3E1', lineHeight: 1.35, marginBottom: '10px' }}>{news[0].title}</h2>
                 <p style={{ fontSize: '14px', color: '#9a8f7a', lineHeight: 1.6, marginBottom: '12px' }}>{news[0].summary}</p>
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  {(news[0].tags || []).map((t: string) => (
-                    <span key={t} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>{t}</span>
-                  ))}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {(news[0].tags || []).map((t: string) => (
+                      <span key={t} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>{t}</span>
+                    ))}
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#FF6D1F', fontWeight: 600 }}>
+                    {news[0].content ? 'Read full article →' : 'View source →'}
+                  </span>
                 </div>
               </div>
             </div>
-          </a>
+          </div>
 
           {/* Rest of news grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '14px' }}>
             {news.slice(1).map((item, i) => (
-              <a key={item.id} href={item.source_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', animation: `fadeIn 0.3s ease ${i * 0.04}s both` }}>
-                <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', overflow: 'hidden', height: '100%', transition: 'border-color 0.2s', display: 'flex', flexDirection: 'column' }}
+              <div key={item.id} onClick={() => { setSelectedArticle(item); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                style={{ textDecoration: 'none', animation: `fadeIn 0.3s ease ${i * 0.04}s both`, cursor: 'pointer' }}>
+                <div style={{ background: '#2f2f2f', border: `1px solid ${selectedArticle?.id === item.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'}`, borderRadius: '14px', overflow: 'hidden', height: '100%', transition: 'border-color 0.2s', display: 'flex', flexDirection: 'column' }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.25)')}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = selectedArticle?.id === item.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)')}
                 >
                   {item.image_url && (
                     <div style={{ height: '140px', overflow: 'hidden', background: '#1a1a1a', flexShrink: 0 }}>
-                      <img src={item.image_url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
-                        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
-                        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                      />
+                      <img src={item.image_url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   )}
                   <div style={{ padding: '14px 16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -153,11 +228,11 @@ export default function NewsPage() {
                           <span key={t} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>{t}</span>
                         ))}
                       </div>
-                      <span style={{ fontSize: '11px', color: '#FF6D1F', fontWeight: 600, flexShrink: 0 }}>Read →</span>
+                      <span style={{ fontSize: '11px', color: '#FF6D1F', fontWeight: 600, flexShrink: 0 }}>{item.content ? 'Read →' : 'Source →'}</span>
                     </div>
                   </div>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
 

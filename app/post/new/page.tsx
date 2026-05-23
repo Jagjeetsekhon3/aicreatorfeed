@@ -26,6 +26,18 @@ export default function NewPostPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [dragOver, setDragOver] = useState(false)
+  const [showToolDropdown, setShowToolDropdown] = useState(false)
+  const toolDropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (toolDropdownRef.current && !toolDropdownRef.current.contains(e.target as Node)) {
+        setShowToolDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
   const [userAvatar, setUserAvatar] = useState('')
   const [userInitial, setUserInitial] = useState('?')
   const [accessToken, setAccessToken] = useState('')
@@ -290,11 +302,40 @@ export default function NewPostPage() {
                 rows={3}
                 style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#F5E7C6', fontFamily: 'monospace', resize: 'none', outline: 'none', lineHeight: 1.6 }}
               />
-              <select value={aiTool} onChange={e => setAiTool(e.target.value)}
-                style={{ marginTop: '8px', width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: aiTool ? '#FAF3E1' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}>
-                <option value="">Select AI tool used...</option>
-                {aiTools.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <div ref={toolDropdownRef} style={{ position: 'relative', marginTop: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowToolDropdown(v => !v)}
+                  style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: aiTool ? '#FAF3E1' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}
+                >
+                  <span>{aiTool || 'Select AI tool used...'}</span>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ flexShrink: 0, transition: 'transform 0.15s', transform: showToolDropdown ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                    <path d="M2 4l4 4 4-4"/>
+                  </svg>
+                </button>
+                {showToolDropdown && (
+                  <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', overflow: 'hidden', zIndex: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.5)', maxHeight: '240px', overflowY: 'auto' }}>
+                    <div
+                      onClick={() => { setAiTool(''); setShowToolDropdown(false) }}
+                      style={{ padding: '9px 12px', fontSize: '12px', color: '#555', cursor: 'pointer', transition: 'background 0.1s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >Select AI tool used...</div>
+                    {aiTools.map(t => (
+                      <div
+                        key={t}
+                        onClick={() => { setAiTool(t); setShowToolDropdown(false) }}
+                        style={{ padding: '9px 12px', fontSize: '12px', color: aiTool === t ? '#FF6D1F' : '#FAF3E1', cursor: 'pointer', background: aiTool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.1s' }}
+                        onMouseEnter={e => { if (aiTool !== t) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
+                        onMouseLeave={e => { if (aiTool !== t) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+                      >
+                        {t}
+                        {aiTool === t && <span style={{ fontSize: '10px' }}>✓</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

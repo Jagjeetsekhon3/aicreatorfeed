@@ -1,6 +1,9 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+
+const RichTextEditor = dynamic(() => import('@/components/ui/RichTextEditor'), { ssr: false })
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type Stats = { totalUsers: number; totalPosts: number; totalComments: number; totalTickets: number; newUsersThisWeek: number; newPostsThisWeek: number }
@@ -44,8 +47,9 @@ export default function AdminDashboard() {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [newsItems, setNewsItems] = useState<any[]>([])
   const [showNewsForm, setShowNewsForm] = useState(false)
-  const [newsForm, setNewsForm] = useState({ title: '', summary: '', source_name: '', source_url: '', image_url: '', tags: '' })
+  const [newsForm, setNewsForm] = useState({ title: '', summary: '', content: '', source_name: '', source_url: '', image_url: '', tags: '' })
   const [newsLoading, setNewsLoading] = useState(false)
+  const [newsImageUploading, setNewsImageUploading] = useState(false)
 
   // User edit/delete state
   const [editingUser, setEditingUser] = useState<User | null>(null)
@@ -182,7 +186,7 @@ export default function AdminDashboard() {
     if (!newsForm.title || !newsForm.summary || !newsForm.source_name || !newsForm.source_url) { showToast('Fill all required fields'); return }
     setNewsLoading(true)
     await action('publish_news', { ...newsForm, tags: newsForm.tags.split(',').map((t: string) => t.trim()).filter(Boolean) })
-    setNewsForm({ title: '', summary: '', source_name: '', source_url: '', image_url: '', tags: '' })
+    setNewsForm({ title: '', summary: '', content: '', source_name: '', source_url: '', image_url: '', tags: '' })
     setShowNewsForm(false)
     const d = await api('news_admin')
     if (d) setNewsItems(d.news)
@@ -1328,16 +1332,97 @@ export default function AdminDashboard() {
                     <input value={newsForm.source_name} onChange={e => setNewsForm(p => ({ ...p, source_name: e.target.value }))} placeholder="TechCrunch, The Verge..." style={inp} />
                   </div>
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Summary *</label>
-                    <textarea value={newsForm.summary} onChange={e => setNewsForm(p => ({ ...p, summary: e.target.value }))} placeholder="Brief summary of the article..." rows={3} style={{ ...inp, resize: 'none' as any }} />
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Summary * <span style={{ color: '#555', fontWeight: 400 }}>(shown on the news card — keep it to 1-2 sentences)</span></label>
+                    <textarea value={newsForm.summary} onChange={e => setNewsForm(p => ({ ...p, summary: e.target.value }))} placeholder="Brief summary shown in the news feed card..." rows={2} style={{ ...inp, resize: 'none' as any }} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '8px' }}>
+                      Full article content <span style={{ color: '#555', fontWeight: 400 }}>(optional — shown when user clicks "Read more")</span>
+                    </label>
+                    <RichTextEditor
+                      value={newsForm.content}
+                      onChange={v => setNewsForm(p => ({ ...p, content: v }))}
+                      placeholder="Write the full article here... Use the toolbar for H2, H3, bold, italic, bullet lists, numbered lists, links, and blockquotes."
+                      minHeight={220}
+                    />
                   </div>
                   <div>
                     <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Source URL *</label>
                     <input value={newsForm.source_url} onChange={e => setNewsForm(p => ({ ...p, source_url: e.target.value }))} placeholder="https://..." style={inp} />
                   </div>
-                  <div>
-                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Image URL (optional)</label>
-                    <input value={newsForm.image_url} onChange={e => setNewsForm(p => ({ ...p, image_url: e.target.value }))} placeholder="https://image.jpg" style={inp} />
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+                      🖼 Thumbnail / Banner <span style={{ color: '#555', fontWeight: 400 }}>(optional — shown on the news card and article header)</span>
+                    </label>
+
+                    {/* Preview */}
+                    {newsForm.image_url ? (
+                      <div style={{ position: 'relative', marginBottom: '10px', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <img src={newsForm.image_url} alt="Thumbnail preview" style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }} />
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)', display: 'flex', alignItems: 'flex-end', padding: '12px' }}>
+                          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>✓ Thumbnail set</span>
+                        </div>
+                        <button
+                          onClick={() => setNewsForm(p => ({ ...p, image_url: '' }))}
+                          style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: '6px', color: '#fff', padding: '4px 10px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}
+                        >✕ Remove</button>
+                      </div>
+                    ) : (
+                      /* Upload drop zone */
+                      <label style={{ display: 'block', cursor: 'pointer' }}>
+                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
+                          const file = e.target.files?.[0]
+                          if (!file) return
+                          if (file.size > 10 * 1024 * 1024) { alert('Max 10MB'); return }
+                          setNewsImageUploading(true)
+                          const form = new FormData()
+                          form.append('file', file)
+                          form.append('folder', 'news')
+                          form.append('type', 'thumbnail')
+                          const res = await fetch('/api/upload', { method: 'POST', body: form })
+                          const data = await res.json()
+                          if (data.secure_url) setNewsForm(p => ({ ...p, image_url: data.secure_url }))
+                          else alert(data.error || 'Upload failed')
+                          setNewsImageUploading(false)
+                          e.target.value = ''
+                        }} />
+                        <div style={{ border: '2px dashed rgba(255,255,255,0.12)', borderRadius: '10px', padding: '24px', textAlign: 'center', transition: 'border-color 0.15s, background 0.15s' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,109,31,0.4)'; (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,109,31,0.03)' }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+                        >
+                          {newsImageUploading ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                              <div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                              <span style={{ fontSize: '13px', color: '#9a8f7a' }}>Uploading to Cloudinary...</span>
+                            </div>
+                          ) : (
+                            <>
+                              <div style={{ fontSize: '28px', marginBottom: '8px' }}>🖼</div>
+                              <p style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1', margin: '0 0 4px' }}>Click to upload image</p>
+                              <p style={{ fontSize: '11px', color: '#9a8f7a', margin: 0 }}>JPG, PNG, WebP — max 10MB • 16:9 recommended</p>
+                            </>
+                          )}
+                        </div>
+                      </label>
+                    )}
+
+                    {/* Or paste URL */}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
+                      <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.07)' }} />
+                      <span style={{ fontSize: '11px', color: '#555', flexShrink: 0 }}>or paste URL</span>
+                      <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.07)' }} />
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                      <input
+                        value={newsForm.image_url}
+                        onChange={e => setNewsForm(p => ({ ...p, image_url: e.target.value }))}
+                        placeholder="https://example.com/image.jpg"
+                        style={{ ...inp, flex: 1 }}
+                      />
+                      {newsForm.image_url && (
+                        <button onClick={() => setNewsForm(p => ({ ...p, image_url: '' }))} style={{ ...btn(false), padding: '8px 12px', fontSize: '12px' }}>Clear</button>
+                      )}
+                    </div>
                   </div>
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Tags (comma separated)</label>

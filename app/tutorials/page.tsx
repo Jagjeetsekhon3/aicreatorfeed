@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getYouTubeThumbnail } from '@/lib/youtube'
+import YouTubePlayer from '@/components/ui/YouTubePlayer'
 
 type Tutorial = {
   id: string
@@ -21,6 +22,7 @@ export default function TutorialsPage() {
   const [loading, setLoading] = useState(true)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const [playing, setPlaying] = useState<Tutorial | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -38,15 +40,64 @@ export default function TutorialsPage() {
 
   const [latest, ...rest] = tutorials
 
+  // Scroll to top of player when a video starts
+  function openVideo(t: Tutorial) {
+    setPlaying(t)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function TagPill({ tag, active, onClick }: { tag: string; active: boolean; onClick: () => void }) {
+    return (
+      <button onClick={onClick} style={{
+        padding: '5px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
+        border: '1px solid', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+        background: active ? 'rgba(255,109,31,0.15)' : 'transparent',
+        borderColor: active ? '#FF6D1F' : 'rgba(255,255,255,0.1)',
+        color: active ? '#FF6D1F' : '#9a8f7a',
+      }}>{tag}</button>
+    )
+  }
+
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 0 80px' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
-      {/* Header */}
+      {/* ── Inline player ── */}
+      {playing && (
+        <div style={{ marginBottom: '32px', animation: 'fadeIn 0.25s ease' }}>
+          {/* Player */}
+          <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 40px rgba(0,0,0,0.5)' }}>
+            <YouTubePlayer videoId={playing.youtube_video_id} />
+          </div>
+
+          {/* Info row */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#FAF3E1', marginBottom: '6px', lineHeight: 1.3 }}>{playing.title}</h2>
+              <p style={{ fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6, margin: '0 0 10px' }}>{playing.description}</p>
+              <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: '#9a8f7a', flexWrap: 'wrap' }}>
+                <span>⏱ {playing.duration_minutes} min</span>
+                <span>👁 {(playing.views_count || 0).toLocaleString()} views</span>
+                {playing.tags.map(t => (
+                  <span key={t} style={{ background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: '4px' }}>#{t}</span>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={() => setPlaying(null)}
+              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#9a8f7a', padding: '8px 16px', borderRadius: '10px', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600, flexShrink: 0 }}
+            >✕ Close</button>
+          </div>
+
+          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', marginTop: '24px', marginBottom: '32px' }} />
+        </div>
+      )}
+
+      {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#FAF3E1', marginBottom: '4px' }}>Weekly tutorials</h1>
-          <p style={{ fontSize: '13px', color: '#9a8f7a' }}>New tutorial every Monday</p>
+          <p style={{ fontSize: '13px', color: '#9a8f7a' }}>New tutorial every Monday • Watch right here</p>
         </div>
         {tutorials.length > 0 && (
           <span style={{
@@ -60,7 +111,7 @@ export default function TutorialsPage() {
         )}
       </div>
 
-      {/* Search + tag filters */}
+      {/* ── Search + filters ── */}
       <div style={{ marginBottom: '28px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <input
           value={search}
@@ -73,40 +124,21 @@ export default function TutorialsPage() {
           }}
         />
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setActiveTag(null)}
-            style={{
-              padding: '5px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
-              border: '1px solid', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
-              background: !activeTag ? 'rgba(255,109,31,0.15)' : 'transparent',
-              borderColor: !activeTag ? '#FF6D1F' : 'rgba(255,255,255,0.1)',
-              color: !activeTag ? '#FF6D1F' : '#9a8f7a',
-            }}
-          >All</button>
+          <TagPill tag="All" active={!activeTag} onClick={() => setActiveTag(null)} />
           {ALL_TAGS.map(tag => (
-            <button
-              key={tag}
-              onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-              style={{
-                padding: '5px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
-                border: '1px solid', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
-                background: activeTag === tag ? 'rgba(255,109,31,0.15)' : 'transparent',
-                borderColor: activeTag === tag ? '#FF6D1F' : 'rgba(255,255,255,0.1)',
-                color: activeTag === tag ? '#FF6D1F' : '#9a8f7a',
-              }}
-            >{tag}</button>
+            <TagPill key={tag} tag={tag} active={activeTag === tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} />
           ))}
         </div>
       </div>
 
-      {/* Loading */}
+      {/* ── Loading ── */}
       {loading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
           <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
       )}
 
-      {/* Empty */}
+      {/* ── Empty ── */}
       {!loading && tutorials.length === 0 && (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{ fontSize: '48px', marginBottom: '12px' }}>🎬</div>
@@ -122,34 +154,32 @@ export default function TutorialsPage() {
         </div>
       )}
 
-      {/* Featured (latest tutorial) */}
+      {/* ── Featured (latest) ── */}
       {!loading && latest && (
         <div style={{ animation: 'fadeIn 0.3s ease' }}>
           <div style={{
-            background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)',
+            background: '#2f2f2f', border: `2px solid ${playing?.id === latest.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'}`,
             borderRadius: '16px', overflow: 'hidden', marginBottom: '32px',
-            display: 'flex', flexWrap: 'wrap' as const,
-          }}>
+            display: 'flex', flexWrap: 'wrap' as const, cursor: 'pointer', transition: 'border-color 0.15s',
+          }}
+            onClick={() => openVideo(latest)}
+          >
             {/* Thumbnail */}
-            <a
-              href={`https://youtube.com/watch?v=${latest.youtube_video_id}`}
-              target="_blank" rel="noopener noreferrer"
-              style={{ position: 'relative', flex: '0 0 300px', minHeight: '200px', background: '#1a1a1a', display: 'block', textDecoration: 'none' }}
-            >
+            <div style={{ position: 'relative', flex: '0 0 300px', minHeight: '200px', background: '#1a1a1a' }}>
               <img
                 src={latest.thumbnail_url || getYouTubeThumbnail(latest.youtube_video_id)}
                 alt={latest.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
               />
-              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}>
-                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(255,109,31,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: '#fff', fontSize: '20px', marginLeft: '4px' }}>▶</span>
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: playing?.id === latest.id ? 'rgba(255,109,31,1)' : 'rgba(255,109,31,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: '#fff', fontSize: '20px', marginLeft: '4px' }}>{playing?.id === latest.id ? '■' : '▶'}</span>
                 </div>
               </div>
               <span style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.8)', color: '#fff', fontSize: '11px', padding: '3px 8px', borderRadius: '4px' }}>
                 {latest.duration_minutes} min
               </span>
-            </a>
+            </div>
 
             {/* Info */}
             <div style={{ flex: 1, padding: '24px', minWidth: '240px' }}>
@@ -165,17 +195,13 @@ export default function TutorialsPage() {
                 <span>👁 {(latest.views_count || 0).toLocaleString()} views</span>
                 <span>⏱ {latest.duration_minutes} min</span>
               </div>
-              <a
-                href={`https://youtube.com/watch?v=${latest.youtube_video_id}`}
-                target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '10px 20px', borderRadius: '10px', fontSize: '13px', textDecoration: 'none' }}
-              >
-                ▶ Watch tutorial
-              </a>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '10px 20px', borderRadius: '10px', fontSize: '13px' }}>
+                {playing?.id === latest.id ? '■ Now playing' : '▶ Watch now'}
+              </div>
             </div>
           </div>
 
-          {/* Rest of tutorials grid */}
+          {/* Rest — grid */}
           {rest.length > 0 && (
             <>
               <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#FAF3E1', marginBottom: '16px' }}>
@@ -183,17 +209,16 @@ export default function TutorialsPage() {
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
                 {rest.map((t, i) => (
-                  <a
+                  <div
                     key={t.id}
-                    href={`https://youtube.com/watch?v=${t.youtube_video_id}`}
-                    target="_blank" rel="noopener noreferrer"
+                    onClick={() => openVideo(t)}
                     style={{
-                      background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)',
-                      borderRadius: '16px', overflow: 'hidden', textDecoration: 'none', display: 'block',
-                      animation: `fadeIn 0.3s ease ${i * 0.05}s both`, transition: 'border-color 0.15s',
+                      background: '#2f2f2f', border: `1px solid ${playing?.id === t.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'}`,
+                      borderRadius: '16px', overflow: 'hidden', cursor: 'pointer',
+                      animation: `fadeIn 0.3s ease ${i * 0.05}s both`, transition: 'border-color 0.15s, transform 0.15s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.3)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,109,31,0.4)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = playing?.id === t.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}
                   >
                     {/* Thumbnail */}
                     <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#1a1a1a' }}>
@@ -202,9 +227,9 @@ export default function TutorialsPage() {
                         alt={t.title}
                         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                       />
-                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.8 }}>
-                          <span style={{ color: '#fff', fontSize: '16px', marginLeft: '3px' }}>▶</span>
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: playing?.id === t.id ? '#FF6D1F' : 'rgba(255,109,31,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span style={{ color: '#fff', fontSize: '16px', marginLeft: playing?.id === t.id ? '0' : '3px' }}>{playing?.id === t.id ? '■' : '▶'}</span>
                         </div>
                       </div>
                       <span style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.8)', color: '#fff', fontSize: '11px', padding: '2px 6px', borderRadius: '4px' }}>
@@ -230,7 +255,7 @@ export default function TutorialsPage() {
                         )}
                       </div>
                     </div>
-                  </a>
+                  </div>
                 ))}
               </div>
             </>

@@ -169,6 +169,7 @@ export default function ProfilePage() {
   const [editForm, setEditForm] = useState({ caption: '', prompt_text: '', ai_tool: '', tags: '' })
   const [editSaving, setEditSaving] = useState(false)
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null)
+  const [showEditToolDropdown, setShowEditToolDropdown] = useState(false)
   const [aiTools, setAiTools] = useState<string[]>(['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Flux', 'Other'])
   const [followModal, setFollowModal] = useState<'followers' | 'following' | null>(null)
   const [followModalUsers, setFollowModalUsers] = useState<any[]>([])
@@ -557,17 +558,34 @@ export default function ProfilePage() {
               </div>
 
               {/* AI Tool */}
-              <div>
+              <div style={{ position: 'relative' }}>
                 <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>AI Tool <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span></label>
-                <select
-                  value={editForm.ai_tool}
-                  onChange={e => setEditForm(p => ({ ...p, ai_tool: e.target.value }))}
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}
+                <button
+                  type="button"
+                  onClick={() => setShowEditToolDropdown(v => !v)}
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: editForm.ai_tool ? '#FAF3E1' : '#9a8f7a', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}
                 >
-                  {['', ...aiTools].map(t => (
-                    <option key={t} value={t}>{t || 'None'}</option>
-                  ))}
-                </select>
+                  <span>{editForm.ai_tool || 'None'}</span>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ flexShrink: 0, transition: 'transform 0.15s', transform: showEditToolDropdown ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                    <path d="M2 4l4 4 4-4"/>
+                  </svg>
+                </button>
+                {showEditToolDropdown && (
+                  <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', overflow: 'hidden', zIndex: 200, boxShadow: '0 8px 24px rgba(0,0,0,0.6)', maxHeight: '220px', overflowY: 'auto' }}>
+                    {['', ...aiTools].map(t => (
+                      <div
+                        key={t || 'none'}
+                        onClick={() => { setEditForm(p => ({ ...p, ai_tool: t })); setShowEditToolDropdown(false) }}
+                        style={{ padding: '10px 14px', fontSize: '13px', color: editForm.ai_tool === t ? '#FF6D1F' : (t ? '#FAF3E1' : '#9a8f7a'), cursor: 'pointer', background: editForm.ai_tool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.1s' }}
+                        onMouseEnter={e => { if (editForm.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
+                        onMouseLeave={e => { if (editForm.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+                      >
+                        {t || 'None'}
+                        {editForm.ai_tool === t && <span style={{ fontSize: '11px' }}>✓</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Tags */}

@@ -145,8 +145,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'publish_news') {
-    const { title, summary, source_name, source_url, image_url, tags } = body
-    await admin.from('news_items').insert({ title, summary, source_name, source_url, image_url: image_url || null, tags: tags || [] })
+    const { title, summary, content, source_name, source_url, image_url, tags } = body
+    await admin.from('news_items').insert({
+      title, summary, source_name, source_url,
+      content: content || null,
+      image_url: image_url || null,
+      tags: tags || [],
+    })
     await admin.from('admin_logs').insert({ action: `Published news: ${title}` })
     return NextResponse.json({ success: true })
   }

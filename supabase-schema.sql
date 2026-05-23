@@ -227,3 +227,8 @@ create policy "Collections are viewable by owner" on public.collections for sele
 
 create index if not exists collection_posts_user_id_idx on public.collection_posts(user_id);
 create index if not exists collection_posts_post_id_idx on public.collection_posts(post_id);
+
+
+-- ─── NEWS ITEMS — add rich content columns (run once) ────────────────────────
+alter table public.news_items add column if not exists content text;
+alter table public.news_items add column if not exists image_url text;
