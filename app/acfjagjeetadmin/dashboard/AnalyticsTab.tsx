@@ -21,7 +21,7 @@ const HOURS = ['12a','1a','2a','3a','4a','5a','6a','7a','8a','9a','10a','11a','1
 
 // World country code → approximate map position (x%, y% on equirectangular 2:1 map)
 const COUNTRY_POSITIONS: Record<string, [number, number]> = {
-  US: [20, 35], CA: [18, 25], MX: [20, 45], BR: [32, 62], AR: [28, 75],
+  US: [20, 35], CA: [18, 25], MX: [20, 44], BR: [32, 62], AR: [28, 75],
   GB: [46, 25], FR: [48, 28], DE: [50, 25], IT: [51, 33], ES: [45, 33],
   IN: [68, 43], CN: [75, 35], JP: [82, 33], KR: [80, 33], AU: [79, 68],
   RU: [65, 20], NG: [51, 52], ZA: [54, 70], EG: [56, 40], KE: [58, 55],
@@ -29,7 +29,7 @@ const COUNTRY_POSITIONS: Record<string, [number, number]> = {
   TH: [74, 47], VN: [76, 48], PH: [80, 48], NZ: [85, 72], SG: [76, 53],
   MY: [76, 51], BD: [70, 43], PL: [52, 25], SE: [51, 18], NL: [48, 24],
   BE: [48, 25], CH: [49, 29], PT: [44, 35], GR: [53, 35], CZ: [51, 27],
-  MX: [20, 44], CO: [27, 55], CL: [25, 70], PE: [25, 60], VE: [29, 52],
+  CO: [27, 55], CL: [25, 70], PE: [25, 60], VE: [29, 52],
 }
 
 function delta(today: number, yesterday: number) {
