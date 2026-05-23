@@ -34,7 +34,6 @@ export default function ExplorePage() {
     fetch('/api/ai-tools').then(r => r.json()).then(d => {
       if (d.tools?.length) setTools(['All tools', ...d.tools.map((t: any) => t.name)])
     })
-  }, [])
     supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
         setCurrentUserId(data.session.user.id)
