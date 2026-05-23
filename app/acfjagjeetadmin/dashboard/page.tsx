@@ -22,6 +22,7 @@ const SIDEBAR_ITEMS = [
   { key: 'tutorials',  icon: '🎬', label: 'Tutorials' },
   { key: 'news',       icon: '📰', label: 'AI News' },
   { key: 'community',  icon: '💬', label: 'Community' },
+  { key: 'aitools',    icon: '🤖', label: 'AI Tools' },
   { key: 'settings',   icon: '🎨', label: 'Site Settings' },
   { key: 'seo',        icon: '🔍', label: 'SEO & Meta' },
   { key: 'features',   icon: '🔧', label: 'Features' },
@@ -51,6 +52,13 @@ export default function AdminDashboard() {
   const [editUserForm, setEditUserForm] = useState({ full_name: '', username: '', bio: '', is_verified: false, is_official: false, twitter: '', instagram: '', youtube: '' })
   const [deleteConfirmUser, setDeleteConfirmUser] = useState<User | null>(null)
   const [userActionLoading, setUserActionLoading] = useState(false)
+
+  // AI Tools state
+  const [aiToolsList, setAiToolsList] = useState<any[]>([])
+  const [newToolName, setNewToolName] = useState('')
+  const [newToolColor, setNewToolColor] = useState('#9a8f7a')
+  const [toolSaving, setToolSaving] = useState(false)
+  const [editingTool, setEditingTool] = useState<any | null>(null)
 
   // Tutorials state
   const [tutorials, setTutorials] = useState<any[]>([])
@@ -108,6 +116,7 @@ export default function AdminDashboard() {
     if (tab === 'news') api('news_admin').then(d => { if (d) setNewsItems(d.news) })
     if (tab === 'tutorials') fetch('/api/tutorials').then(r => r.json()).then(d => setTutorials(d.tutorials || []))
     if (tab === 'community') api('spaces_admin').then(d => { if (d) setSpaces(d.spaces) })
+    if (tab === 'aitools') fetch('/api/ai-tools').then(r => r.json()).then(d => setAiToolsList(d.tools || []))
     if (tab === 'tickets') api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
     if (tab === 'seo') api('settings').then(d => {
       if (d?.settings) {
@@ -202,6 +211,57 @@ export default function AdminDashboard() {
     await fetch('/api/tutorials', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
     setTutorials(prev => prev.filter((t: any) => t.id !== id))
     showToast('Deleted')
+  }
+
+  async function addAiTool() {
+    if (!newToolName.trim()) { showToast('Enter a tool name'); return }
+    setToolSaving(true)
+    const res = await fetch('/api/ai-tools', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newToolName.trim(), color: newToolColor, sort_order: aiToolsList.length }),
+    })
+    const d = await res.json()
+    if (d.tool) {
+      setAiToolsList(prev => [...prev, d.tool])
+      setNewToolName('')
+      setNewToolColor('#9a8f7a')
+      showToast('Tool added!')
+    } else showToast(d.error || 'Failed')
+    setToolSaving(false)
+  }
+
+  async function deleteAiTool(id: string, name: string) {
+    if (!confirm(`Remove "${name}" from the tools list?`)) return
+    await fetch('/api/ai-tools', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+    setAiToolsList(prev => prev.filter(t => t.id !== id))
+    showToast('Tool removed')
+  }
+
+  async function saveAiToolEdit(tool: any) {
+    const res = await fetch('/api/ai-tools', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: tool.id, name: tool.name, color: tool.color, sort_order: tool.sort_order }),
+    })
+    if (res.ok) { setEditingTool(null); showToast('Saved') }
+  }
+
+  async function moveAiTool(id: string, direction: 'up' | 'down') {
+    const idx = aiToolsList.findIndex(t => t.id === id)
+    if (direction === 'up' && idx === 0) return
+    if (direction === 'down' && idx === aiToolsList.length - 1) return
+    const newList = [...aiToolsList]
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    ;[newList[idx], newList[swapIdx]] = [newList[swapIdx], newList[idx]]
+    // update sort_order values
+    const updated = newList.map((t, i) => ({ ...t, sort_order: i }))
+    setAiToolsList(updated)
+    // save both swapped items
+    await Promise.all([
+      fetch('/api/ai-tools', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: updated[idx].id, sort_order: idx }) }),
+      fetch('/api/ai-tools', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: updated[swapIdx].id, sort_order: swapIdx }) }),
+    ])
   }
 
   async function createSpace() {
@@ -657,6 +717,124 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
               {posts.length === 0 && <p style={{ textAlign: 'center', padding: '40px', color: '#9a8f7a' }}>No posts found</p>}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI TOOLS ─────────────────────────────────────────────────── */}
+        {tab === 'aitools' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '4px' }}>AI Tools</h1>
+              <p style={{ fontSize: '13px', color: '#9a8f7a', margin: 0 }}>
+                These tools appear in the post creation form, edit form, and explore filters across the entire site.
+              </p>
+            </div>
+
+            {/* Add new tool */}
+            <div style={{ ...card, marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '14px', color: '#FF6D1F' }}>➕ Add new tool</h3>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '180px' }}>
+                  <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Tool name *</label>
+                  <input
+                    value={newToolName}
+                    onChange={e => setNewToolName(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addAiTool()}
+                    placeholder="e.g. Adobe Firefly, Ideogram, Grok..."
+                    style={inp}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Badge color</label>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <input type="color" value={newToolColor} onChange={e => setNewToolColor(e.target.value)}
+                      style={{ width: '40px', height: '38px', border: 'none', borderRadius: '8px', cursor: 'pointer', background: 'transparent', padding: 0 }} />
+                    <span style={{ fontSize: '11px', color: '#9a8f7a', fontFamily: 'monospace' }}>{newToolColor}</span>
+                  </div>
+                </div>
+                {/* Preview badge */}
+                {newToolName && (
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '6px', background: `${newToolColor}22`, color: newToolColor, border: `1px solid ${newToolColor}44` }}>
+                      {newToolName}
+                    </span>
+                  </div>
+                )}
+                <button onClick={addAiTool} disabled={toolSaving || !newToolName.trim()} style={btn()}>
+                  {toolSaving ? 'Adding...' : '+ Add tool'}
+                </button>
+              </div>
+            </div>
+
+            {/* Tools list */}
+            <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+              <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#9a8f7a' }}>{aiToolsList.length} tools active</span>
+                <span style={{ fontSize: '12px', color: '#555' }}>Use ↑↓ arrows to reorder</span>
+              </div>
+
+              {aiToolsList.length === 0 && (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#9a8f7a' }}>
+                  <div style={{ fontSize: '32px', marginBottom: '8px' }}>🤖</div>
+                  No tools yet. Add one above!
+                </div>
+              )}
+
+              {aiToolsList.map((tool, idx) => (
+                <div key={tool.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.1s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  {/* Reorder arrows */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0 }}>
+                    <button onClick={() => moveAiTool(tool.id, 'up')} disabled={idx === 0}
+                      style={{ background: 'none', border: 'none', cursor: idx === 0 ? 'default' : 'pointer', color: idx === 0 ? '#333' : '#9a8f7a', fontSize: '11px', padding: '1px 4px', lineHeight: 1 }}>▲</button>
+                    <button onClick={() => moveAiTool(tool.id, 'down')} disabled={idx === aiToolsList.length - 1}
+                      style={{ background: 'none', border: 'none', cursor: idx === aiToolsList.length - 1 ? 'default' : 'pointer', color: idx === aiToolsList.length - 1 ? '#333' : '#9a8f7a', fontSize: '11px', padding: '1px 4px', lineHeight: 1 }}>▼</button>
+                  </div>
+
+                  {/* Color dot */}
+                  <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: tool.color, flexShrink: 0 }} />
+
+                  {/* Name / edit inline */}
+                  {editingTool?.id === tool.id ? (
+                    <div style={{ display: 'flex', gap: '8px', flex: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input
+                        value={editingTool.name}
+                        onChange={e => setEditingTool((p: any) => ({ ...p, name: e.target.value }))}
+                        style={{ ...inp, flex: 1, minWidth: '120px', padding: '6px 10px', fontSize: '13px' }}
+                        autoFocus
+                      />
+                      <input type="color" value={editingTool.color}
+                        onChange={e => setEditingTool((p: any) => ({ ...p, color: e.target.value }))}
+                        style={{ width: '34px', height: '34px', border: 'none', borderRadius: '6px', cursor: 'pointer', padding: 0 }} />
+                      <button onClick={() => saveAiToolEdit(editingTool)} style={{ ...btn(), padding: '6px 12px', fontSize: '12px' }}>Save</button>
+                      <button onClick={() => setEditingTool(null)} style={{ ...btn(false), padding: '6px 10px', fontSize: '12px' }}>Cancel</button>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ flex: 1 }}>
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1' }}>{tool.name}</span>
+                        <span style={{ marginLeft: '10px', fontSize: '12px', padding: '2px 8px', borderRadius: '5px', background: `${tool.color}22`, color: tool.color, border: `1px solid ${tool.color}33`, fontWeight: 700 }}>{tool.name}</span>
+                      </div>
+                      <span style={{ fontSize: '11px', color: '#555', fontFamily: 'monospace' }}>#{idx + 1}</span>
+                      <button onClick={() => setEditingTool({ ...tool })}
+                        style={{ background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.2)', color: '#FF6D1F', padding: '5px 10px', borderRadius: '7px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                        ✏️ Edit
+                      </button>
+                      <button onClick={() => deleteAiTool(tool.id, tool.name)}
+                        style={{ background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', color: '#ff8080', padding: '5px 10px', borderRadius: '7px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                        🗑
+                      </button>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '14px', padding: '12px 16px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '12px', fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6 }}>
+              💡 Changes apply <strong style={{ color: '#FAF3E1' }}>immediately</strong> — users will see the updated list next time they open the post form or explore page.
             </div>
           </div>
         )}

@@ -66,6 +66,11 @@ export default function ProfilePage() {
   const [followLoading, setFollowLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'posts' | 'prompts'>('posts')
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+  const [editingPost, setEditingPost] = useState<Post | null>(null)
+  const [editForm, setEditForm] = useState({ caption: '', prompt_text: '', ai_tool: '', tags: '' })
+  const [editSaving, setEditSaving] = useState(false)
+  const [deletingPostId, setDeletingPostId] = useState<string | null>(null)
+  const [aiTools, setAiTools] = useState<string[]>(['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Flux', 'Other'])
   const [followModal, setFollowModal] = useState<'followers' | 'following' | null>(null)
   const [followModalUsers, setFollowModalUsers] = useState<any[]>([])
   const [followModalLoading, setFollowModalLoading] = useState(false)
@@ -76,6 +81,9 @@ export default function ProfilePage() {
         setCurrentUserId(data.session.user.id)
         setAccessToken(data.session.access_token)
       }
+    })
+    fetch('/api/ai-tools').then(r => r.json()).then(d => {
+      if (d.tools?.length) setAiTools(d.tools.map((t: any) => t.name))
     })
   }, [])
 
@@ -135,6 +143,53 @@ export default function ProfilePage() {
     const data = await res.json()
     setFollowModalUsers(data.users || [])
     setFollowModalLoading(false)
+  }
+
+  function openEditPost(post: Post) {
+    setEditingPost(post)
+    setSelectedPost(null)
+    setEditForm({
+      caption: post.caption || '',
+      prompt_text: post.prompt_text || '',
+      ai_tool: post.ai_tool || '',
+      tags: post.tags?.join(', ') || '',
+    })
+  }
+
+  async function handleSaveEdit() {
+    if (!editingPost) return
+    setEditSaving(true)
+    const res = await fetch(`/api/posts/${editingPost.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({
+        caption: editForm.caption,
+        prompt_text: editForm.prompt_text || null,
+        ai_tool: editForm.ai_tool || null,
+        tags: editForm.tags ? editForm.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+      }),
+    })
+    if (res.ok) {
+      const { post: updated } = await res.json()
+      setPosts(prev => prev.map(p => p.id === editingPost.id ? { ...p, ...updated } : p))
+      setEditingPost(null)
+    }
+    setEditSaving(false)
+  }
+
+  async function handleDeletePost(postId: string) {
+    if (!confirm('Delete this post? This cannot be undone.')) return
+    setDeletingPostId(postId)
+    const res = await fetch(`/api/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    if (res.ok) {
+      setPosts(prev => prev.filter(p => p.id !== postId))
+      setSelectedPost(null)
+      setEditingPost(null)
+    }
+    setDeletingPostId(null)
   }
 
   const isOwnProfile = currentUserId === profile?.id
@@ -290,38 +345,66 @@ export default function ProfilePage() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px' }}>
           {displayPosts.map(post => (
-            <div key={post.id} onClick={() => setSelectedPost(post)} style={{ position: 'relative', paddingBottom: '100%', cursor: 'pointer', background: '#2a2a2a', overflow: 'hidden' }}
-              onMouseEnter={e => { (e.currentTarget.querySelector('.overlay') as HTMLElement).style.opacity = '1' }}
-              onMouseLeave={e => { (e.currentTarget.querySelector('.overlay') as HTMLElement).style.opacity = '0' }}
+            <div key={post.id} style={{ position: 'relative', paddingBottom: '100%', background: '#2a2a2a', overflow: 'hidden' }}
+              onMouseEnter={e => {
+                (e.currentTarget.querySelector('.overlay') as HTMLElement).style.opacity = '1'
+                if (isOwnProfile) (e.currentTarget.querySelector('.post-menu-btn') as HTMLElement | null)?.style && ((e.currentTarget.querySelector('.post-menu-btn') as HTMLElement).style.opacity = '1')
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget.querySelector('.overlay') as HTMLElement).style.opacity = '0'
+                if (isOwnProfile) (e.currentTarget.querySelector('.post-menu-btn') as HTMLElement | null)?.style && ((e.currentTarget.querySelector('.post-menu-btn') as HTMLElement).style.opacity = '0')
+              }}
             >
-              {post.media_type === 'image' && post.image_url
-                ? <img src={post.image_url} alt={post.caption} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                : post.media_type === 'video' && post.video_url
-                  ? <div style={{ position: 'absolute', inset: 0, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '6px' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ color: '#fff', fontSize: '14px', marginLeft: '3px' }}>▶</span>
+              {/* Thumbnail */}
+              <div onClick={() => setSelectedPost(post)} style={{ position: 'absolute', inset: 0, cursor: 'pointer' }}>
+                {post.media_type === 'image' && post.image_url
+                  ? <img src={post.image_url} alt={post.caption} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : post.media_type === 'video' && post.video_url
+                    ? <div style={{ position: 'absolute', inset: 0, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span style={{ color: '#fff', fontSize: '14px', marginLeft: '3px' }}>▶</span>
+                        </div>
                       </div>
-                    </div>
-                  : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px' }}>
-                      <p style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.5, textAlign: 'center', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as const }}>
-                        {post.caption}
-                      </p>
-                    </div>
-              }
-              {/* Type badge */}
-              {post.media_type === 'video' && <span style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '14px' }}>▶</span>}
-              {post.prompt_text && <span style={{ position: 'absolute', top: '6px', left: '6px', background: 'rgba(255,109,31,0.8)', borderRadius: '4px', padding: '1px 5px', fontSize: '10px', color: '#fff', fontWeight: 700 }}>✦</span>}
-              {/* Hover overlay */}
-              <div className="overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', opacity: 0, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+                    : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px' }}>
+                        <p style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.5, textAlign: 'center', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as const }}>
+                          {post.caption}
+                        </p>
+                      </div>
+                }
+              </div>
+
+              {/* Type badges */}
+              {post.media_type === 'video' && <span style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '14px', pointerEvents: 'none' }}>▶</span>}
+              {post.prompt_text && <span style={{ position: 'absolute', top: '6px', left: '6px', background: 'rgba(255,109,31,0.8)', borderRadius: '4px', padding: '1px 5px', fontSize: '10px', color: '#fff', fontWeight: 700, pointerEvents: 'none' }}>✦</span>}
+
+              {/* Hover overlay (stats) */}
+              <div className="overlay" onClick={() => setSelectedPost(post)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', opacity: 0, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', cursor: 'pointer' }}>
                 <span style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>♥ {post.likes_count}</span>
                 <span style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>💬 {post.comments_count}</span>
               </div>
+
+              {/* Own post: ⋯ menu button */}
+              {isOwnProfile && (
+                <button
+                  className="post-menu-btn"
+                  onClick={e => { e.stopPropagation(); openEditPost(post) }}
+                  style={{ position: 'absolute', top: '6px', right: '6px', opacity: 0, transition: 'opacity 0.15s', background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', color: '#fff', fontSize: '14px', fontWeight: 700, lineHeight: 1, zIndex: 10 }}
+                  title="Edit or delete post"
+                >⋯</button>
+              )}
+
+              {/* Deleting spinner */}
+              {deletingPostId === post.id && (
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,255,255,0.2)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      {/* Post modal */}
+      {/* Post view modal */}
       {selectedPost && (
         <div onClick={() => setSelectedPost(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.15s ease' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#2a2a2a', borderRadius: '16px', overflow: 'hidden', maxWidth: '480px', width: '100%', maxHeight: '90vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -340,14 +423,117 @@ export default function ProfilePage() {
                 </div>
               )}
               {selectedPost.tags?.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
                   {selectedPost.tags.map(t => <span key={t} style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>#{t}</span>)}
                 </div>
               )}
-              <div style={{ display: 'flex', gap: '16px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                 <span style={{ fontSize: '14px', color: '#9a8f7a' }}>♥ {selectedPost.likes_count}</span>
                 <span style={{ fontSize: '14px', color: '#9a8f7a' }}>💬 {selectedPost.comments_count}</span>
-                <button onClick={() => setSelectedPost(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#9a8f7a', fontFamily: 'inherit' }}>Close</button>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                  {isOwnProfile && (
+                    <>
+                      <button
+                        onClick={() => openEditPost(selectedPost)}
+                        style={{ background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.25)', color: '#FF6D1F', padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                      >✏️ Edit</button>
+                      <button
+                        onClick={() => handleDeletePost(selectedPost.id)}
+                        disabled={deletingPostId === selectedPost.id}
+                        style={{ background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', color: '#ff8080', padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                      >🗑 Delete</button>
+                    </>
+                  )}
+                  <button onClick={() => setSelectedPost(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#9a8f7a', fontFamily: 'inherit' }}>Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit post modal */}
+      {editingPost && (
+        <div onClick={() => setEditingPost(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 310, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.15s ease' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#2a2a2a', borderRadius: '16px', width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FAF3E1' }}>Edit post</h3>
+              <button onClick={() => setEditingPost(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', fontSize: '20px', lineHeight: 1 }}>×</button>
+            </div>
+
+            {/* Preview thumbnail */}
+            {editingPost.image_url && (
+              <div style={{ position: 'relative', maxHeight: '200px', overflow: 'hidden' }}>
+                <img src={editingPost.image_url} alt="" style={{ width: '100%', display: 'block', objectFit: 'cover', maxHeight: '200px' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, #2a2a2a)' }} />
+              </div>
+            )}
+
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {/* Caption */}
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>Caption</label>
+                <textarea
+                  value={editForm.caption}
+                  onChange={e => setEditForm(p => ({ ...p, caption: e.target.value }))}
+                  rows={3}
+                  placeholder="What's this about?"
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', resize: 'none', fontFamily: 'inherit', outline: 'none' }}
+                />
+              </div>
+
+              {/* Prompt text */}
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>✦ AI Prompt <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span></label>
+                <textarea
+                  value={editForm.prompt_text}
+                  onChange={e => setEditForm(p => ({ ...p, prompt_text: e.target.value }))}
+                  rows={3}
+                  placeholder="The prompt you used to generate this..."
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,109,31,0.04)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', color: '#FAF3E1', fontSize: '13px', padding: '10px 12px', resize: 'none', fontFamily: 'monospace', outline: 'none' }}
+                />
+              </div>
+
+              {/* AI Tool */}
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>AI Tool <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span></label>
+                <select
+                  value={editForm.ai_tool}
+                  onChange={e => setEditForm(p => ({ ...p, ai_tool: e.target.value }))}
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}
+                >
+                  {['', ...aiTools].map(t => (
+                    <option key={t} value={t}>{t || 'None'}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Tags */}
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>Tags <span style={{ color: '#555', fontWeight: 400 }}>(comma separated)</span></label>
+                <input
+                  value={editForm.tags}
+                  onChange={e => setEditForm(p => ({ ...p, tags: e.target.value }))}
+                  placeholder="midjourney, portrait, cinematic..."
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }}
+                />
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', paddingTop: '4px' }}>
+                <button
+                  onClick={() => { setEditingPost(null); handleDeletePost(editingPost.id) }}
+                  style={{ background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', color: '#ff8080', padding: '10px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                >🗑 Delete post</button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => setEditingPost(null)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#9a8f7a', padding: '10px 18px', borderRadius: '10px', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={editSaving}
+                    style={{ background: '#FF6D1F', border: 'none', color: '#fff', padding: '10px 22px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', opacity: editSaving ? 0.7 : 1 }}
+                  >{editSaving ? 'Saving…' : 'Save changes'}</button>
+                </div>
               </div>
             </div>
           </div>

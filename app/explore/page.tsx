@@ -11,9 +11,7 @@ const SORTS = [
   { key: 'latest',    label: '✨ Latest' },
 ]
 
-const TOOLS = ['All tools', 'Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Flux']
 const TYPES = ['All', 'Images', 'Videos', 'Text', 'Prompts']
-
 const TRENDING_TAGS = ['midjourney','aiart','stablediffusion','promptengineering','sora','dalle','runway','flux','aitools','cinematic','portrait','abstract']
 
 export default function ExplorePage() {
@@ -30,8 +28,13 @@ export default function ExplorePage() {
   const [currentUserId, setCurrentUserId] = useState('')
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set())
   const [accessToken, setAccessToken] = useState('')
+  const [tools, setTools] = useState(['All tools', 'Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Flux'])
 
   useEffect(() => {
+    fetch('/api/ai-tools').then(r => r.json()).then(d => {
+      if (d.tools?.length) setTools(['All tools', ...d.tools.map((t: any) => t.name)])
+    })
+  }, [])
     supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
         setCurrentUserId(data.session.user.id)
@@ -140,7 +143,7 @@ export default function ExplorePage() {
 
       {/* Tool filter */}
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '20px' }}>
-        {TOOLS.map(t => (
+        {tools.map(t => (
           <button key={t} onClick={() => setTool(t)} style={{
             padding: '5px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
             border: `1px solid ${tool === t ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`,

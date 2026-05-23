@@ -4,13 +4,12 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { extractYouTubeId, getYouTubeThumbnail } from '@/lib/youtube'
 
-const AI_TOOLS = ['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Flux', 'Adobe Firefly', 'Other']
-
 export default function NewPostPage() {
   const router = useRouter()
   const supabase = createClient()
   const fileRef = useRef<HTMLInputElement>(null)
 
+  const [aiTools, setAiTools] = useState<string[]>([])
   const [text, setText] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [imagePreview, setImagePreview] = useState('')
@@ -30,6 +29,13 @@ export default function NewPostPage() {
   const [accessToken, setAccessToken] = useState('')
 
   useEffect(() => {
+    // Load AI tools from API
+    fetch('/api/ai-tools').then(r => r.json()).then(d => {
+      setAiTools((d.tools || []).map((t: any) => t.name))
+    }).catch(() => {
+      setAiTools(['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway', 'Kling', 'Flux', 'Other'])
+    })
+
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) { router.replace('/auth/login?redirect=/post/new'); return }
       const u = data.session.user
@@ -219,7 +225,7 @@ export default function NewPostPage() {
               <select value={aiTool} onChange={e => setAiTool(e.target.value)}
                 style={{ marginTop: '8px', width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: aiTool ? '#FAF3E1' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}>
                 <option value="">Select AI tool used...</option>
-                {AI_TOOLS.map(t => <option key={t} value={t}>{t}</option>)}
+                {aiTools.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           )}
