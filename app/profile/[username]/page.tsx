@@ -246,7 +246,6 @@ export default function ProfilePage() {
 
   function openEditPost(post: Post) {
     setEditingPost(post)
-    setSelectedPost(null)
     setEditForm({
       caption: post.caption || '',
       prompt_text: post.prompt_text || '',
@@ -285,7 +284,6 @@ export default function ProfilePage() {
     })
     if (res.ok) {
       setPosts(prev => prev.filter(p => p.id !== postId))
-      setSelectedPost(null)
       setEditingPost(null)
     }
     setDeletingPostId(null)
