@@ -920,6 +920,81 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
+              {/* Social Links */}
+              <div style={{ ...card, gridColumn: '1 / -1' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>📣 Social Links</h3>
+                <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px', marginTop: 0 }}>These appear on the Contact page. Leave blank to hide.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '14px' }}>
+                  {[
+                    { key: 'social_twitter',          label: '𝕏 Twitter / X',   placeholder: 'username (no @)' },
+                    { key: 'social_instagram',        label: '📸 Instagram',      placeholder: 'username (no @)' },
+                    { key: 'social_discord',          label: '💬 Discord URL',    placeholder: 'https://discord.gg/...' },
+                    { key: 'social_discord_label',    label: '💬 Discord label',  placeholder: 'Join our server' },
+                    { key: 'social_youtube',          label: '▶ YouTube URL',    placeholder: 'https://youtube.com/@...' },
+                    { key: 'social_youtube_label',    label: '▶ YouTube label',  placeholder: 'Watch tutorials' },
+                    { key: 'social_tiktok',           label: '♪ TikTok',          placeholder: 'username (no @)' },
+                    { key: 'social_linkedin',         label: 'in LinkedIn URL',   placeholder: 'https://linkedin.com/company/...' },
+                    { key: 'social_linkedin_label',   label: 'in LinkedIn label', placeholder: 'Connect with us' },
+                  ].map(({ key, label, placeholder }) => {
+                    const val = settingVal(key)
+                    return (
+                      <div key={key}>
+                        <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px', fontWeight: 600 }}>{label}</label>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <input value={val} placeholder={placeholder}
+                            onChange={e => setSettings(prev => {
+                              const exists = prev.find(s => s.key === key)
+                              return exists ? prev.map(s => s.key === key ? { ...s, value: e.target.value } : s)
+                                           : [...prev, { key, value: e.target.value }]
+                            })}
+                            style={{ ...inp, flex: 1 }} />
+                          <button onClick={() => saveSetting(key, val)} style={btn()} disabled={saving}>✓</button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Contact info */}
+              <div style={{ ...card, gridColumn: '1 / -1' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>✉️ Contact Page Info</h3>
+                <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px', marginTop: 0 }}>Shown on the /contact page above the form.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Contact email</label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input value={settingVal('contact_email')} placeholder="hello@aicreatorfeed.com"
+                        onChange={e => setSettings(prev => {
+                          const exists = prev.find(s => s.key === 'contact_email')
+                          return exists ? prev.map(s => s.key === 'contact_email' ? { ...s, value: e.target.value } : s)
+                                       : [...prev, { key: 'contact_email', value: e.target.value }]
+                        })}
+                        style={{ ...inp, flex: 1 }} />
+                      <button onClick={() => saveSetting('contact_email', settingVal('contact_email'))} style={btn()} disabled={saving}>Save</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Contact page intro message</label>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      <textarea value={settingVal('contact_message')} rows={2} placeholder="Have a question? We'd love to hear from you…"
+                        onChange={e => setSettings(prev => {
+                          const exists = prev.find(s => s.key === 'contact_message')
+                          return exists ? prev.map(s => s.key === 'contact_message' ? { ...s, value: e.target.value } : s)
+                                       : [...prev, { key: 'contact_message', value: e.target.value }]
+                        })}
+                        style={{ ...inp, flex: 1, resize: 'none' as any }} />
+                      <button onClick={() => saveSetting('contact_message', settingVal('contact_message'))} style={btn()} disabled={saving}>Save</button>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ marginTop: '12px' }}>
+                  <a href="/contact" target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>
+                    → Preview contact page ↗
+                  </a>
+                </div>
+              </div>
+
               {/* Favicon */}
               <div style={{ ...card, gridColumn: '1 / -1' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>🌐 Favicon</h3>

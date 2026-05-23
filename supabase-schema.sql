@@ -175,3 +175,19 @@ alter table public.tutorials enable row level security;
 alter table public.news_items enable row level security;
 create policy "Tutorials are public" on public.tutorials for select using (true);
 create policy "News is public" on public.news_items for select using (true);
+
+
+-- ─── CONTACT & SOCIAL SETTINGS (run once) ───────────────────────────────────
+insert into public.site_settings (key, value) values
+  ('contact_email',        ''),
+  ('contact_message',      'Have a question, idea, or issue? We''d love to hear from you. Fill out the form and we''ll get back to you within 24–48 hours.'),
+  ('social_twitter',       ''),
+  ('social_instagram',     ''),
+  ('social_discord',       ''),
+  ('social_discord_label', 'Join our server'),
+  ('social_youtube',       ''),
+  ('social_youtube_label', 'Watch tutorials'),
+  ('social_tiktok',        ''),
+  ('social_linkedin',      ''),
+  ('social_linkedin_label','Connect with us')
+on conflict (key) do nothing;

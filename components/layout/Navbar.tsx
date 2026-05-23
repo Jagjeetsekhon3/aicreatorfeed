@@ -165,6 +165,7 @@ function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
     { href: '/tutorials',     label: 'Tutorials',     icon: '🎬' },
     { href: '/messages',      label: 'Messages',      icon: '💬' },
     { href: '/settings',      label: 'Settings',      icon: '⚙️' },
+    { href: '/contact',       label: 'Contact',        icon: '✉️' },
   ]
 
   return (
