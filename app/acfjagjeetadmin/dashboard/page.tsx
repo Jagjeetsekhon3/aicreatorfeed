@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
 const RichTextEditor = dynamic(() => import('@/components/ui/RichTextEditor'), { ssr: false })
+const AnalyticsTab = dynamic(() => import('./AnalyticsTab'), { ssr: false })
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type Stats = { totalUsers: number; totalPosts: number; totalComments: number; totalTickets: number; newUsersThisWeek: number; newPostsThisWeek: number }
@@ -121,14 +122,14 @@ export default function AdminDashboard() {
       api('settings').then(d => { if (d) { setSettings(d.settings); setFlags(d.flags) } })
       fetch('/api/admin/cloudinary-check').then(r => r.json()).then(d => setCloudinaryStatus(d)).catch(() => {})
     }
-    if (tab === 'users') api('users').then(d => { if (d) setUsers(d.users) })
-    if (tab === 'posts') api('posts').then(d => { if (d) setPosts(d.posts) })
-    if (tab === 'news') api('news_admin').then(d => { if (d) setNewsItems(d.news) })
+    if (tab === 'users')     api('users').then(d => { if (d) setUsers(d.users) })
+    if (tab === 'posts')     api('posts').then(d => { if (d) setPosts(d.posts) })
+    if (tab === 'news')      api('news_admin').then(d => { if (d) setNewsItems(d.news) })
     if (tab === 'tutorials') fetch('/api/tutorials').then(r => r.json()).then(d => setTutorials(d.tutorials || []))
     if (tab === 'community') api('spaces_admin').then(d => { if (d) setSpaces(d.spaces) })
-    if (tab === 'aitools') fetch('/api/ai-tools').then(r => r.json()).then(d => setAiToolsList(d.tools || []))
-    if (tab === 'tickets') api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
-    if (tab === 'seo') api('settings').then(d => {
+    if (tab === 'aitools')   fetch('/api/ai-tools').then(r => r.json()).then(d => setAiToolsList(d.tools || []))
+    if (tab === 'tickets')   api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
+    if (tab === 'seo')       api('settings').then(d => {
       if (d?.settings) {
         const s = (d.settings as Setting[]).reduce((acc: any, s) => { acc[s.key] = s.value; return acc }, {} as any)
         setSeoSettings({
@@ -476,62 +477,7 @@ export default function AdminDashboard() {
       <main style={{ flex: 1, padding: '28px', overflowY: 'auto', maxHeight: '100vh' }}>
 
         {/* ── OVERVIEW ─────────────────────────────────────────────────── */}
-        {tab === 'overview' && (
-          <div style={{ animation: 'slideIn 0.2s ease' }}>
-            <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '24px' }}>Overview</h1>
-
-            {/* Stat cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px', marginBottom: '28px' }}>
-              {[
-                { label: 'Total Users', value: stats?.totalUsers, sub: `+${stats?.newUsersThisWeek} this week`, icon: '👥', color: '#FF6D1F' },
-                { label: 'Total Posts', value: stats?.totalPosts, sub: `+${stats?.newPostsThisWeek} this week`, icon: '📝', color: '#a78bfa' },
-                { label: 'Comments', value: stats?.totalComments, sub: 'all time', icon: '💬', color: '#34d399' },
-                { label: 'Tickets', value: stats?.totalTickets, sub: 'support requests', icon: '🎫', color: '#facc15' },
-              ].map(({ label, value, sub, icon, color }) => (
-                <div key={label} style={{ ...card, position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>{icon}</div>
-                  <div style={{ fontSize: '28px', fontWeight: 900, color, marginBottom: '2px' }}>{value?.toLocaleString() || '0'}</div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1', marginBottom: '2px' }}>{label}</div>
-                  <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{sub}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Quick actions */}
-            <div style={{ ...card, marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '14px' }}>Quick actions</h3>
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                {[
-                  { label: '👥 Manage users', action: () => setTab('users') },
-                  { label: '📝 Review posts', action: () => setTab('posts') },
-                  { label: '🎫 Open tickets', action: () => { setTab('tickets'); setTicketFilter('open') } },
-                  { label: '🎨 Site settings', action: () => setTab('settings') },
-                  { label: '🔧 Features', action: () => setTab('features') },
-                ].map(({ label, action }) => (
-                  <button key={label} onClick={action} style={btn()}>{label}</button>
-                ))}
-              </div>
-            </div>
-
-            {/* Site status */}
-            <div style={{ ...card }}>
-              <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '14px' }}>Site status</h3>
-              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                {[
-                  { label: 'Maintenance mode', key: 'maintenance_mode' },
-                  { label: 'Signups allowed', key: 'allow_signups' },
-                  { label: 'Posts allowed', key: 'allow_posts' },
-                  { label: 'Comments allowed', key: 'allow_comments' },
-                ].map(({ label, key }) => (
-                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: settingVal(key) === 'true' ? '#4ade80' : '#ff8080' }} />
-                    <span style={{ fontSize: '13px', color: '#F5E7C6' }}>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        {tab === 'overview' && <AnalyticsTab />}
 
         {/* ── USERS ────────────────────────────────────────────────────── */}
         {tab === 'users' && (

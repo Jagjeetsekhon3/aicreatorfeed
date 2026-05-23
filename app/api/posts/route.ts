@@ -27,17 +27,19 @@ export async function POST(req: NextRequest) {
 
     const supabase = createClient()
     const body = await req.json()
-    const { text, image_url, prompt_text, ai_tool, youtube_id, tags } = body
+    const { text, image_url, images, prompt_text, ai_tool, ai_tools, youtube_id, tags } = body
 
-    if (!text && !image_url && !youtube_id) {
+    // images = [{url, prompt_text, ai_tool}, ...] for carousel posts
+    const primaryImage = image_url || (images && images[0]?.url) || null
+
+    if (!text && !primaryImage && !youtube_id) {
       return NextResponse.json({ error: 'Post must have text, image, or video' }, { status: 400 })
     }
 
     let media_type = 'text'
     if (youtube_id) media_type = 'video'
-    else if (image_url) media_type = 'image'
+    else if (primaryImage) media_type = 'image'
 
-    // Use admin client to bypass RLS for insert
     const admin = createAdmin(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -46,11 +48,13 @@ export async function POST(req: NextRequest) {
     const { data, error } = await admin.from('posts').insert({
       user_id: user.id,
       caption: text || '',
-      prompt_text: prompt_text || null,
+      prompt_text: prompt_text || (images?.[0]?.prompt_text) || null,
       media_type,
-      image_url: image_url || null,
+      image_url: primaryImage,
+      images: images && images.length > 1 ? images : [],
       video_url: youtube_id || null,
-      ai_tool: ai_tool || null,
+      ai_tool: ai_tool || (images?.[0]?.ai_tool) || null,
+      ai_tools: ai_tools || [],
       tags: tags || [],
     }).select(`*, user:profiles!posts_user_id_fkey(id, username, full_name, avatar_url, is_verified, is_official)`).single()
 

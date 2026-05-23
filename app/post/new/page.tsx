@@ -12,17 +12,16 @@ export default function NewPostPage() {
 
   const [aiTools, setAiTools] = useState<string[]>([])
   const [text, setText] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
-  const [imagePreview, setImagePreview] = useState('')
-  const [promptText, setPromptText] = useState('')
-  const [aiTool, setAiTool] = useState('')
+  // Multi-image carousel: each slide = { url, preview, prompt_text, ai_tool }
+  const [slides, setSlides] = useState<{ url: string; preview: string; prompt_text: string; ai_tool: string }[]>([])
+  const [activeSlide, setActiveSlide] = useState(0)
+  const [uploadingSlot, setUploadingSlot] = useState<number | null>(null)
   const [youtubeLink, setYoutubeLink] = useState('')
   const [youtubeId, setYoutubeId] = useState('')
   const [youtubeThumbnail, setYoutubeThumbnail] = useState('')
   const [tags, setTags] = useState('')
   const [showPrompt, setShowPrompt] = useState(false)
   const [showVideo, setShowVideo] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [dragOver, setDragOver] = useState(false)
@@ -69,15 +68,26 @@ export default function NewPostPage() {
     else { setYoutubeId(''); setYoutubeThumbnail('') }
   }, [youtubeLink])
 
-  async function uploadFile(file: File) {
-    if (!file.type.startsWith('image/')) { setError('Only image files are allowed (JPG, PNG, WebP, GIF)'); return }
-    if (file.size > 10 * 1024 * 1024) { setError(`File too large: ${(file.size / 1024 / 1024).toFixed(1)}MB. Max is 10MB.`); return }
+  async function uploadFile(file: File, slotIndex: number) {
+    if (!file.type.startsWith('image/')) { setError('Only image files allowed'); return }
+    if (file.size > 10 * 1024 * 1024) { setError(`Too large: ${(file.size / 1024 / 1024).toFixed(1)}MB. Max 10MB.`); return }
+    setError('')
+    setUploadingSlot(slotIndex)
 
-    setUploading(true); setError('')
-
-    // Show local preview instantly
+    // Instant local preview
     const reader = new FileReader()
-    reader.onload = ev => setImagePreview(ev.target?.result as string)
+    reader.onload = ev => {
+      const preview = ev.target?.result as string
+      setSlides(prev => {
+        const next = [...prev]
+        if (slotIndex >= next.length) {
+          next.push({ url: '', preview, prompt_text: '', ai_tool: '' })
+        } else {
+          next[slotIndex] = { ...next[slotIndex], preview }
+        }
+        return next
+      })
+    }
     reader.readAsDataURL(file)
 
     const form = new FormData()
@@ -89,44 +99,83 @@ export default function NewPostPage() {
     const data = await res.json()
 
     if (data.secure_url) {
-      setImageUrl(data.secure_url)
+      setSlides(prev => {
+        const next = [...prev]
+        if (slotIndex >= next.length) {
+          next.push({ url: data.secure_url, preview: data.secure_url, prompt_text: '', ai_tool: '' })
+        } else {
+          next[slotIndex] = { ...next[slotIndex], url: data.secure_url }
+        }
+        return next
+      })
+      setActiveSlide(slotIndex)
     } else if (data.setup) {
-      setError('Cloudinary is not set up yet. Add your Cloudinary credentials in Vercel environment variables.')
-      setImagePreview('')
+      setError('Cloudinary not configured. Add credentials in Vercel env vars.')
+      setSlides(prev => prev.filter((_, i) => i !== slotIndex))
     } else {
-      setError(data.error || 'Upload failed. Please try again.')
-      setImagePreview('')
+      setError(data.error || 'Upload failed')
+      setSlides(prev => prev.filter((_, i) => i !== slotIndex))
     }
-    setUploading(false)
+    setUploadingSlot(null)
   }
 
-  async function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (file) await uploadFile(file)
-    e.target.value = '' // reset so same file can be re-picked
+  async function handleImagePick(e: React.ChangeEvent<HTMLInputElement>, slotIndex: number) {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    // Support picking multiple files at once for new slots
+    for (let i = 0; i < files.length; i++) {
+      await uploadFile(files[i], slotIndex + i)
+    }
+    e.target.value = ''
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
     setDragOver(false)
     if (youtubeId) return
-    const file = e.dataTransfer.files?.[0]
-    if (file) uploadFile(file)
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))
+    files.forEach((f, i) => uploadFile(f, slides.length + i))
+  }
+
+  function removeSlide(idx: number) {
+    setSlides(prev => prev.filter((_, i) => i !== idx))
+    setActiveSlide(prev => Math.max(0, Math.min(prev, slides.length - 2)))
+  }
+
+  function moveSlide(from: number, to: number) {
+    setSlides(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      return next
+    })
+    setActiveSlide(to)
+  }
+
+  function updateSlide(idx: number, field: 'prompt_text' | 'ai_tool', value: string) {
+    setSlides(prev => prev.map((s, i) => i === idx ? { ...s, [field]: value } : s))
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!text.trim() && !imageUrl && !youtubeId) { setError('Add some text, image, or video'); return }
+    if (!text.trim() && slides.length === 0 && !youtubeId) { setError('Add some text, image(s), or video'); return }
+    if (slides.some(s => !s.url)) { setError('Some images are still uploading, please wait'); return }
+    if (uploadingSlot !== null) { setError('Please wait for upload to finish'); return }
     setSubmitting(true); setError('')
+
+    const imageData = slides.map(s => ({ url: s.url, prompt_text: s.prompt_text || null, ai_tool: s.ai_tool || null }))
+    const allTools = [...new Set(slides.map(s => s.ai_tool).filter(Boolean))]
+
     const res = await fetch('/api/posts', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
       body: JSON.stringify({
-        text: text.trim(), image_url: imageUrl || null,
-        prompt_text: promptText.trim() || null, ai_tool: aiTool || null,
+        text: text.trim(),
+        image_url: slides[0]?.url || null,
+        images: imageData,
+        prompt_text: slides[0]?.prompt_text || null,
+        ai_tool: slides[0]?.ai_tool || null,
+        ai_tools: allTools,
         youtube_id: youtubeId || null,
         tags: tags.split(',').map(t => t.trim().toLowerCase().replace(/^#/, '')).filter(Boolean),
       }),
@@ -136,7 +185,7 @@ export default function NewPostPage() {
     router.push('/feed')
   }
 
-  const canPost = (text.trim() || imageUrl || youtubeId) && !uploading && !submitting
+  const canPost = (text.trim() || slides.length > 0 || youtubeId) && uploadingSlot === null && !submitting
 
   return (
     <div style={{ maxWidth: '580px', margin: '0 auto', padding: '32px 0 100px' }}>
@@ -198,56 +247,157 @@ export default function NewPostPage() {
             </div>
           </div>
 
-          {/* Image drop zone / preview */}
+          {/* ── CAROUSEL IMAGE AREA ── */}
           <div
             onDragOver={e => { e.preventDefault(); if (!youtubeId) setDragOver(true) }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
-            style={{ margin: '0 0 4px' }}
           >
-            {imagePreview ? (
-              <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: `1px solid ${dragOver ? 'rgba(255,109,31,0.5)' : 'rgba(255,255,255,0.07)'}`, transition: 'border-color 0.15s' }}>
-                <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', display: 'block' }} />
+            {/* Main slide preview */}
+            {slides.length > 0 && !youtubeId && (
+              <div style={{ position: 'relative', background: '#111', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                {/* Active slide image */}
+                <div style={{ position: 'relative', maxHeight: '400px', overflow: 'hidden' }}>
+                  <img src={slides[activeSlide]?.preview || slides[activeSlide]?.url} alt=""
+                    style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', display: 'block' }} />
 
-                {/* Uploading overlay */}
-                {uploading && (
-                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-                    <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                    <span style={{ fontSize: '13px', color: '#FAF3E1', fontWeight: 600 }}>Uploading to Cloudinary...</span>
-                  </div>
-                )}
-
-                {/* Uploaded badge + remove button */}
-                {!uploading && (
-                  <>
-                    <div style={{ position: 'absolute', bottom: '10px', left: '10px', background: 'rgba(0,0,0,0.7)', borderRadius: '6px', padding: '3px 8px', fontSize: '11px', color: '#4ade80', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      ✓ Uploaded
+                  {/* Uploading overlay */}
+                  {uploadingSlot === activeSlide && (
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                      <span style={{ fontSize: '12px', color: '#FAF3E1', fontWeight: 600 }}>Uploading...</span>
                     </div>
-                    <button type="button" onClick={() => { setImageUrl(''); setImagePreview('') }}
-                      style={{ position: 'absolute', top: '10px', right: '10px', width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(0,0,0,0.65)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                  )}
+
+                  {/* Slide count badge */}
+                  {slides.length > 1 && (
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', color: '#fff', fontWeight: 600 }}>
+                      {activeSlide + 1} / {slides.length}
+                    </div>
+                  )}
+
+                  {/* Arrow navigation */}
+                  {slides.length > 1 && activeSlide > 0 && (
+                    <button type="button" onClick={() => setActiveSlide(activeSlide - 1)}
+                      style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+                  )}
+                  {slides.length > 1 && activeSlide < slides.length - 1 && (
+                    <button type="button" onClick={() => setActiveSlide(activeSlide + 1)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+                  )}
+
+                  {/* Dot indicators */}
+                  {slides.length > 1 && (
+                    <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '5px' }}>
+                      {slides.map((_, i) => (
+                        <button key={i} type="button" onClick={() => setActiveSlide(i)}
+                          style={{ width: i === activeSlide ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === activeSlide ? '#FF6D1F' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Remove current slide */}
+                  <button type="button" onClick={() => removeSlide(activeSlide)}
+                    style={{ position: 'absolute', top: '10px', left: '10px', width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(0,0,0,0.65)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                  </button>
+                </div>
+
+                {/* Per-slide prompt + tool */}
+                <div style={{ padding: '10px 14px', background: 'rgba(255,109,31,0.04)', borderTop: '1px solid rgba(255,109,31,0.1)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>✦ Image {activeSlide + 1} prompt</span>
+                    <span style={{ fontSize: '11px', color: '#555' }}>(optional)</span>
+                  </div>
+                  <textarea
+                    value={slides[activeSlide]?.prompt_text || ''}
+                    onChange={e => updateSlide(activeSlide, 'prompt_text', e.target.value)}
+                    placeholder="Prompt used for this image..."
+                    rows={2}
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: '#F5E7C6', fontFamily: 'monospace', resize: 'none', outline: 'none', lineHeight: 1.6 }}
+                  />
+                  {/* Per-slide AI tool */}
+                  <div ref={toolDropdownRef} style={{ position: 'relative', marginTop: '6px' }}>
+                    <button type="button" onClick={() => setShowToolDropdown(v => !v)}
+                      style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '7px 10px', fontSize: '12px', color: slides[activeSlide]?.ai_tool ? '#FAF3E1' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}>
+                      <span>{slides[activeSlide]?.ai_tool || 'AI tool for this image...'}</span>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ flexShrink: 0, transform: showToolDropdown ? 'rotate(180deg)' : 'rotate(0)' }}><path d="M2 4l4 4 4-4"/></svg>
                     </button>
-                    <button type="button" onClick={() => fileRef.current?.click()}
-                      style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0,0,0,0.65)', border: 'none', borderRadius: '8px', padding: '4px 10px', color: '#fff', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit', fontWeight: 600 }}>
-                      Change
-                    </button>
-                  </>
-                )}
+                    {showToolDropdown && (
+                      <div style={{ position: 'absolute', bottom: 'calc(100% + 4px)', left: 0, right: 0, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', overflow: 'hidden', zIndex: 100, boxShadow: '0 -8px 24px rgba(0,0,0,0.5)', maxHeight: '200px', overflowY: 'auto' }}>
+                        <div onClick={() => { updateSlide(activeSlide, 'ai_tool', ''); setShowToolDropdown(false) }}
+                          style={{ padding: '9px 12px', fontSize: '12px', color: '#555', cursor: 'pointer' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>None</div>
+                        {aiTools.map(t => (
+                          <div key={t} onClick={() => { updateSlide(activeSlide, 'ai_tool', t); setShowToolDropdown(false) }}
+                            style={{ padding: '9px 12px', fontSize: '12px', color: slides[activeSlide]?.ai_tool === t ? '#FF6D1F' : '#FAF3E1', cursor: 'pointer', background: slides[activeSlide]?.ai_tool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                            onMouseEnter={e => { if (slides[activeSlide]?.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
+                            onMouseLeave={e => { if (slides[activeSlide]?.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}>
+                            {t}{slides[activeSlide]?.ai_tool === t && <span>✓</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Thumbnail strip */}
+                <div style={{ display: 'flex', gap: '6px', padding: '10px 14px', overflowX: 'auto', alignItems: 'center' }}>
+                  {slides.map((s, i) => (
+                    <div key={i} onClick={() => setActiveSlide(i)}
+                      style={{ position: 'relative', width: '52px', height: '52px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, cursor: 'pointer', border: `2px solid ${i === activeSlide ? '#FF6D1F' : 'transparent'}`, transition: 'border-color 0.15s' }}>
+                      <img src={s.preview || s.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {/* Reorder buttons */}
+                      {i > 0 && (
+                        <button type="button" onClick={e => { e.stopPropagation(); moveSlide(i, i - 1) }}
+                          style={{ position: 'absolute', top: 0, left: 0, background: 'rgba(0,0,0,0.65)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '10px', padding: '1px 4px' }}>←</button>
+                      )}
+                      {i < slides.length - 1 && (
+                        <button type="button" onClick={e => { e.stopPropagation(); moveSlide(i, i + 1) }}
+                          style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(0,0,0,0.65)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '10px', padding: '1px 4px' }}>→</button>
+                      )}
+                      {s.ai_tool && (
+                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.75)', fontSize: '8px', color: '#FF8540', padding: '1px 3px', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.ai_tool}</div>
+                      )}
+                      {uploadingSlot === i && (
+                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '16px', height: '16px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Add more images button */}
+                  {slides.length < 10 && (
+                    <label style={{ width: '52px', height: '52px', borderRadius: '6px', border: '1.5px dashed rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, gap: '2px', transition: 'border-color 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.5)')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}>
+                      <input type="file" accept="image/*" multiple style={{ display: 'none' }}
+                        onChange={e => handleImagePick(e, slides.length)} />
+                      <span style={{ fontSize: '18px', color: '#9a8f7a', lineHeight: 1 }}>+</span>
+                      <span style={{ fontSize: '8px', color: '#9a8f7a' }}>Add</span>
+                    </label>
+                  )}
+                </div>
               </div>
-            ) : !youtubeId && (
-              /* Drop zone — only visible when no image/video */
-              <div
-                onClick={() => fileRef.current?.click()}
-                style={{ border: `2px dashed ${dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)'}`, borderRadius: '12px', padding: '28px 20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', background: dragOver ? 'rgba(255,109,31,0.04)' : 'transparent' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.4)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)')}
-              >
-                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', fontSize: '20px' }}>🖼</div>
-                <p style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', margin: '0 0 4px' }}>
-                  {dragOver ? 'Drop to upload' : 'Click or drag image here'}
-                </p>
-                <p style={{ fontSize: '12px', color: '#9a8f7a', margin: 0 }}>JPG, PNG, WebP, GIF — max 10MB</p>
-              </div>
+            )}
+
+            {/* Empty drop zone (no images yet) */}
+            {slides.length === 0 && !youtubeId && (
+              <label style={{ display: 'block', margin: '0', cursor: 'pointer' }}>
+                <input type="file" accept="image/*" multiple style={{ display: 'none' }}
+                  onChange={e => handleImagePick(e, 0)} />
+                <div style={{ border: `2px dashed ${dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)'}`, margin: '0 18px 14px', borderRadius: '12px', padding: '28px 20px', textAlign: 'center', transition: 'all 0.15s', background: dragOver ? 'rgba(255,109,31,0.04)' : 'transparent' }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.4)')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)')}>
+                  <div style={{ fontSize: '28px', marginBottom: '8px' }}>🖼</div>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', margin: '0 0 4px' }}>
+                    {dragOver ? 'Drop images here' : 'Click to add images'}
+                  </p>
+                  <p style={{ fontSize: '12px', color: '#9a8f7a', margin: 0 }}>Up to 10 images · each per-image prompt & AI tool · JPG, PNG, WebP</p>
+                </div>
+              </label>
             )}
           </div>
 
@@ -257,7 +407,7 @@ export default function NewPostPage() {
               <div style={{ position: 'relative', paddingBottom: '56.25%' }}>
                 <img src={youtubeThumbnail} alt="Video" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(255,109,31,0.4)' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{ color: '#fff', fontSize: '16px', marginLeft: '3px' }}>▶</span>
                   </div>
                 </div>
@@ -288,57 +438,6 @@ export default function NewPostPage() {
             </div>
           )}
 
-          {/* AI Prompt section */}
-          {showPrompt && (
-            <div style={{ margin: '0 18px 14px', background: 'rgba(255,109,31,0.04)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '12px', padding: '14px', animation: 'fadeUp 0.2s ease' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#FF6D1F', letterSpacing: '0.05em' }}>✦ AI PROMPT</span>
-                <button type="button" onClick={() => setShowPrompt(false)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '14px', padding: '2px' }}>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
-                </button>
-              </div>
-              <textarea value={promptText} onChange={e => setPromptText(e.target.value)}
-                placeholder="Paste the exact prompt you used..."
-                rows={3}
-                style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '10px', fontSize: '12px', color: '#F5E7C6', fontFamily: 'monospace', resize: 'none', outline: 'none', lineHeight: 1.6 }}
-              />
-              <div ref={toolDropdownRef} style={{ position: 'relative', marginTop: '8px' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowToolDropdown(v => !v)}
-                  style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: aiTool ? '#FAF3E1' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}
-                >
-                  <span>{aiTool || 'Select AI tool used...'}</span>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ flexShrink: 0, transition: 'transform 0.15s', transform: showToolDropdown ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                    <path d="M2 4l4 4 4-4"/>
-                  </svg>
-                </button>
-                {showToolDropdown && (
-                  <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', overflow: 'hidden', zIndex: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.5)', maxHeight: '240px', overflowY: 'auto' }}>
-                    <div
-                      onClick={() => { setAiTool(''); setShowToolDropdown(false) }}
-                      style={{ padding: '9px 12px', fontSize: '12px', color: '#555', cursor: 'pointer', transition: 'background 0.1s' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >Select AI tool used...</div>
-                    {aiTools.map(t => (
-                      <div
-                        key={t}
-                        onClick={() => { setAiTool(t); setShowToolDropdown(false) }}
-                        style={{ padding: '9px 12px', fontSize: '12px', color: aiTool === t ? '#FF6D1F' : '#FAF3E1', cursor: 'pointer', background: aiTool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.1s' }}
-                        onMouseEnter={e => { if (aiTool !== t) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
-                        onMouseLeave={e => { if (aiTool !== t) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
-                      >
-                        {t}
-                        {aiTool === t && <span style={{ fontSize: '10px' }}>✓</span>}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Tags row */}
           <div style={{ margin: '0 18px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
@@ -352,29 +451,26 @@ export default function NewPostPage() {
           </div>
 
           {/* Divider */}
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 0 0' }} />
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }} />
 
           {/* Bottom toolbar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '10px 14px' }}>
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImagePick} />
 
-            {/* Image button */}
-            <button type="button" onClick={() => fileRef.current?.click()} disabled={!!youtubeId || uploading} title="Add image"
-              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: youtubeId ? 'not-allowed' : 'pointer', background: imageUrl ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: youtubeId ? 0.35 : 1, transition: 'background 0.15s' }}
-              onMouseEnter={e => { if (!youtubeId) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = imageUrl ? 'rgba(255,109,31,0.15)' : 'transparent' }}
-            >
+            {/* Image button — opens file picker to add more images */}
+            <label title="Add images" style={{ width: '36px', height: '36px', borderRadius: '8px', cursor: youtubeId ? 'not-allowed' : 'pointer', background: slides.length > 0 ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: youtubeId ? 0.35 : 1, transition: 'background 0.15s' }}>
+              <input type="file" accept="image/*" multiple style={{ display: 'none' }} disabled={!!youtubeId}
+                onChange={e => handleImagePick(e, slides.length)} />
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <rect x="1.5" y="3" width="15" height="12" rx="2" stroke={imageUrl ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
-                <circle cx="6" cy="7.5" r="1.5" stroke={imageUrl ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
-                <path d="M1.5 12L5.5 8.5L8.5 11.5L11.5 8.5L16.5 13" stroke={imageUrl ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="1.5" y="3" width="15" height="12" rx="2" stroke={slides.length > 0 ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
+                <circle cx="6" cy="7.5" r="1.5" stroke={slides.length > 0 ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
+                <path d="M1.5 12L5.5 8.5L8.5 11.5L11.5 8.5L16.5 13" stroke={slides.length > 0 ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </button>
+            </label>
 
             {/* Video button */}
-            <button type="button" onClick={() => { setShowVideo(!showVideo); if (showVideo) { setYoutubeLink(''); setYoutubeId('') } }} disabled={!!imageUrl} title="Add YouTube video"
-              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: imageUrl ? 'not-allowed' : 'pointer', background: (showVideo || youtubeId) ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: imageUrl ? 0.35 : 1, transition: 'background 0.15s' }}
-              onMouseEnter={e => { if (!imageUrl) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)' }}
+            <button type="button" onClick={() => { setShowVideo(!showVideo); if (showVideo) { setYoutubeLink(''); setYoutubeId('') } }} disabled={slides.length > 0} title="Add YouTube video"
+              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: slides.length > 0 ? 'not-allowed' : 'pointer', background: (showVideo || youtubeId) ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: slides.length > 0 ? 0.35 : 1, transition: 'background 0.15s' }}
+              onMouseEnter={e => { if (!slides.length) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = (showVideo || youtubeId) ? 'rgba(255,109,31,0.15)' : 'transparent' }}
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -385,23 +481,24 @@ export default function NewPostPage() {
 
             {/* Prompt button */}
             <button type="button" onClick={() => setShowPrompt(!showPrompt)} title="Add AI prompt"
-              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: showPrompt ? 'rgba(255,109,31,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = showPrompt ? 'rgba(255,109,31,0.2)' : 'rgba(255,255,255,0.08)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = showPrompt ? 'rgba(255,109,31,0.15)' : 'transparent' }}
+              style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.4, pointerEvents: 'none' }}
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M9 1.5L10.8 6.5H16L11.6 9.5L13.4 14.5L9 11.5L4.6 14.5L6.4 9.5L2 6.5H7.2L9 1.5Z" stroke={showPrompt ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinejoin="round"/>
+                <path d="M9 1.5L10.8 6.5H16L11.6 9.5L13.4 14.5L9 11.5L4.6 14.5L6.4 9.5L2 6.5H7.2L9 1.5Z" stroke="#9a8f7a" strokeWidth="1.3" strokeLinejoin="round"/>
               </svg>
             </button>
 
-            {/* Character count far right */}
-            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#555' }}>{text.length > 0 ? `${text.length}` : ''}</span>
+            {/* Character count + slide count */}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {slides.length > 0 && <span style={{ fontSize: '11px', color: '#FF6D1F', fontWeight: 600 }}>{slides.length} image{slides.length > 1 ? 's' : ''}</span>}
+              {text.length > 0 && <span style={{ fontSize: '12px', color: '#555' }}>{text.length}</span>}
+            </div>
           </div>
         </div>
 
         {/* Help text */}
         <p style={{ textAlign: 'center', fontSize: '12px', color: '#555', marginTop: '14px', lineHeight: 1.5 }}>
-          🖼 image &nbsp;·&nbsp; ▶ YouTube &nbsp;·&nbsp; ✦ AI prompt &nbsp;·&nbsp; # tags — all optional
+          Up to 10 images · per-image prompt & AI tool · or 1 YouTube video · # tags
         </p>
       </form>
     </div>

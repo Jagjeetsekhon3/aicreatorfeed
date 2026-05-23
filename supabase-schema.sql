@@ -232,3 +232,15 @@ create index if not exists collection_posts_post_id_idx on public.collection_pos
 -- ─── NEWS ITEMS — add rich content columns (run once) ────────────────────────
 alter table public.news_items add column if not exists content text;
 alter table public.news_items add column if not exists image_url text;
+
+
+-- ─── ANALYTICS — add country to profiles (run once) ─────────────────────────
+alter table public.profiles add column if not exists country text;
+alter table public.profiles add column if not exists country_code text; -- ISO alpha-2 e.g. "IN", "US"
+
+
+-- ─── CAROUSEL POSTS (run once) ───────────────────────────────────────────────
+-- images: array of {url, prompt_text, ai_tool} objects
+alter table public.posts add column if not exists images jsonb default '[]'::jsonb;
+alter table public.posts add column if not exists ai_tools text[] default '{}';
+-- image_url stays as the "cover" (first image or primary)

@@ -11,7 +11,8 @@ type Post = {
   id: string; user_id: string; user: PostUser;
   caption: string; prompt_text: string | null;
   media_type: string; image_url: string | null; video_url: string | null;
-  ai_tool: string | null; tags: string[];
+  images?: { url: string; prompt_text?: string | null; ai_tool?: string | null }[]
+  ai_tool: string | null; ai_tools?: string[]; tags: string[];
   likes_count: number; comments_count: number;
   is_liked?: boolean; is_bookmarked?: boolean; created_at: string;
 }
@@ -56,6 +57,10 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
   const [showMenu, setShowMenu] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleted, setDeleted] = useState(false)
+  // Carousel
+  const [carouselIdx, setCarouselIdx] = useState(0)
+  const allSlides = post.images && post.images.length > 0 ? post.images : (post.image_url ? [{ url: post.image_url, prompt_text: post.prompt_text, ai_tool: post.ai_tool }] : [])
+  const activeSlideData = allSlides[carouselIdx] || allSlides[0]
   const menuRef = useRef<HTMLDivElement>(null)
   const shareRef = useRef<HTMLDivElement>(null)
   const saveRef = useRef<HTMLDivElement>(null)
@@ -279,23 +284,41 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
           </p>
         )}
 
-        {/* Prompt */}
-        {post.prompt_text && (
+        {/* AI tools badges (multi-tool posts) */}
+        {post.ai_tools && post.ai_tools.length > 1 && (
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
+            {post.ai_tools.map((tool, i) => {
+              const ts = toolStyle || { bg: 'rgba(255,255,255,0.06)', color: '#9a8f7a' }
+              return (
+                <span key={i} style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '5px', background: ts.bg, color: ts.color }}>
+                  {tool}
+                </span>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Prompt — shows current slide's prompt if carousel, else post-level prompt */}
+        {(activeSlideData?.prompt_text || post.prompt_text) && (
           <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', padding: '10px 12px', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>✦ AI Prompt {post.ai_tool ? `· ${post.ai_tool}` : ''}</span>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>
+                ✦ AI Prompt
+                {(activeSlideData?.ai_tool || post.ai_tool) && ` · ${activeSlideData?.ai_tool || post.ai_tool}`}
+                {allSlides.length > 1 && ` (image ${carouselIdx + 1})`}
+              </span>
               <div style={{ display: 'flex', gap: '8px' }}>
-                {post.prompt_text.length > 120 && (
+                {(activeSlideData?.prompt_text || post.prompt_text || '').length > 120 && (
                   <button onClick={() => setShowFullPrompt(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: '#9a8f7a', fontFamily: 'inherit' }}>{showFullPrompt ? 'Less' : 'More'}</button>
                 )}
-                <button onClick={async () => { await navigator.clipboard.writeText(post.prompt_text!); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                <button onClick={async () => { await navigator.clipboard.writeText(activeSlideData?.prompt_text || post.prompt_text || ''); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: copied ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit', fontWeight: 600 }}>
                   {copied ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
             </div>
             <p style={{ fontSize: '12px', color: '#9a8f7a', fontFamily: 'monospace', lineHeight: 1.6, margin: 0, overflow: 'hidden', display: showFullPrompt ? 'block' : '-webkit-box', WebkitLineClamp: showFullPrompt ? undefined : 2, WebkitBoxOrient: 'vertical' as const }}>
-              "{post.prompt_text}"
+              "{activeSlideData?.prompt_text || post.prompt_text}"
             </p>
           </div>
         )}
@@ -310,11 +333,42 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
         )}
       </div>
 
-      {/* Image */}
-      {post.media_type === 'image' && post.image_url && (
-        <Link href={`/post/${post.id}`}>
-          <img src={post.image_url} alt={post.caption} style={{ width: '100%', display: 'block', maxHeight: '500px', objectFit: 'cover', cursor: 'pointer' }} />
-        </Link>
+      {/* Image carousel */}
+      {post.media_type === 'image' && allSlides.length > 0 && (
+        <div style={{ position: 'relative', background: '#111' }}>
+          <Link href={`/post/${post.id}`}>
+            <img src={allSlides[carouselIdx]?.url} alt={post.caption}
+              style={{ width: '100%', display: 'block', maxHeight: '500px', objectFit: 'cover', cursor: 'pointer' }} />
+          </Link>
+
+          {/* Navigation arrows */}
+          {allSlides.length > 1 && carouselIdx > 0 && (
+            <button onClick={() => setCarouselIdx(i => i - 1)}
+              style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>‹</button>
+          )}
+          {allSlides.length > 1 && carouselIdx < allSlides.length - 1 && (
+            <button onClick={() => setCarouselIdx(i => i + 1)}
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>›</button>
+          )}
+
+          {/* Slide count badge */}
+          {allSlides.length > 1 && (
+            <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.65)', borderRadius: '20px', padding: '3px 10px', fontSize: '12px', color: '#fff', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><rect x="0" y="2" width="8" height="8" rx="1" stroke="white" strokeWidth="1.2"/><rect x="3" y="0" width="8" height="8" rx="1" stroke="white" strokeWidth="1.2" fill="rgba(0,0,0,0.5)"/></svg>
+              {carouselIdx + 1}/{allSlides.length}
+            </div>
+          )}
+
+          {/* Dot indicators */}
+          {allSlides.length > 1 && (
+            <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '5px' }}>
+              {allSlides.map((_, i) => (
+                <button key={i} onClick={() => setCarouselIdx(i)}
+                  style={{ width: i === carouselIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === carouselIdx ? '#FF6D1F' : 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Video */}
