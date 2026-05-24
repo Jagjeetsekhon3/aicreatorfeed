@@ -57,7 +57,8 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
   const [showMenu, setShowMenu] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleted, setDeleted] = useState(false)
-  // Carousel: prefer images[] array, fall back to single image_url
+  // Carousel
+  const [carouselIdx, setCarouselIdx] = useState(0)
   const allSlides = (post.images && post.images.length > 0)
     ? post.images
     : (post.image_url ? [{ url: post.image_url, prompt_text: post.prompt_text, ai_tool: post.ai_tool }] : [])
