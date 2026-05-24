@@ -3,15 +3,11 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import RazorpayButton from '@/components/ui/RazorpayButton'
 import Link from 'next/link'
-
-const PRESETS = [
-  { label: '₹99',  plan: 'donation_99',  amount: 99,  desc: 'Buy us a chai ☕' },
-  { label: '₹199', plan: 'donation_199', amount: 199, desc: 'Support our servers 🖥' },
-  { label: '₹499', plan: 'donation_499', amount: 499, desc: 'Fuel AI creativity 🚀' },
-]
+import { usePricingSettings } from '@/lib/usePricingSettings'
 
 export default function DonatePage() {
-  const [selected, setSelected] = useState<string>('donation_199')
+  const { pricing, loading: pricingLoading } = usePricingSettings()
+  const [selected, setSelected] = useState<string>('preset_2')
   const [customAmt, setCustomAmt] = useState('')
   const [isCustom, setIsCustom] = useState(false)
   const [accessToken, setAccessToken] = useState('')
@@ -23,8 +19,24 @@ export default function DonatePage() {
     })
   }, [])
 
-  const activePlan = isCustom ? 'donation_custom' : selected
-  const activeAmount = isCustom ? parseInt(customAmt) || 0 : PRESETS.find(p => p.plan === selected)?.amount || 0
+  const presets = pricingLoading ? [] : [
+    { key: 'preset_1', amount: pricing.donation_preset_1_amount, label: pricing.donation_preset_1_label },
+    { key: 'preset_2', amount: pricing.donation_preset_2_amount, label: pricing.donation_preset_2_label },
+    { key: 'preset_3', amount: pricing.donation_preset_3_amount, label: pricing.donation_preset_3_label },
+  ]
+
+  const activeAmount = isCustom
+    ? parseInt(customAmt) || 0
+    : presets.find(p => p.key === selected)?.amount || 0
+
+  // Map to API plan key based on amount
+  function getPlanKey(amount: number): string {
+    if (isCustom) return 'donation_custom'
+    if (amount === pricing.donation_preset_1_amount) return 'donation_99'
+    if (amount === pricing.donation_preset_2_amount) return 'donation_199'
+    if (amount === pricing.donation_preset_3_amount) return 'donation_499'
+    return 'donation_custom'
+  }
 
   if (success) return (
     <div style={{ maxWidth: '480px', margin: '60px auto', padding: '0 16px', textAlign: 'center' }}>
@@ -39,34 +51,40 @@ export default function DonatePage() {
     </div>
   )
 
+  if (pricingLoading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
+      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
+
   return (
     <div style={{ maxWidth: '520px', margin: '40px auto', padding: '0 16px 80px' }}>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} @keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
-      {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px', animation: 'fadeIn 0.3s ease' }}>
         <div style={{ fontSize: '48px', marginBottom: '12px' }}>💛</div>
-        <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#FAF3E1', marginBottom: '8px' }}>Support AiCreatorFeed</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#FAF3E1', marginBottom: '8px' }}>
+          {pricing.donation_page_title}
+        </h1>
         <p style={{ color: '#9a8f7a', fontSize: '15px', lineHeight: 1.7 }}>
-          We're a community-first platform for AI creators. Your donation helps us keep the platform free, improve features, and pay for servers.
+          {pricing.donation_page_desc || "We're a community-first platform for AI creators. Your donation helps us keep the platform free, improve features, and pay for servers."}
         </p>
       </div>
 
       <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '20px', padding: '28px', animation: 'fadeIn 0.35s ease' }}>
         <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#9a8f7a', marginBottom: '14px', letterSpacing: '0.05em' }}>SELECT AMOUNT</h3>
 
-        {/* Preset amounts */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
-          {PRESETS.map(p => (
-            <button key={p.plan} onClick={() => { setSelected(p.plan); setIsCustom(false) }}
-              style={{ padding: '14px 8px', borderRadius: '12px', border: `2px solid ${!isCustom && selected === p.plan ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`, background: !isCustom && selected === p.plan ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', transition: 'all 0.15s' }}>
-              <div style={{ fontSize: '18px', fontWeight: 900, color: !isCustom && selected === p.plan ? '#FF6D1F' : '#FAF3E1' }}>{p.label}</div>
-              <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '3px' }}>{p.desc}</div>
+          {presets.map(p => (
+            <button key={p.key} onClick={() => { setSelected(p.key); setIsCustom(false) }}
+              style={{ padding: '14px 8px', borderRadius: '12px', border: `2px solid ${!isCustom && selected === p.key ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`, background: !isCustom && selected === p.key ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', transition: 'all 0.15s' }}>
+              <div style={{ fontSize: '18px', fontWeight: 900, color: !isCustom && selected === p.key ? '#FF6D1F' : '#FAF3E1' }}>₹{p.amount}</div>
+              <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '3px' }}>{p.label}</div>
             </button>
           ))}
         </div>
 
-        {/* Custom amount */}
         <button onClick={() => setIsCustom(true)}
           style={{ width: '100%', padding: '12px', borderRadius: '12px', border: `2px solid ${isCustom ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`, background: isCustom ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '20px', transition: 'all 0.15s' }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: isCustom ? '#FF6D1F' : '#9a8f7a' }}>✏️ Custom amount</div>
@@ -83,7 +101,6 @@ export default function DonatePage() {
           </div>
         )}
 
-        {/* What it funds */}
         <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.1)', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
           <p style={{ fontSize: '12px', fontWeight: 700, color: '#FF6D1F', margin: '0 0 8px' }}>Your donation goes towards:</p>
           {['🖥 Server & hosting costs', '🛠 New features & improvements', '🎬 Tutorial production', '🌍 Growing the AI creator community'].map(item => (
@@ -91,9 +108,8 @@ export default function DonatePage() {
           ))}
         </div>
 
-        {/* Pay button */}
         <RazorpayButton
-          plan={activePlan}
+          plan={getPlanKey(activeAmount)}
           type="donation"
           label={`₹${activeAmount} Donation`}
           amount={activeAmount}

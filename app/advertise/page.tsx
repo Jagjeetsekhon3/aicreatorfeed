@@ -3,37 +3,39 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import RazorpayButton from '@/components/ui/RazorpayButton'
-
-const AD_PLANS = [
-  {
-    id: 'ad_basic',
-    label: '7-Day Basic',
-    price: 999,
-    days: 7,
-    slot: 'Feed — mid position',
-    impressions: '~5,000',
-    features: ['Feed mid placement', '~5,000 impressions', '7 days duration', 'Image + link + CTA button'],
-  },
-  {
-    id: 'ad_pro',
-    label: '30-Day Pro',
-    price: 2999,
-    days: 30,
-    slot: 'Feed top + Explore',
-    impressions: '~25,000',
-    popular: true,
-    features: ['Feed top + Explore page', '~25,000 impressions', '30 days duration', 'Image + link + CTA button', 'Performance analytics'],
-  },
-]
+import { usePricingSettings } from '@/lib/usePricingSettings'
 
 export default function AdvertisePage() {
   const router = useRouter()
+  const { pricing } = usePricingSettings()
   const [selected, setSelected] = useState('ad_pro')
   const [accessToken, setAccessToken] = useState('')
   const [step, setStep] = useState<'plans' | 'setup' | 'success'>('plans')
   const [paymentId, setPaymentId] = useState('')
   const [adForm, setAdForm] = useState({ title: '', description: '', link_url: '', cta_text: 'Learn more', image_url: '' })
   const [saving, setSaving] = useState(false)
+
+  const AD_PLANS = [
+    {
+      id: 'ad_basic',
+      label: `${pricing.ad_basic_days}-Day Basic`,
+      price: pricing.ad_basic_price,
+      days: pricing.ad_basic_days,
+      slot: 'Feed — mid position',
+      impressions: '~5,000',
+      features: ['Feed mid placement', '~5,000 impressions', `${pricing.ad_basic_days} days duration`, 'Image + link + CTA button'],
+    },
+    {
+      id: 'ad_pro',
+      label: `${pricing.ad_pro_days}-Day Pro`,
+      price: pricing.ad_pro_price,
+      days: pricing.ad_pro_days,
+      slot: 'Feed top + Explore',
+      impressions: '~25,000',
+      popular: true,
+      features: ['Feed top + Explore page', '~25,000 impressions', `${pricing.ad_pro_days} days duration`, 'Image + link + CTA button', 'Performance analytics'],
+    },
+  ]
 
   useEffect(() => {
     createClient().auth.getSession().then(({ data }) => {
@@ -72,9 +74,11 @@ export default function AdvertisePage() {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px', animation: 'fadeIn 0.3s ease' }}>
         <div style={{ fontSize: '36px', marginBottom: '12px' }}>📢</div>
-        <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#FAF3E1', marginBottom: '8px' }}>Advertise on AiCreatorFeed</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#FAF3E1', marginBottom: '8px' }}>
+          {pricing.advertise_page_title}
+        </h1>
         <p style={{ color: '#9a8f7a', fontSize: '15px', lineHeight: 1.7 }}>
-          Reach thousands of AI creators, artists, and prompt engineers. Our audience is passionate about AI tools, models, and creative workflows.
+          {pricing.advertise_page_desc || 'Reach thousands of AI creators, artists, and prompt engineers. Our audience is passionate about AI tools, models, and creative workflows.'}
         </p>
       </div>
 

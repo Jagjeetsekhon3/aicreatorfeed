@@ -26,16 +26,30 @@ function buildRazorpay(key_id: string, key_secret: string) {
   return new Razorpay({ key_id, key_secret })
 }
 
-// Payment amounts in paise (₹1 = 100)
-const PLANS: Record<string, { amount: number; label: string }> = {
-  donation_99:      { amount: 9900,   label: '₹99 Donation' },
-  donation_199:     { amount: 19900,  label: '₹199 Donation' },
-  donation_499:     { amount: 49900,  label: '₹499 Donation' },
-  donation_custom:  { amount: 0,      label: 'Custom Donation' },
-  verified_monthly: { amount: 29900,  label: '₹299/mo Verified' },
-  verified_yearly:  { amount: 199900, label: '₹1999/yr Verified' },
-  ad_basic:         { amount: 99900,  label: '₹999 Ad (7 days)' },
-  ad_pro:           { amount: 299900, label: '₹2999 Ad (30 days)' },
+async function getPlanAmount(plan: string, customAmount?: number): Promise<{ amount: number; label: string } | null> {
+  // Load prices from site_settings (admin-configurable), fall back to hardcoded defaults
+  const { data } = await admin().from('site_settings').select('key, value').like('key', 'pricing_%')
+  const s: Record<string, number> = {}
+  ;(data || []).forEach((r: any) => {
+    const key = r.key.replace('pricing_', '')
+    s[key] = parseFloat(r.value) || 0
+  })
+
+  const prices: Record<string, { amount: number; label: string }> = {
+    donation_99:      { amount: Math.round((s.donation_preset_1_amount || 99)   * 100), label: '₹99 Donation' },
+    donation_199:     { amount: Math.round((s.donation_preset_2_amount || 199)  * 100), label: '₹199 Donation' },
+    donation_499:     { amount: Math.round((s.donation_preset_3_amount || 499)  * 100), label: '₹499 Donation' },
+    donation_custom:  { amount: Math.round((customAmount || 99) * 100),                 label: `₹${customAmount} Donation` },
+    verified_monthly: { amount: Math.round((s.verified_monthly_price || 299)    * 100), label: 'Verified Monthly' },
+    verified_yearly:  { amount: Math.round((s.verified_yearly_price  || 1999)   * 100), label: 'Verified Yearly' },
+    ad_basic:         { amount: Math.round((s.ad_basic_price || 999)            * 100), label: 'Ad Basic' },
+    ad_pro:           { amount: Math.round((s.ad_pro_price   || 2999)           * 100), label: 'Ad Pro' },
+  }
+
+  if (plan === 'donation_custom') {
+    return { amount: Math.round((customAmount || 99) * 100), label: `₹${customAmount} Donation` }
+  }
+  return prices[plan] || null
 }
 
 export async function POST(req: NextRequest) {
@@ -62,18 +76,14 @@ export async function POST(req: NextRequest) {
       userId = user?.id || null
     }
 
-    // Determine amount
+    // Determine amount dynamically from settings
     let amount: number
     let label: string
-    if (plan === 'donation_custom') {
-      amount = Math.round((custom_amount || 99) * 100) // custom amount in rupees → paise
-      label = `₹${custom_amount} Donation`
-    } else {
-      const planInfo = PLANS[plan]
-      if (!planInfo) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
-      amount = planInfo.amount
-      label = planInfo.label
-    }
+
+    const planInfo = await getPlanAmount(plan, custom_amount)
+    if (!planInfo) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
+    amount = planInfo.amount
+    label = planInfo.label
 
     // Create Razorpay order
     const order = await rzp.orders.create({

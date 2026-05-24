@@ -8,6 +8,15 @@ const PUBLIC_KEYS = [
   'social_twitter', 'social_instagram', 'social_discord', 'social_discord_label',
   'social_youtube', 'social_youtube_label', 'social_tiktok', 'social_linkedin', 'social_linkedin_label',
   'meta_title', 'meta_description', 'favicon_url',
+  // Pricing
+  'pricing_donation_preset_1_amount', 'pricing_donation_preset_1_label',
+  'pricing_donation_preset_2_amount', 'pricing_donation_preset_2_label',
+  'pricing_donation_preset_3_amount', 'pricing_donation_preset_3_label',
+  'pricing_donation_page_title',      'pricing_donation_page_desc',
+  'pricing_verified_monthly_price',   'pricing_verified_yearly_price',
+  'pricing_ad_basic_price',           'pricing_ad_basic_days',
+  'pricing_ad_pro_price',             'pricing_ad_pro_days',
+  'pricing_advertise_page_title',     'pricing_advertise_page_desc',
 ]
 
 export const revalidate = 60

@@ -74,8 +74,18 @@ export async function GET(req: NextRequest) {
 
     const configured = !!(keyId && hasSecret && !keyId.includes('your_key'))
 
+    const { data: pricingSettings } = await admin.from('site_settings')
+      .select('key, value')
+      .like('key', 'pricing_%')
+
+    const pricing: Record<string, string> = {}
+    ;(pricingSettings || []).forEach((s: any) => {
+      pricing[s.key.replace('pricing_', '')] = s.value
+    })
+
     return NextResponse.json({
       payments: payments || [],
+      pricing: Object.keys(pricing).length > 0 ? pricing : null,
       razorpay_status: {
         configured,
         key_id: keyId || null,

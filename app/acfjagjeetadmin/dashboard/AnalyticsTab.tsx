@@ -14,6 +14,12 @@ type AnalyticsData = {
   topTools: [string, number][]; topTags: [string, number][]
   topCountries: { name: string; code: string; count: number }[]
   heatmap: number[][]; topCreators: any[]; topPosts: any[]; topSpaces: any[]
+  // Revenue
+  revenue: { total: number; donation: number; subscription: number; ad: number; thisMonth: number; thisWeek: number; today: number; transactionCount: number }
+  revenueDailyBuckets: { date: string; amount: number }[]
+  recentPayments: any[]
+  adCampaigns: any[]
+  adStats: { activeAds: number; pendingAds: number; totalImpressions: number; totalClicks: number }
 }
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -399,6 +405,203 @@ export default function AnalyticsTab() {
             )
           })}
         </div>
+      </div>
+
+      {/* ── REVENUE OVERVIEW ─────────────────────────────────────────── */}
+      <div style={{ ...card, marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>💰 Revenue</h3>
+          <span style={{ fontSize: '12px', color: '#9a8f7a' }}>{data.revenue.transactionCount} paid transactions</span>
+        </div>
+
+        {data.revenue.total === 0 ? (
+          <div style={{ textAlign: 'center', padding: '24px', color: '#9a8f7a', fontSize: '13px' }}>
+            <div style={{ fontSize: '28px', marginBottom: '8px' }}>💳</div>
+            No payments yet. Set up Razorpay in Admin → Payments to start collecting.
+          </div>
+        ) : (
+          <>
+            {/* Revenue KPI row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px', marginBottom: '16px' }}>
+              {[
+                { label: 'Total revenue',   value: data.revenue.total,        color: '#4ade80' },
+                { label: 'This month',      value: data.revenue.thisMonth,     color: '#FF6D1F' },
+                { label: 'This week',       value: data.revenue.thisWeek,      color: '#a78bfa' },
+                { label: 'Today',           value: data.revenue.today,         color: '#60a5fa' },
+                { label: 'From donations',  value: data.revenue.donation,      color: '#facc15' },
+                { label: 'Subscriptions',   value: data.revenue.subscription,  color: '#f472b6' },
+                { label: 'Ad revenue',      value: data.revenue.ad,            color: '#34d399' },
+              ].map(({ label, value, color }) => (
+                <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '12px' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color, marginBottom: '3px' }}>
+                    ₹{(value / 100).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Revenue breakdown bars */}
+            {data.revenue.total > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '8px', fontWeight: 600 }}>REVENUE BREAKDOWN</div>
+                {[
+                  { label: 'Donations',      value: data.revenue.donation,     color: '#facc15' },
+                  { label: 'Subscriptions',  value: data.revenue.subscription, color: '#f472b6' },
+                  { label: 'Ad campaigns',   value: data.revenue.ad,           color: '#34d399' },
+                ].filter(r => r.value > 0).map(({ label, value, color }) => (
+                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '12px', color: '#FAF3E1', width: '110px', flexShrink: 0 }}>{label}</span>
+                    <div style={{ flex: 1, height: '8px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.round((value / data.revenue.total) * 100)}%`, height: '100%', background: color, borderRadius: '4px', transition: 'width 0.6s ease' }} />
+                    </div>
+                    <span style={{ fontSize: '11px', color: '#9a8f7a', width: '80px', textAlign: 'right', flexShrink: 0 }}>
+                      ₹{(value / 100).toLocaleString('en-IN', { maximumFractionDigits: 0 })} · {Math.round((value / data.revenue.total) * 100)}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 30-day revenue chart */}
+            {(() => {
+              const maxRev = Math.max(...data.revenueDailyBuckets.map(d => d.amount), 1)
+              const W = 480, H = 80
+              const pts = data.revenueDailyBuckets.map((d, i) => {
+                const x = (i / (data.revenueDailyBuckets.length - 1)) * W
+                const y = H - (d.amount / maxRev) * (H - 10) - 4
+                return `${x},${y}`
+              }).join(' ')
+              const fillPts = `0,${H} ${pts} ${W},${H}`
+              return (
+                <div>
+                  <div style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '6px', fontWeight: 600 }}>30-DAY REVENUE TREND</div>
+                  <svg viewBox={`0 0 ${W} ${H + 16}`} style={{ width: '100%', height: '80px' }}>
+                    <defs>
+                      <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#4ade80" stopOpacity="0.3" />
+                        <stop offset="100%" stopColor="#4ade80" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <polygon points={fillPts} fill="url(#revGrad)" />
+                    <polyline points={pts} fill="none" stroke="#4ade80" strokeWidth="2" strokeLinejoin="round" />
+                    <text x="0" y={H + 14} fontSize="9" fill="#9a8f7a">{data.revenueDailyBuckets[0]?.date?.slice(5)}</text>
+                    <text x={W} y={H + 14} fontSize="9" fill="#9a8f7a" textAnchor="end">{data.revenueDailyBuckets[data.revenueDailyBuckets.length - 1]?.date?.slice(5)}</text>
+                  </svg>
+                </div>
+              )
+            })()}
+
+            {/* Recent payments table */}
+            {data.recentPayments.length > 0 && (
+              <div style={{ marginTop: '14px' }}>
+                <div style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '8px', fontWeight: 600 }}>RECENT PAYMENTS</div>
+                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '10px', overflow: 'hidden' }}>
+                  {data.recentPayments.map((p: any, i: number) => {
+                    const user = Array.isArray(p.user) ? p.user[0] : p.user
+                    return (
+                      <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                        {user?.avatar_url
+                          ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                          : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#FF6D1F', fontWeight: 700, flexShrink: 0 }}>
+                              {user?.full_name?.[0] || '?'}
+                            </div>
+                        }
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#FAF3E1' }}>{user?.full_name || 'Guest'}</div>
+                          <div style={{ fontSize: '11px', color: '#9a8f7a' }}>@{user?.username || '—'}</div>
+                        </div>
+                        <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', flexShrink: 0, background: p.type === 'donation' ? 'rgba(250,204,21,0.1)' : p.type === 'subscription' ? 'rgba(244,114,182,0.1)' : 'rgba(52,211,153,0.1)', color: p.type === 'donation' ? '#facc15' : p.type === 'subscription' ? '#f472b6' : '#34d399' }}>
+                          {p.type}
+                        </span>
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#4ade80' }}>₹{(p.amount / 100).toFixed(0)}</div>
+                          <div style={{ fontSize: '10px', color: '#9a8f7a' }}>{new Date(p.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ── AD CAMPAIGNS ─────────────────────────────────────────────────── */}
+      <div style={{ ...card, marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>📢 Ad Campaigns</h3>
+          <a href="/acfjagjeetadmin/dashboard?tab=ads" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>Manage ads →</a>
+        </div>
+
+        {/* Ad stats row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '10px', marginBottom: '16px' }}>
+          {[
+            { label: 'Active campaigns', value: data.adStats.activeAds,       color: '#4ade80' },
+            { label: 'Pending review',   value: data.adStats.pendingAds,       color: '#facc15' },
+            { label: 'Total impressions',value: data.adStats.totalImpressions, color: '#60a5fa' },
+            { label: 'Total clicks',     value: data.adStats.totalClicks,      color: '#FF6D1F' },
+            { label: 'Avg CTR',          value: data.adStats.totalImpressions > 0 ? parseFloat(((data.adStats.totalClicks / data.adStats.totalImpressions) * 100).toFixed(1)) : 0, color: '#a78bfa', suffix: '%' },
+          ].map(({ label, value, color, suffix }) => (
+            <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '12px' }}>
+              <div style={{ fontSize: '18px', fontWeight: 800, color, marginBottom: '3px' }}>{value.toLocaleString()}{suffix || ''}</div>
+              <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Campaigns table */}
+        {data.adCampaigns.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#9a8f7a', fontSize: '13px' }}>
+            <div style={{ fontSize: '24px', marginBottom: '6px' }}>📢</div>
+            No ad campaigns yet
+          </div>
+        ) : (
+          <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '10px', overflow: 'hidden' }}>
+            {data.adCampaigns.slice(0, 8).map((ad: any, i: number) => {
+              const user = Array.isArray(ad.user) ? ad.user[0] : ad.user
+              const ctr = ad.impressions > 0 ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : '0'
+              return (
+                <div key={ad.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none', flexWrap: 'wrap' }}>
+                  {/* Status dot */}
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: ad.status === 'active' ? '#4ade80' : ad.status === 'pending' ? '#facc15' : '#555' }} />
+
+                  {/* Ad title + advertiser */}
+                  <div style={{ flex: 1, minWidth: '140px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#FAF3E1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ad.title}</div>
+                    <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{user?.full_name || 'Unknown'} · {ad.slot}</div>
+                  </div>
+
+                  {/* Impressions / Clicks / CTR */}
+                  <div style={{ display: 'flex', gap: '14px', flexShrink: 0 }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#60a5fa' }}>{(ad.impressions || 0).toLocaleString()}</div>
+                      <div style={{ fontSize: '10px', color: '#9a8f7a' }}>views</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#FF6D1F' }}>{(ad.clicks || 0).toLocaleString()}</div>
+                      <div style={{ fontSize: '10px', color: '#9a8f7a' }}>clicks</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#a78bfa' }}>{ctr}%</div>
+                      <div style={{ fontSize: '10px', color: '#9a8f7a' }}>CTR</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#4ade80' }}>₹{((ad.budget_paise || 0) / 100).toFixed(0)}</div>
+                      <div style={{ fontSize: '10px', color: '#9a8f7a' }}>budget</div>
+                    </div>
+                  </div>
+
+                  {/* Duration */}
+                  <div style={{ fontSize: '10px', color: '#555', flexShrink: 0, textAlign: 'right' }}>
+                    {ad.ends_at ? new Date(ad.ends_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── COMMUNITY HEALTH ─────────────────────────────────────────────── */}

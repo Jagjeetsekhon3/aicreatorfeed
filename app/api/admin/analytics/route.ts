@@ -203,10 +203,61 @@ export async function GET() {
     heatmap[day][hour]++
   })
 
-  // Engagement rate = likes / (posts * avg_followers) — approximate
+  // Engagement rate
   const engagementRate = totalPosts && totalLikes
     ? Math.round((totalLikes / Math.max(totalPosts, 1)) * 10) / 10
     : 0
+
+  // ── REVENUE QUERIES ──────────────────────────────────────────────────────
+  const { data: allPayments } = await db
+    .from('payments')
+    .select('id, amount, type, status, created_at')
+    .eq('status', 'paid')
+    .order('created_at', { ascending: false })
+
+  const { data: recentPayments } = await db
+    .from('payments')
+    .select('id, amount, type, status, created_at, user:profiles!payments_user_id_fkey(username, full_name, avatar_url)')
+    .eq('status', 'paid')
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  const { data: adCampaigns } = await db
+    .from('ad_slots')
+    .select('id, title, slot, status, impressions, clicks, starts_at, ends_at, budget_paise, user:profiles!ad_slots_user_id_fkey(username, full_name)')
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  // ── REVENUE PROCESSING ───────────────────────────────────────────────────
+  const paid = allPayments || []
+
+  const totalRevenuePaise = paid.reduce((s: number, p: any) => s + (p.amount || 0), 0)
+  const donationRevenue   = paid.filter((p: any) => p.type === 'donation').reduce((s: number, p: any) => s + p.amount, 0)
+  const subscriptionRevenue = paid.filter((p: any) => p.type === 'subscription').reduce((s: number, p: any) => s + p.amount, 0)
+  const adRevenue         = paid.filter((p: any) => p.type === 'ad').reduce((s: number, p: any) => s + p.amount, 0)
+
+  const revenueThisMonth  = paid.filter((p: any) => new Date(p.created_at) >= new Date(daysAgo(30))).reduce((s: number, p: any) => s + p.amount, 0)
+  const revenueThisWeek   = paid.filter((p: any) => new Date(p.created_at) >= new Date(daysAgo(7))).reduce((s: number, p: any) => s + p.amount, 0)
+  const revenueToday      = paid.filter((p: any) => new Date(p.created_at) >= new Date(daysAgo(1))).reduce((s: number, p: any) => s + p.amount, 0)
+
+  // 30-day daily revenue buckets
+  const revenueBuckets: Record<string, number> = {}
+  const now2 = new Date()
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now2); d.setDate(d.getDate() - i)
+    revenueBuckets[d.toISOString().slice(0, 10)] = 0
+  }
+  paid.forEach((p: any) => {
+    const day = p.created_at?.slice(0, 10)
+    if (day && revenueBuckets[day] !== undefined) revenueBuckets[day] += p.amount
+  })
+  const revenueDailyBuckets = Object.entries(revenueBuckets).map(([date, amount]) => ({ date, amount }))
+
+  // Ad campaign stats
+  const activeAds   = (adCampaigns || []).filter((a: any) => a.status === 'active').length
+  const pendingAds  = (adCampaigns || []).filter((a: any) => a.status === 'pending').length
+  const totalImpressions = (adCampaigns || []).reduce((s: number, a: any) => s + (a.impressions || 0), 0)
+  const totalClicks      = (adCampaigns || []).reduce((s: number, a: any) => s + (a.clicks || 0), 0)
 
   return NextResponse.json({
     // KPIs
@@ -232,7 +283,6 @@ export async function GET() {
     newFollowsToday: newFollowsToday || 0,
     newUsersYesterday: newUsersYesterday || 0,
     newPostsYesterday: newPostsYesterday || 0,
-    // Computed
     engagementRate,
     // Charts
     userCumulative,
@@ -246,5 +296,21 @@ export async function GET() {
     topCreators: topCreators || [],
     topPosts: topPosts || [],
     topSpaces: topSpaces || [],
+    // Revenue
+    revenue: {
+      total: totalRevenuePaise,
+      donation: donationRevenue,
+      subscription: subscriptionRevenue,
+      ad: adRevenue,
+      thisMonth: revenueThisMonth,
+      thisWeek: revenueThisWeek,
+      today: revenueToday,
+      transactionCount: paid.length,
+    },
+    revenueDailyBuckets,
+    recentPayments: recentPayments || [],
+    // Ad campaigns
+    adCampaigns: adCampaigns || [],
+    adStats: { activeAds, pendingAds, totalImpressions, totalClicks },
   })
 }

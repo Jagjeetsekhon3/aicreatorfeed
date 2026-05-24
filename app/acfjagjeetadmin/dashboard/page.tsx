@@ -77,6 +77,21 @@ export default function AdminDashboard() {
   const [rzpForm, setRzpForm] = useState({ key_id: '', key_secret: '', webhook_secret: '' })
   const [rzpSaving, setRzpSaving] = useState(false)
   const [rzpShowSecret, setRzpShowSecret] = useState(false)
+  // Pricing settings
+  const [pricingForm, setPricingForm] = useState({
+    donation_preset_1_amount: '99',   donation_preset_1_label: 'Buy us a chai ☕',
+    donation_preset_2_amount: '199',  donation_preset_2_label: 'Support our servers 🖥',
+    donation_preset_3_amount: '499',  donation_preset_3_label: 'Fuel AI creativity 🚀',
+    verified_monthly_price: '299',
+    verified_yearly_price: '1999',
+    ad_basic_price: '999',  ad_basic_days: '7',
+    ad_pro_price: '2999',   ad_pro_days: '30',
+    donation_page_title: 'Support AiCreatorFeed',
+    donation_page_desc: '',
+    advertise_page_title: 'Advertise on AiCreatorFeed',
+    advertise_page_desc: '',
+  })
+  const [pricingSaving, setPricingSaving] = useState(false)
 
   // Tutorials state
   const [tutorials, setTutorials] = useState<any[]>([])
@@ -148,6 +163,10 @@ export default function AdminDashboard() {
           key_secret: d.razorpay_status?.key_secret_saved ? '••••••••••••••••' : '',
           webhook_secret: d.razorpay_status?.webhook_secret_saved ? '••••••••••••••••' : '',
         })
+        // Load pricing from settings
+        if (d.pricing) {
+          setPricingForm(prev => ({ ...prev, ...d.pricing }))
+        }
       }
     })
     if (tab === 'ads')       api('ads_admin').then(d => { if (d) setAdCampaigns(d.ads || []) })
@@ -323,6 +342,15 @@ export default function AdminDashboard() {
     }
     showToast('SEO settings saved!')
     setSaving(false)
+  }
+
+  async function savePricingSettings() {
+    setPricingSaving(true)
+    for (const [key, value] of Object.entries(pricingForm)) {
+      await action('update_setting', { key: `pricing_${key}`, value: String(value) })
+    }
+    showToast('Pricing settings saved!')
+    setPricingSaving(false)
   }
 
   async function saveRazorpayKeys() {
@@ -846,6 +874,152 @@ export default function AdminDashboard() {
                 </div>
               )
             })()}
+
+            {/* ── Pricing Settings ── */}
+            <div style={{ ...card, marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#FAF3E1' }}>🏷 Pricing & Package Settings</div>
+                  <div style={{ fontSize: '12px', color: '#9a8f7a', marginTop: '2px' }}>Edit prices and labels — live on your donation, verify, and advertise pages instantly</div>
+                </div>
+                <button onClick={savePricingSettings} disabled={pricingSaving} style={btn()}>
+                  {pricingSaving ? 'Saving...' : '💾 Save all pricing'}
+                </button>
+              </div>
+
+              {/* DONATION SETTINGS */}
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#facc15', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>💛</span> DONATION PAGE
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#9a8f7a', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Page title</label>
+                    <input value={pricingForm.donation_page_title} onChange={e => setPricingForm(p => ({ ...p, donation_page_title: e.target.value }))} style={inp} placeholder="Support AiCreatorFeed" />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#9a8f7a', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Page subtitle</label>
+                    <input value={pricingForm.donation_page_desc} onChange={e => setPricingForm(p => ({ ...p, donation_page_desc: e.target.value }))} style={inp} placeholder="Short description shown on the page" />
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  {([1, 2, 3] as const).map(n => (
+                    <div key={n} style={{ background: 'rgba(250,204,21,0.04)', border: '1px solid rgba(250,204,21,0.12)', borderRadius: '10px', padding: '12px' }}>
+                      <div style={{ fontSize: '11px', color: '#facc15', fontWeight: 700, marginBottom: '8px' }}>PRESET {n}</div>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', alignItems: 'center' }}>
+                        <span style={{ color: '#9a8f7a', fontSize: '13px', fontWeight: 700, flexShrink: 0 }}>₹</span>
+                        <input
+                          type="number"
+                          value={(pricingForm as any)[`donation_preset_${n}_amount`]}
+                          onChange={e => setPricingForm(p => ({ ...p, [`donation_preset_${n}_amount`]: e.target.value }))}
+                          style={{ ...inp, padding: '7px 8px', fontSize: '13px', fontWeight: 700 }}
+                          placeholder="99"
+                        />
+                      </div>
+                      <input
+                        value={(pricingForm as any)[`donation_preset_${n}_label`]}
+                        onChange={e => setPricingForm(p => ({ ...p, [`donation_preset_${n}_label`]: e.target.value }))}
+                        style={{ ...inp, padding: '7px 8px', fontSize: '12px' }}
+                        placeholder="Label..."
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* VERIFIED SUBSCRIPTION SETTINGS */}
+              <div style={{ marginBottom: '24px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#f472b6', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>✓</span> VERIFIED BADGE SUBSCRIPTION
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div style={{ background: 'rgba(244,114,182,0.04)', border: '1px solid rgba(244,114,182,0.12)', borderRadius: '10px', padding: '14px' }}>
+                    <div style={{ fontSize: '11px', color: '#f472b6', fontWeight: 700, marginBottom: '10px' }}>MONTHLY PLAN</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ color: '#9a8f7a', fontSize: '14px', fontWeight: 700 }}>₹</span>
+                      <input
+                        type="number"
+                        value={pricingForm.verified_monthly_price}
+                        onChange={e => setPricingForm(p => ({ ...p, verified_monthly_price: e.target.value }))}
+                        style={{ ...inp, fontSize: '16px', fontWeight: 800 }}
+                        placeholder="299"
+                      />
+                      <span style={{ color: '#555', fontSize: '12px', flexShrink: 0 }}>/month</span>
+                    </div>
+                  </div>
+                  <div style={{ background: 'rgba(244,114,182,0.04)', border: '1px solid rgba(244,114,182,0.12)', borderRadius: '10px', padding: '14px' }}>
+                    <div style={{ fontSize: '11px', color: '#f472b6', fontWeight: 700, marginBottom: '10px' }}>YEARLY PLAN</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ color: '#9a8f7a', fontSize: '14px', fontWeight: 700 }}>₹</span>
+                      <input
+                        type="number"
+                        value={pricingForm.verified_yearly_price}
+                        onChange={e => setPricingForm(p => ({ ...p, verified_yearly_price: e.target.value }))}
+                        style={{ ...inp, fontSize: '16px', fontWeight: 800 }}
+                        placeholder="1999"
+                      />
+                      <span style={{ color: '#555', fontSize: '12px', flexShrink: 0 }}>/year</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AD CAMPAIGN PACKAGE SETTINGS */}
+              <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#34d399', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>📢</span> AD CAMPAIGN PACKAGES
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  {[
+                    { key: 'basic', label: 'BASIC PACKAGE', color: '#34d399' },
+                    { key: 'pro',   label: 'PRO PACKAGE',   color: '#60a5fa' },
+                  ].map(({ key, label, color }) => (
+                    <div key={key} style={{ background: `rgba(${color === '#34d399' ? '52,211,153' : '96,165,250'},0.04)`, border: `1px solid rgba(${color === '#34d399' ? '52,211,153' : '96,165,250'},0.12)`, borderRadius: '10px', padding: '14px' }}>
+                      <div style={{ fontSize: '11px', color, fontWeight: 700, marginBottom: '10px' }}>{label}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                        <span style={{ color: '#9a8f7a', fontSize: '14px', fontWeight: 700 }}>₹</span>
+                        <input
+                          type="number"
+                          value={(pricingForm as any)[`ad_${key}_price`]}
+                          onChange={e => setPricingForm(p => ({ ...p, [`ad_${key}_price`]: e.target.value }))}
+                          style={{ ...inp, fontSize: '16px', fontWeight: 800 }}
+                          placeholder={key === 'basic' ? '999' : '2999'}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <input
+                          type="number"
+                          value={(pricingForm as any)[`ad_${key}_days`]}
+                          onChange={e => setPricingForm(p => ({ ...p, [`ad_${key}_days`]: e.target.value }))}
+                          style={{ ...inp, fontSize: '13px', width: '60px', padding: '7px 8px' }}
+                          placeholder="7"
+                        />
+                        <span style={{ color: '#9a8f7a', fontSize: '12px' }}>days duration</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Advertise page settings */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#9a8f7a', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Advertise page title</label>
+                    <input value={pricingForm.advertise_page_title} onChange={e => setPricingForm(p => ({ ...p, advertise_page_title: e.target.value }))} style={inp} placeholder="Advertise on AiCreatorFeed" />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#9a8f7a', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Advertise page subtitle</label>
+                    <input value={pricingForm.advertise_page_desc} onChange={e => setPricingForm(p => ({ ...p, advertise_page_desc: e.target.value }))} style={inp} placeholder="Short description" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Save button (bottom) */}
+              <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                <button onClick={savePricingSettings} disabled={pricingSaving} style={btn()}>
+                  {pricingSaving ? 'Saving...' : '💾 Save all pricing'}
+                </button>
+              </div>
+            </div>
 
             {/* Payments table */}
             <div style={{ ...card, padding: 0, overflow: 'hidden' }}>

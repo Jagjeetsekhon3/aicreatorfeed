@@ -4,35 +4,37 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import RazorpayButton from '@/components/ui/RazorpayButton'
 import Link from 'next/link'
-
-const PLANS = [
-  {
-    id: 'verified_monthly',
-    label: 'Monthly',
-    price: 299,
-    period: '/month',
-    tag: 'Flexible',
-    features: ['✓ Orange verified badge ✓', '✓ Priority in search results', '✓ Verified creator profile', '✓ Monthly billed'],
-  },
-  {
-    id: 'verified_yearly',
-    label: 'Yearly',
-    price: 1999,
-    period: '/year',
-    tag: 'Save 44%',
-    popular: true,
-    features: ['✓ Orange verified badge ✓', '✓ Priority in search results', '✓ Verified creator profile', '✓ 2 months free'],
-  },
-]
+import { usePricingSettings } from '@/lib/usePricingSettings'
 
 export default function VerifyPage() {
   const router = useRouter()
+  const { pricing } = usePricingSettings()
   const [selected, setSelected] = useState('verified_yearly')
   const [accessToken, setAccessToken] = useState('')
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [success, setSuccess] = useState(false)
+
+  const PLANS = [
+    {
+      id: 'verified_monthly',
+      label: 'Monthly',
+      price: pricing.verified_monthly_price,
+      period: '/month',
+      tag: 'Flexible',
+      features: ['✓ Orange verified badge', '✓ Priority in search results', '✓ Verified creator profile', '✓ Monthly billed'],
+    },
+    {
+      id: 'verified_yearly',
+      label: 'Yearly',
+      price: pricing.verified_yearly_price,
+      period: '/year',
+      tag: `Save ${Math.round((1 - pricing.verified_yearly_price / (pricing.verified_monthly_price * 12)) * 100)}%`,
+      popular: true,
+      features: ['✓ Orange verified badge', '✓ Priority in search results', '✓ Verified creator profile', '✓ 2 months free'],
+    },
+  ]
 
   useEffect(() => {
     const supabase = createClient()
