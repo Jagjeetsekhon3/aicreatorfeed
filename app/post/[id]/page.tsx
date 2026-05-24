@@ -25,6 +25,7 @@ export default function PostPage() {
   const [accessToken, setAccessToken] = useState('')
   const [showMenu, setShowMenu] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [carouselIdx, setCarouselIdx] = useState(0)
   const menuRef = useRef<HTMLDivElement>(null)
 
   // Close menu on outside click
@@ -153,9 +154,52 @@ export default function PostPage() {
       <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' }}>
 
         {/* Media */}
-        {post.media_type === 'image' && post.image_url && (
-          <img src={post.image_url} alt={post.caption} style={{ width: '100%', display: 'block', maxHeight: '520px', objectFit: 'cover' }} />
-        )}
+        {post.media_type === 'image' && (() => {
+          const slides = (post.images && post.images.length > 0)
+            ? post.images
+            : (post.image_url ? [{ url: post.image_url, prompt_text: post.prompt_text, ai_tool: post.ai_tool }] : [])
+          if (!slides.length) return null
+          return (
+            <div style={{ position: 'relative', background: '#111', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px' }}>
+              <img src={slides[carouselIdx]?.url} alt={post.caption}
+                style={{ width: '100%', display: 'block', maxHeight: '520px', objectFit: 'cover' }} />
+
+              {/* Arrows */}
+              {slides.length > 1 && carouselIdx > 0 && (
+                <button onClick={() => setCarouselIdx(i => i - 1)}
+                  style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+              )}
+              {slides.length > 1 && carouselIdx < slides.length - 1 && (
+                <button onClick={() => setCarouselIdx(i => i + 1)}
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+              )}
+
+              {/* Counter */}
+              {slides.length > 1 && (
+                <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(0,0,0,0.65)', borderRadius: '20px', padding: '3px 10px', fontSize: '12px', color: '#fff', fontWeight: 600 }}>
+                  {carouselIdx + 1} / {slides.length}
+                </div>
+              )}
+
+              {/* Dot indicators */}
+              {slides.length > 1 && (
+                <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '5px' }}>
+                  {slides.map((_: any, i: number) => (
+                    <button key={i} onClick={() => setCarouselIdx(i)}
+                      style={{ width: i === carouselIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === carouselIdx ? '#FF6D1F' : 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
+                  ))}
+                </div>
+              )}
+
+              {/* Per-slide AI tool badge */}
+              {slides[carouselIdx]?.ai_tool && (
+                <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', borderRadius: '6px', padding: '3px 9px', fontSize: '11px', fontWeight: 700, color: '#FF8540' }}>
+                  {slides[carouselIdx].ai_tool}
+                </div>
+              )}
+            </div>
+          )
+        })()}
         {post.media_type === 'video' && post.video_url && (
           <YouTubePlayer videoId={post.video_url} />
         )}
@@ -199,19 +243,28 @@ export default function PostPage() {
           {/* Caption */}
           {post.caption && <p style={{ fontSize: '15px', color: '#F5E7C6', lineHeight: 1.65, marginBottom: '14px', whiteSpace: 'pre-wrap' }}><RenderWithMentions text={post.caption} /></p>}
 
-          {/* Prompt */}
-          {post.prompt_text && (
-            <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '12px', padding: '12px 14px', marginBottom: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>✦ AI PROMPT {post.ai_tool ? `· ${post.ai_tool}` : ''}</span>
-                <button onClick={async () => { await navigator.clipboard.writeText(post.prompt_text); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: copied ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit' }}>
-                  {copied ? '✓ Copied' : 'Copy'}
-                </button>
+          {/* Prompt — shows current slide's prompt for carousel posts */}
+          {(() => {
+            const slides = (post.images && post.images.length > 0) ? post.images : (post.image_url ? [{ url: post.image_url, prompt_text: post.prompt_text, ai_tool: post.ai_tool }] : [])
+            const slidePrompt = slides[carouselIdx]?.prompt_text || post.prompt_text
+            const slideTool = slides[carouselIdx]?.ai_tool || post.ai_tool
+            const isCarousel = slides.length > 1
+            if (!slidePrompt) return null
+            return (
+              <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '12px', padding: '12px 14px', marginBottom: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>
+                    ✦ AI PROMPT {slideTool ? `· ${slideTool}` : ''}{isCarousel ? ` (image ${carouselIdx + 1})` : ''}
+                  </span>
+                  <button onClick={async () => { await navigator.clipboard.writeText(slidePrompt); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: copied ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit' }}>
+                    {copied ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+                <p style={{ fontSize: '12px', color: '#9a8f7a', fontFamily: 'monospace', lineHeight: 1.6, margin: 0 }}>"{slidePrompt}"</p>
               </div>
-              <p style={{ fontSize: '12px', color: '#9a8f7a', fontFamily: 'monospace', lineHeight: 1.6, margin: 0 }}>"{post.prompt_text}"</p>
-            </div>
-          )}
+            )
+          })()}
 
           {/* Tags */}
           {post.tags?.length > 0 && (

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       prompt_text: prompt_text || (images?.[0]?.prompt_text) || null,
       media_type,
       image_url: primaryImage,
-      images: images && images.length > 1 ? images : [],
+      images: images && images.length > 0 ? images : [],
       video_url: youtube_id || null,
       ai_tool: ai_tool || (images?.[0]?.ai_tool) || null,
       ai_tools: ai_tools || [],
