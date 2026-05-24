@@ -27,6 +27,8 @@ const SIDEBAR_ITEMS = [
   { key: 'news',       icon: '📰', label: 'AI News' },
   { key: 'community',  icon: '💬', label: 'Community' },
   { key: 'aitools',    icon: '🤖', label: 'AI Tools' },
+  { key: 'payments',   icon: '💳', label: 'Payments' },
+  { key: 'ads',        icon: '📢', label: 'Ad Campaigns' },
   { key: 'settings',   icon: '🎨', label: 'Site Settings' },
   { key: 'seo',        icon: '🔍', label: 'SEO & Meta' },
   { key: 'features',   icon: '🔧', label: 'Features' },
@@ -67,6 +69,14 @@ export default function AdminDashboard() {
 
   // Cloudinary status
   const [cloudinaryStatus, setCloudinaryStatus] = useState<any>(null)
+
+  // Payments & Ads
+  const [payments, setPayments] = useState<any[]>([])
+  const [adCampaigns, setAdCampaigns] = useState<any[]>([])
+  const [razorpayStatus, setRazorpayStatus] = useState<any>(null)
+  const [rzpForm, setRzpForm] = useState({ key_id: '', key_secret: '', webhook_secret: '' })
+  const [rzpSaving, setRzpSaving] = useState(false)
+  const [rzpShowSecret, setRzpShowSecret] = useState(false)
 
   // Tutorials state
   const [tutorials, setTutorials] = useState<any[]>([])
@@ -129,6 +139,18 @@ export default function AdminDashboard() {
     if (tab === 'community') api('spaces_admin').then(d => { if (d) setSpaces(d.spaces) })
     if (tab === 'aitools')   fetch('/api/ai-tools').then(r => r.json()).then(d => setAiToolsList(d.tools || []))
     if (tab === 'tickets')   api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
+    if (tab === 'payments')  api('payments_admin').then(d => {
+      if (d) {
+        setPayments(d.payments || [])
+        setRazorpayStatus(d.razorpay_status)
+        setRzpForm({
+          key_id: d.razorpay_status?.key_id_saved || '',
+          key_secret: d.razorpay_status?.key_secret_saved ? '••••••••••••••••' : '',
+          webhook_secret: d.razorpay_status?.webhook_secret_saved ? '••••••••••••••••' : '',
+        })
+      }
+    })
+    if (tab === 'ads')       api('ads_admin').then(d => { if (d) setAdCampaigns(d.ads || []) })
     if (tab === 'seo')       api('settings').then(d => {
       if (d?.settings) {
         const s = (d.settings as Setting[]).reduce((acc: any, s) => { acc[s.key] = s.value; return acc }, {} as any)
@@ -301,6 +323,25 @@ export default function AdminDashboard() {
     }
     showToast('SEO settings saved!')
     setSaving(false)
+  }
+
+  async function saveRazorpayKeys() {
+    setRzpSaving(true)
+    const updates: {key: string; value: string}[] = []
+    if (rzpForm.key_id && !rzpForm.key_id.startsWith('•'))
+      updates.push({ key: 'razorpay_key_id', value: rzpForm.key_id.trim() })
+    if (rzpForm.key_secret && !rzpForm.key_secret.startsWith('•'))
+      updates.push({ key: 'razorpay_key_secret', value: rzpForm.key_secret.trim() })
+    if (rzpForm.webhook_secret && !rzpForm.webhook_secret.startsWith('•'))
+      updates.push({ key: 'razorpay_webhook_secret', value: rzpForm.webhook_secret.trim() })
+
+    for (const u of updates) await action('update_setting', u)
+
+    // Refresh status
+    const d = await api('payments_admin')
+    if (d) setRazorpayStatus(d.razorpay_status)
+    showToast('Razorpay keys saved!')
+    setRzpSaving(false)
   }
 
   async function deleteNews(id: string) {
@@ -673,6 +714,242 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
               {posts.length === 0 && <p style={{ textAlign: 'center', padding: '40px', color: '#9a8f7a' }}>No posts found</p>}
+            </div>
+          </div>
+        )}
+
+        {/* ── PAYMENTS ─────────────────────────────────────────────────── */}
+        {tab === 'payments' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '24px' }}>💳 Payments & Razorpay</h1>
+
+            {/* ── Razorpay Key Settings ── */}
+            <div style={{ ...card, marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>💳</div>
+                  <div>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#FAF3E1' }}>Razorpay Configuration</div>
+                    {!razorpayStatus ? (
+                      <div style={{ fontSize: '12px', color: '#9a8f7a' }}>Checking connection...</div>
+                    ) : razorpayStatus.configured ? (
+                      <div style={{ fontSize: '12px', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        ● Connected &nbsp;·&nbsp;
+                        {razorpayStatus.mode === 'live'
+                          ? <span style={{ color: '#4ade80', fontWeight: 700 }}>🟢 Live mode</span>
+                          : <span style={{ color: '#facc15', fontWeight: 700 }}>🟡 Test mode</span>}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '12px', color: '#ff8080' }}>● Not connected — enter your keys below</div>
+                    )}
+                  </div>
+                </div>
+                <a href="https://dashboard.razorpay.com/app/keys" target="_blank" rel="noopener"
+                  style={{ ...btn(false), textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px' }}>
+                  Razorpay Dashboard ↗
+                </a>
+              </div>
+
+              {/* Key fields */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {/* Key ID */}
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>
+                    Key ID
+                    <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 400, color: '#555' }}>starts with rzp_test_ or rzp_live_</span>
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      value={rzpForm.key_id}
+                      onChange={e => setRzpForm(p => ({ ...p, key_id: e.target.value }))}
+                      placeholder="rzp_test_xxxxxxxxxxxx"
+                      style={{ ...inp, flex: 1, fontFamily: 'monospace', fontSize: '13px' }}
+                    />
+                    {razorpayStatus?.configured && (
+                      <div style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '8px', fontSize: '11px', color: '#4ade80', whiteSpace: 'nowrap' }}>
+                        ✓ Saved
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Key Secret */}
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>
+                    Key Secret
+                    <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 400, color: '#ff8080' }}>⚠ Never share this</span>
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                      <input
+                        type={rzpShowSecret ? 'text' : 'password'}
+                        value={rzpForm.key_secret}
+                        onChange={e => setRzpForm(p => ({ ...p, key_secret: e.target.value }))}
+                        placeholder="Enter your secret key"
+                        style={{ ...inp, width: '100%', boxSizing: 'border-box', fontFamily: 'monospace', fontSize: '13px', paddingRight: '70px' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setRzpShowSecret(v => !v)}
+                        style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: '#9a8f7a', fontFamily: 'inherit' }}
+                      >{rzpShowSecret ? 'Hide' : 'Show'}</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Webhook Secret */}
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>
+                    Webhook Secret
+                    <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 400, color: '#555' }}>optional — from Razorpay → Webhooks</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={rzpForm.webhook_secret}
+                    onChange={e => setRzpForm(p => ({ ...p, webhook_secret: e.target.value }))}
+                    placeholder="Leave blank if not using webhooks"
+                    style={{ ...inp, width: '100%', boxSizing: 'border-box', fontFamily: 'monospace', fontSize: '13px' }}
+                  />
+                </div>
+
+                {/* Save button */}
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', paddingTop: '4px' }}>
+                  <button onClick={saveRazorpayKeys} disabled={rzpSaving} style={btn()}>
+                    {rzpSaving ? 'Saving...' : '💾 Save Razorpay keys'}
+                  </button>
+                  <span style={{ fontSize: '12px', color: '#555' }}>Keys are stored securely in site_settings</span>
+                </div>
+              </div>
+
+              {/* Mode indicator & tip */}
+              <div style={{ marginTop: '18px', padding: '14px', background: rzpForm.key_id.startsWith('rzp_live') ? 'rgba(74,222,128,0.05)' : 'rgba(250,204,21,0.05)', border: `1px solid ${rzpForm.key_id.startsWith('rzp_live') ? 'rgba(74,222,128,0.15)' : 'rgba(250,204,21,0.15)'}`, borderRadius: '10px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: rzpForm.key_id.startsWith('rzp_live') ? '#4ade80' : '#facc15', marginBottom: '6px' }}>
+                  {rzpForm.key_id.startsWith('rzp_live') ? '🟢 Live mode — real payments will be processed' : '🟡 Test mode — use test cards, no real money'}
+                </div>
+                <p style={{ fontSize: '11px', color: '#9a8f7a', margin: 0, lineHeight: 1.7 }}>
+                  Test card: <code style={{ background: 'rgba(255,255,255,0.07)', padding: '1px 5px', borderRadius: '3px' }}>4111 1111 1111 1111</code> · Any future expiry · CVV: <code style={{ background: 'rgba(255,255,255,0.07)', padding: '1px 5px', borderRadius: '3px' }}>123</code> · OTP: <code style={{ background: 'rgba(255,255,255,0.07)', padding: '1px 5px', borderRadius: '3px' }}>123456</code>
+                </p>
+              </div>
+            </div>
+
+            {/* Revenue summary */}
+            {payments.length > 0 && (() => {
+              const paid = payments.filter(p => p.status === 'paid')
+              const total = paid.reduce((sum, p) => sum + (p.amount || 0), 0)
+              const byType = paid.reduce((acc: any, p) => { acc[p.type] = (acc[p.type] || 0) + p.amount; return acc }, {})
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '20px' }}>
+                  <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#4ade80' }}>₹{(total / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Total revenue</div></div>
+                  <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#FF6D1F' }}>₹{((byType.donation || 0) / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Donations</div></div>
+                  <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#a78bfa' }}>₹{((byType.subscription || 0) / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Subscriptions</div></div>
+                  <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#facc15' }}>₹{((byType.ad || 0) / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Ad revenue</div></div>
+                </div>
+              )
+            })()}
+
+            {/* Payments table */}
+            <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+              <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '13px', fontWeight: 600 }}>All payments ({payments.length})</span>
+              </div>
+              {payments.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#9a8f7a' }}>No payments yet</div>
+              ) : (
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                  <thead>
+                    <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                      {['User', 'Type', 'Amount', 'Status', 'Date'].map(h => (
+                        <th key={h} style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 600, color: '#9a8f7a', fontSize: '11px' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map(p => (
+                      <tr key={p.id} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td style={{ padding: '10px 14px', color: '#FAF3E1' }}>{p.user?.full_name || 'Guest'}</td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', fontWeight: 600, background: p.type === 'donation' ? 'rgba(74,222,128,0.1)' : p.type === 'subscription' ? 'rgba(167,139,250,0.1)' : 'rgba(250,204,21,0.1)', color: p.type === 'donation' ? '#4ade80' : p.type === 'subscription' ? '#a78bfa' : '#facc15' }}>{p.type}</span>
+                        </td>
+                        <td style={{ padding: '10px 14px', color: '#FAF3E1', fontWeight: 600 }}>₹{(p.amount / 100).toFixed(0)}</td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: p.status === 'paid' ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)', color: p.status === 'paid' ? '#4ade80' : '#9a8f7a' }}>{p.status}</span>
+                        </td>
+                        <td style={{ padding: '10px 14px', color: '#9a8f7a' }}>{new Date(p.created_at).toLocaleDateString('en-IN')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── AD CAMPAIGNS ─────────────────────────────────────────────── */}
+        {tab === 'ads' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 900, margin: 0 }}>📢 Ad Campaigns</h1>
+              <a href="/advertise" target="_blank" rel="noopener" style={{ ...btn(), textDecoration: 'none', display: 'inline-flex', alignItems: 'center', fontSize: '13px' }}>+ New campaign ↗</a>
+            </div>
+
+            <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+              {adCampaigns.length === 0 ? (
+                <div style={{ padding: '60px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '32px', marginBottom: '12px' }}>📢</div>
+                  <p style={{ color: '#9a8f7a', fontSize: '14px' }}>No ad campaigns yet.<br/>When advertisers book campaigns they'll appear here for review.</p>
+                </div>
+              ) : (
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                  <thead>
+                    <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                      {['Ad', 'Advertiser', 'Slot', 'Period', 'Status', 'Actions'].map(h => (
+                        <th key={h} style={{ padding: '8px 14px', textAlign: 'left', fontWeight: 600, color: '#9a8f7a', fontSize: '11px' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adCampaigns.map(ad => (
+                      <tr key={ad.id} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td style={{ padding: '10px 14px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {ad.image_url && <img src={ad.image_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }} />}
+                            <div>
+                              <div style={{ color: '#FAF3E1', fontWeight: 600, fontSize: '12px' }}>{ad.title}</div>
+                              {ad.description && <div style={{ color: '#9a8f7a', fontSize: '11px' }}>{ad.description?.slice(0, 40)}</div>}
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '10px 14px', color: '#9a8f7a' }}>{ad.user?.full_name || '—'}</td>
+                        <td style={{ padding: '10px 14px' }}><span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.06)', padding: '2px 7px', borderRadius: '4px', color: '#9a8f7a' }}>{ad.slot}</span></td>
+                        <td style={{ padding: '10px 14px', color: '#9a8f7a', fontSize: '11px' }}>
+                          {ad.starts_at ? new Date(ad.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'} →{' '}
+                          {ad.ends_at ? new Date(ad.ends_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}
+                        </td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', fontWeight: 600, background: ad.status === 'active' ? 'rgba(74,222,128,0.1)' : ad.status === 'pending' ? 'rgba(250,204,21,0.1)' : 'rgba(255,255,255,0.05)', color: ad.status === 'active' ? '#4ade80' : ad.status === 'pending' ? '#facc15' : '#9a8f7a' }}>{ad.status}</span>
+                        </td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            {ad.status === 'pending' && (
+                              <button onClick={() => { action('update_ad_status', { ad_id: ad.id, status: 'active' }); setAdCampaigns(prev => prev.map(a => a.id === ad.id ? { ...a, status: 'active' } : a)); showToast('Ad approved!') }}
+                                style={{ fontSize: '11px', color: '#4ade80', background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Approve</button>
+                            )}
+                            {ad.status === 'active' && (
+                              <button onClick={() => { action('update_ad_status', { ad_id: ad.id, status: 'paused' }); setAdCampaigns(prev => prev.map(a => a.id === ad.id ? { ...a, status: 'paused' } : a)); showToast('Ad paused') }}
+                                style={{ fontSize: '11px', color: '#facc15', background: 'rgba(250,204,21,0.1)', border: '1px solid rgba(250,204,21,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Pause</button>
+                            )}
+                            {ad.status === 'paused' && (
+                              <button onClick={() => { action('update_ad_status', { ad_id: ad.id, status: 'active' }); setAdCampaigns(prev => prev.map(a => a.id === ad.id ? { ...a, status: 'active' } : a)); showToast('Ad resumed') }}
+                                style={{ fontSize: '11px', color: '#60a5fa', background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Resume</button>
+                            )}
+                            <a href={ad.link_url} target="_blank" rel="noopener" style={{ fontSize: '11px', color: '#9a8f7a', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '4px 8px', textDecoration: 'none' }}>↗</a>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         )}

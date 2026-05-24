@@ -244,3 +244,65 @@ alter table public.profiles add column if not exists country_code text; -- ISO a
 alter table public.posts add column if not exists images jsonb default '[]'::jsonb;
 alter table public.posts add column if not exists ai_tools text[] default '{}';
 -- image_url stays as the "cover" (first image or primary)
+
+
+-- ─── PAYMENTS & SUBSCRIPTIONS ────────────────────────────────────────────────
+
+create table if not exists public.payments (
+  id                uuid default uuid_generate_v4() primary key,
+  user_id           uuid references public.profiles(id) on delete set null,
+  razorpay_order_id text not null,
+  razorpay_payment_id text,
+  razorpay_signature text,
+  amount            int not null,         -- in paise (₹1 = 100 paise)
+  currency          text default 'INR',
+  type              text not null,        -- 'donation' | 'subscription' | 'ad'
+  status            text default 'created', -- 'created' | 'paid' | 'failed'
+  metadata          jsonb default '{}',
+  created_at        timestamptz default now(),
+  updated_at        timestamptz default now()
+);
+
+create table if not exists public.subscriptions (
+  id                uuid default uuid_generate_v4() primary key,
+  user_id           uuid references public.profiles(id) on delete cascade not null unique,
+  plan              text not null default 'verified', -- 'verified' | 'pro'
+  status            text default 'active',            -- 'active' | 'expired' | 'cancelled'
+  payment_id        uuid references public.payments(id),
+  starts_at         timestamptz default now(),
+  expires_at        timestamptz,
+  auto_renew        boolean default false,
+  created_at        timestamptz default now()
+);
+
+create table if not exists public.ad_slots (
+  id          uuid default uuid_generate_v4() primary key,
+  user_id     uuid references public.profiles(id) on delete cascade,
+  slot        text not null,  -- 'feed_top' | 'feed_mid' | 'explore_top' | 'sidebar'
+  title       text not null,
+  description text,
+  image_url   text,
+  link_url    text not null,
+  cta_text    text default 'Learn more',
+  budget_paise int default 0,
+  impressions int default 0,
+  clicks      int default 0,
+  status      text default 'pending',  -- 'pending' | 'active' | 'paused' | 'ended'
+  starts_at   timestamptz,
+  ends_at     timestamptz,
+  payment_id  uuid references public.payments(id),
+  created_at  timestamptz default now()
+);
+
+alter table public.payments enable row level security;
+alter table public.subscriptions enable row level security;
+alter table public.ad_slots enable row level security;
+
+create policy "Users view own payments" on public.payments for select using (auth.uid() = user_id);
+create policy "Users view own subscription" on public.subscriptions for select using (auth.uid() = user_id);
+create policy "Anyone can view active ads" on public.ad_slots for select using (status = 'active');
+create policy "Users manage own ads" on public.ad_slots for all using (auth.uid() = user_id);
+
+-- Add paid_verified flag to profiles
+alter table public.profiles add column if not exists paid_verified boolean default false;
+alter table public.profiles add column if not exists subscription_expires_at timestamptz;

@@ -55,6 +55,47 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ posts: data || [] })
   }
 
+  if (type === 'payments_admin') {
+    const { data: payments } = await admin.from('payments')
+      .select('*, user:profiles(username, full_name)')
+      .order('created_at', { ascending: false })
+      .limit(100)
+
+    // Get keys from env OR site_settings (site_settings takes priority)
+    const { data: settings } = await admin.from('site_settings')
+      .select('key, value')
+      .in('key', ['razorpay_key_id', 'razorpay_key_secret', 'razorpay_webhook_secret'])
+
+    const saved: Record<string, string> = {}
+    ;(settings || []).forEach((s: any) => { saved[s.key] = s.value })
+
+    const keyId = saved['razorpay_key_id'] || process.env.RAZORPAY_KEY_ID || ''
+    const hasSecret = !!(saved['razorpay_key_secret'] || process.env.RAZORPAY_KEY_SECRET)
+
+    const configured = !!(keyId && hasSecret && !keyId.includes('your_key'))
+
+    return NextResponse.json({
+      payments: payments || [],
+      razorpay_status: {
+        configured,
+        key_id: keyId || null,
+        key_id_saved: keyId || '',
+        key_secret_saved: hasSecret,
+        webhook_secret_saved: !!(saved['razorpay_webhook_secret']),
+        mode: keyId.startsWith('rzp_live') ? 'live' : 'test',
+        source: saved['razorpay_key_id'] ? 'database' : 'env',
+      },
+    })
+  }
+
+  if (type === 'ads_admin') {
+    const { data } = await admin.from('ad_slots')
+      .select('*, user:profiles(username, full_name)')
+      .order('created_at', { ascending: false })
+      .limit(50)
+    return NextResponse.json({ ads: data || [] })
+  }
+
   if (type === 'tickets') {
     const status = searchParams.get('status') || 'open'
     let q = admin.from('support_tickets').select('*, user:profiles(username, full_name)').order('created_at', { ascending: false })
@@ -176,6 +217,13 @@ export async function POST(req: NextRequest) {
   if (action === 'delete_post') {
     await admin.from('posts').delete().eq('id', body.post_id)
     await admin.from('admin_logs').insert({ action: `Admin deleted post: ${body.post_id}` })
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'update_ad_status') {
+    const { ad_id, status } = body
+    await admin.from('ad_slots').update({ status }).eq('id', ad_id)
+    await admin.from('admin_logs').insert({ action: `Admin set ad ${ad_id} status to: ${status}` })
     return NextResponse.json({ success: true })
   }
 
