@@ -307,6 +307,7 @@ export default function Navbar() {
         position: 'sticky', top: 0, zIndex: 50,
         background: 'rgba(34,34,34,0.96)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(255,255,255,0.07)',
+        paddingTop: 'env(safe-area-inset-top)',
       }}>
         <div style={{
           maxWidth: '1100px', margin: '0 auto', padding: '0 16px',
@@ -379,8 +380,9 @@ export default function Navbar() {
         display: 'none', position: 'sticky', top: 0, zIndex: 50,
         background: 'rgba(34,34,34,0.96)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(255,255,255,0.07)',
-        padding: '0 16px', height: '56px', alignItems: 'center', justifyContent: 'space-between',
+        paddingTop: 'env(safe-area-inset-top)',
       }}>
+        <div style={{ padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           <Logo />
           <span style={{ fontWeight: 900, fontSize: '16px', color: '#FAF3E1' }}>
@@ -403,6 +405,7 @@ export default function Navbar() {
               <Link href="/auth/signup" style={{ fontSize: '12px', fontWeight: 700, background: '#FF6D1F', color: '#fff', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Join free</Link>
             </>
           )}
+        </div>
         </div>
       </nav>
 
