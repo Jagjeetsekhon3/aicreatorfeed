@@ -68,12 +68,12 @@ export default function InstallBanner() {
       <img src="/icons/icon-72x72.png" alt="AiCreatorFeed" style={{ width: '44px', height: '44px', borderRadius: '10px', flexShrink: 0 }} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', marginBottom: '2px' }}>
+        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '2px' }}>
           Install AiCreatorFeed
         </div>
         {isIOS ? (
           <div style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.5 }}>
-            Tap <strong style={{ color: '#FAF3E1' }}>Share</strong> then <strong style={{ color: '#FAF3E1' }}>"Add to Home Screen"</strong> to install
+            Tap <strong style={{ color: 'var(--color-cream)' }}>Share</strong> then <strong style={{ color: 'var(--color-cream)' }}>"Add to Home Screen"</strong> to install
           </div>
         ) : (
           <div style={{ fontSize: '12px', color: '#9a8f7a' }}>
@@ -85,7 +85,7 @@ export default function InstallBanner() {
       <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
         {!isIOS && deferredPrompt && (
           <button onClick={install}
-            style={{ background: '#FF6D1F', border: 'none', color: '#fff', fontWeight: 700, padding: '7px 14px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+            style={{ background: 'var(--color-primary)', border: 'none', color: '#fff', fontWeight: 700, padding: '7px 14px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
             Install
           </button>
         )}

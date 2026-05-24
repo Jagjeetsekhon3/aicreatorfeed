@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabase/client'
 function Logo() {
   return (
     <svg width="42" height="42" viewBox="-54 -100 108 170" fill="none">
-      <polygon points="0,-72 54,60 36,60 0,-12 -36,60 -54,60" fill="#FF6D1F"/>
-      <rect x="-28" y="14" width="56" height="13" fill="#222222"/>
-      <circle cx="0" cy="-88" r="13" fill="#FF6D1F"/>
+      <polygon points="0,-72 54,60 36,60 0,-12 -36,60 -54,60" fill="var(--color-primary)"/>
+      <rect x="-28" y="14" width="56" height="13" fill="var(--color-bg)"/>
+      <circle cx="0" cy="-88" r="13" fill="var(--color-primary)"/>
     </svg>
   )
 }
@@ -17,15 +17,15 @@ function Logo() {
 const inp: React.CSSProperties = {
   width: '100%', background: '#2a2a2a',
   border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
-  padding: '14px 16px', fontSize: '15px', color: '#FAF3E1',
+  padding: '14px 16px', fontSize: '15px', color: 'var(--color-cream)',
   outline: 'none', fontFamily: 'inherit',
 }
 
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div style={{ minHeight: '100vh', background: '#222222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%' }} />
+      <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '32px', height: '32px', border: '3px solid var(--color-primary)', borderTopColor: 'transparent', borderRadius: '50%' }} />
       </div>
     }>
       <LoginForm />
@@ -62,8 +62,8 @@ function LoginForm() {
   }, [])
 
   if (checking) return (
-    <div style={{ minHeight: '100vh', background: '#222222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%' }} />
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '32px', height: '32px', border: '3px solid var(--color-primary)', borderTopColor: 'transparent', borderRadius: '50%' }} />
     </div>
   )
 
@@ -97,13 +97,13 @@ function LoginForm() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#222222', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
       <div style={{ width: '100%', maxWidth: '420px' }}>
 
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}><Logo /></div>
-          <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#FAF3E1', letterSpacing: '-0.5px' }}>
-            Ai<span style={{ color: '#FF6D1F' }}>Creator</span>Feed
+          <h1 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-cream)', letterSpacing: '-0.5px' }}>
+            Ai<span style={{ color: 'var(--color-primary)' }}>Creator</span>Feed
           </h1>
           <p style={{ fontSize: '14px', color: '#9a8f7a', marginTop: '6px' }}>Welcome back</p>
         </div>
@@ -119,7 +119,7 @@ function LoginForm() {
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }}>
                 Email or Username
               </label>
               <div style={{ position: 'relative' }}>
@@ -137,7 +137,7 @@ function LoginForm() {
                     position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
                     fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '6px',
                     background: isEmail ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.08)',
-                    color: isEmail ? '#FF6D1F' : '#9a8f7a',
+                    color: isEmail ? 'var(--color-primary)' : '#9a8f7a',
                   }}>
                     {isEmail ? 'email' : 'username'}
                   </span>
@@ -147,8 +147,8 @@ function LoginForm() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
-                <label style={{ fontSize: '13px', fontWeight: 600, color: '#F5E7C6' }}>Password</label>
-                <Link href="/auth/forgot-password" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none' }}>Forgot password?</Link>
+                <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)' }}>Password</label>
+                <Link href="/auth/forgot-password" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none' }}>Forgot password?</Link>
               </div>
               <div style={{ position: 'relative' }}>
                 <input
@@ -168,7 +168,7 @@ function LoginForm() {
 
             <button type="submit" disabled={loading || !identifier || !password} style={{
               width: '100%', padding: '14px', borderRadius: '12px',
-              background: '#FF6D1F', border: 'none', cursor: loading ? 'wait' : 'pointer',
+              background: 'var(--color-primary)', border: 'none', cursor: loading ? 'wait' : 'pointer',
               fontSize: '15px', fontWeight: 700, color: '#fff', fontFamily: 'inherit',
               opacity: (!identifier || !password) ? 0.5 : 1, marginTop: '4px',
             }}>
@@ -178,7 +178,7 @@ function LoginForm() {
 
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#9a8f7a' }}>
             No account?{' '}
-            <Link href="/auth/signup" style={{ color: '#FF6D1F', fontWeight: 600, textDecoration: 'none' }}>
+            <Link href="/auth/signup" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>
               Join AiCreatorFeed free
             </Link>
           </p>

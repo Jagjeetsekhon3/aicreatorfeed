@@ -60,20 +60,20 @@ export default async function HomePage() {
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
           background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.25)',
-          color: '#FF6D1F', fontSize: '13px', padding: '6px 16px',
+          color: 'var(--color-primary)', fontSize: '13px', padding: '6px 16px',
           borderRadius: '999px', marginBottom: '28px',
         }}>
-          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#FF6D1F', display: 'inline-block', animation: 'pulse 2s ease-in-out infinite' }} />
+          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--color-primary)', display: 'inline-block', animation: 'pulse 2s ease-in-out infinite' }} />
           Community for AI creators
         </div>
         <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}} @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
         {/* Headline */}
-        <h1 style={{ fontSize: 'clamp(36px, 8vw, 68px)', fontWeight: 900, letterSpacing: '-2px', lineHeight: 1.05, marginBottom: '20px', color: '#FAF3E1' }}>
+        <h1 style={{ fontSize: 'clamp(36px, 8vw, 68px)', fontWeight: 900, letterSpacing: '-2px', lineHeight: 1.05, marginBottom: '20px', color: 'var(--color-cream)' }}>
           Where AI Creators<br />
-          <span style={{ color: '#FF6D1F' }}>Connect</span>
+          <span style={{ color: 'var(--color-primary)' }}>Connect</span>
         </h1>
-        <p style={{ fontSize: '17px', color: '#F5E7C6', maxWidth: '480px', margin: '0 auto 12px', lineHeight: 1.7 }}>
+        <p style={{ fontSize: '17px', color: 'var(--color-beige)', maxWidth: '480px', margin: '0 auto 12px', lineHeight: 1.7 }}>
           Share prompts. Follow creators. Get the latest AI news and level up with weekly tutorials.
         </p>
         <p style={{ fontSize: '13px', color: '#9a8f7a', marginBottom: '40px', letterSpacing: '0.04em' }}>
@@ -84,7 +84,7 @@ export default async function HomePage() {
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '56px' }}>
           <Link href="/auth/signup" style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
-            background: '#FF6D1F', color: '#fff', fontWeight: 700,
+            background: 'var(--color-primary)', color: '#fff', fontWeight: 700,
             padding: '14px 32px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px',
             boxShadow: '0 4px 20px rgba(255,109,31,0.35)',
           }}>
@@ -93,7 +93,7 @@ export default async function HomePage() {
           <Link href="/explore" style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-            color: '#F5E7C6', fontWeight: 500,
+            color: 'var(--color-beige)', fontWeight: 500,
             padding: '14px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px',
           }}>
             Browse prompts
@@ -110,7 +110,7 @@ export default async function HomePage() {
               background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)',
               borderRadius: '14px', padding: '18px 12px',
             }}>
-              <div style={{ fontSize: '26px', fontWeight: 900, color: '#FF6D1F', marginBottom: '3px', fontVariantNumeric: 'tabular-nums' }}>{num}</div>
+              <div style={{ fontSize: '26px', fontWeight: 900, color: 'var(--color-primary)', marginBottom: '3px', fontVariantNumeric: 'tabular-nums' }}>{num}</div>
               <div style={{ fontSize: '12px', color: '#9a8f7a' }}>{label}</div>
             </div>
           ))}
@@ -122,10 +122,10 @@ export default async function HomePage() {
         <div style={{ marginBottom: '72px', padding: '0 16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#FAF3E1', margin: 0 }}>🔥 Trending now</h2>
+              <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-cream)', margin: 0 }}>🔥 Trending now</h2>
               <p style={{ fontSize: '13px', color: '#9a8f7a', marginTop: '3px' }}>Most liked posts from the community</p>
             </div>
-            <Link href="/explore" style={{ fontSize: '13px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>
+            <Link href="/explore" style={{ fontSize: '13px', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
               See all →
             </Link>
           </div>
@@ -136,7 +136,7 @@ export default async function HomePage() {
 
       {/* Features grid */}
       <div style={{ padding: '0 16px' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#FAF3E1', marginBottom: '20px', textAlign: 'center' }}>Everything an AI creator needs</h2>
+        <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-cream)', marginBottom: '20px', textAlign: 'center' }}>Everything an AI creator needs</h2>
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '14px',
@@ -154,7 +154,7 @@ export default async function HomePage() {
               }}>
                 {emoji}
               </div>
-              <h3 style={{ fontWeight: 700, color: '#FAF3E1', marginBottom: '8px', fontSize: '15px' }}>{title}</h3>
+              <h3 style={{ fontWeight: 700, color: 'var(--color-cream)', marginBottom: '8px', fontSize: '15px' }}>{title}</h3>
               <p style={{ fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6, margin: 0 }}>{desc}</p>
             </div>
           ))}
@@ -162,13 +162,13 @@ export default async function HomePage() {
 
         {/* Bottom CTA */}
         <div style={{ textAlign: 'center', marginTop: '48px', padding: '40px 20px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '20px' }}>
-          <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#FAF3E1', marginBottom: '10px' }}>Ready to join the community?</h3>
+          <h3 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '10px' }}>Ready to join the community?</h3>
           <p style={{ fontSize: '14px', color: '#9a8f7a', marginBottom: '24px' }}>Free to join. No credit card needed.</p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/auth/signup" style={{ background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>
+            <Link href="/auth/signup" style={{ background: 'var(--color-primary)', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>
               Create free account →
             </Link>
-            <Link href="/feed" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5E7C6', fontWeight: 500, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>
+            <Link href="/feed" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--color-beige)', fontWeight: 500, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>
               Browse the feed
             </Link>
           </div>

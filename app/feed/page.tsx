@@ -135,11 +135,11 @@ export default function FeedPage() {
   if (!isLoggedIn) return (
     <div style={{ maxWidth: '600px', margin: '60px auto', textAlign: 'center', padding: '0 16px' }}>
       <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤖</div>
-      <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#FAF3E1', marginBottom: '8px' }}>Join AiCreatorFeed</h2>
+      <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '8px' }}>Join AiCreatorFeed</h2>
       <p style={{ color: '#9a8f7a', marginBottom: '24px', lineHeight: 1.6 }}>Sign in to see posts from creators you follow</p>
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-        <Link href="/auth/signup" style={{ background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>Join free</Link>
-        <Link href="/auth/login" style={{ background: '#2f2f2f', color: '#F5E7C6', fontWeight: 600, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>Sign in</Link>
+        <Link href="/auth/signup" style={{ background: 'var(--color-primary)', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>Join free</Link>
+        <Link href="/auth/login" style={{ background: '#2f2f2f', color: 'var(--color-beige)', fontWeight: 600, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>Sign in</Link>
       </div>
     </div>
   )
@@ -149,12 +149,12 @@ export default function FeedPage() {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
       {/* Filter bar */}
-      <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '2px', position: 'sticky', top: '64px', background: '#222222', paddingTop: '16px', zIndex: 10 }}>
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '2px', position: 'sticky', top: '64px', background: 'var(--color-bg)', paddingTop: '16px', zIndex: 10 }}>
         {FILTERS.map(({ key, label }) => (
           <button key={key} onClick={() => setFilter(key)} style={{
             padding: '8px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
             border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit',
-            background: filter === key ? '#FF6D1F' : '#2f2f2f',
+            background: filter === key ? 'var(--color-primary)' : '#2f2f2f',
             color: filter === key ? '#fff' : '#9a8f7a', transition: 'all 0.15s',
           }}>{label}</button>
         ))}
@@ -167,8 +167,8 @@ export default function FeedPage() {
       {suggestedUsers.length > 0 && (
         <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '16px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', margin: 0 }}>Suggested creators</h3>
-            <Link href="/explore" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>See all</Link>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', margin: 0 }}>Suggested creators</h3>
+            <Link href="/explore" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>See all</Link>
           </div>
           <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
             {suggestedUsers.map(user => (
@@ -176,20 +176,20 @@ export default function FeedPage() {
                 <Link href={`/profile/${user.username}`} style={{ textDecoration: 'none' }}>
                   {user.avatar_url
                     ? <img src={user.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto 8px' }} />
-                    : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700, margin: '0 auto 8px' }}>{user.full_name?.[0]}</div>
+                    : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700, margin: '0 auto 8px' }}>{user.full_name?.[0]}</div>
                   }
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', marginBottom: '2px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#FAF3E1', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '70px' }}>{user.full_name?.split(' ')[0]}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-cream)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '70px' }}>{user.full_name?.split(' ')[0]}</span>
                     {(user.is_verified || user.is_official) && (
                       <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                        <circle cx="8" cy="8" r="7.5" fill="#FF6D1F"/>
+                        <circle cx="8" cy="8" r="7.5" fill="var(--color-primary)"/>
                         <path d="M4.5 8.5L6.5 10.5L11.5 5.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     )}
                   </div>
                   <div style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '8px' }}>@{user.username}</div>
                 </Link>
-                <button onClick={() => handleFollow(user.id)} style={{ width: '100%', padding: '5px 0', background: '#FF6D1F', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                <button onClick={() => handleFollow(user.id)} style={{ width: '100%', padding: '5px 0', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
                   Follow
                 </button>
               </div>
@@ -201,7 +201,7 @@ export default function FeedPage() {
       {/* Loading */}
       {loading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
       )}
 
@@ -209,15 +209,15 @@ export default function FeedPage() {
       {!loading && posts.length === 0 && (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌱</div>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#FAF3E1', marginBottom: '8px' }}>Your feed is empty</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '8px' }}>Your feed is empty</h3>
           <p style={{ color: '#9a8f7a', fontSize: '14px', marginBottom: '24px', lineHeight: 1.6 }}>
             Follow some creators to see their posts here, or explore trending content
           </p>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-            <Link href="/explore" style={{ background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>
+            <Link href="/explore" style={{ background: 'var(--color-primary)', color: '#fff', fontWeight: 700, padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px' }}>
               Explore creators
             </Link>
-            <Link href="/post/new" style={{ background: '#2f2f2f', color: '#F5E7C6', fontWeight: 600, padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <Link href="/post/new" style={{ background: '#2f2f2f', color: 'var(--color-beige)', fontWeight: 600, padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontSize: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
               Share a post
             </Link>
           </div>
@@ -242,11 +242,11 @@ export default function FeedPage() {
       {!loading && hasMore && posts.length > 0 && (
         <div style={{ textAlign: 'center', marginTop: '24px' }}>
           <button onClick={() => loadPosts()} disabled={loadingMore} style={{
-            background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.1)', color: '#F5E7C6',
+            background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--color-beige)',
             padding: '10px 28px', borderRadius: '12px', fontSize: '14px', fontWeight: 600,
             cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '8px',
           }}>
-            {loadingMore ? <><div style={{ width: '14px', height: '14px', border: '2px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />Loading...</> : 'Load more'}
+            {loadingMore ? <><div style={{ width: '14px', height: '14px', border: '2px solid var(--color-primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />Loading...</> : 'Load more'}
           </button>
         </div>
       )}

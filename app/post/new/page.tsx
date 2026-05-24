@@ -197,9 +197,9 @@ export default function NewPostPage() {
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           Back
         </button>
-        <h1 style={{ fontSize: '17px', fontWeight: 800, color: '#FAF3E1' }}>New post</h1>
+        <h1 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--color-cream)' }}>New post</h1>
         <button type="submit" form="post-form" disabled={!canPost} style={{
-          background: canPost ? '#FF6D1F' : 'rgba(255,255,255,0.08)',
+          background: canPost ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)',
           color: canPost ? '#fff' : '#555',
           border: 'none', borderRadius: '10px', padding: '8px 18px',
           fontSize: '14px', fontWeight: 700, cursor: canPost ? 'pointer' : 'not-allowed',
@@ -229,7 +229,7 @@ export default function NewPostPage() {
             <div style={{ flexShrink: 0, marginTop: '2px' }}>
               {userAvatar
                 ? <img src={userAvatar} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-                : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 700 }}>{userInitial}</div>
+                : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 700 }}>{userInitial}</div>
               }
             </div>
             {/* Text */}
@@ -264,8 +264,8 @@ export default function NewPostPage() {
                   {/* Uploading overlay */}
                   {uploadingSlot === activeSlide && (
                     <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                      <span style={{ fontSize: '12px', color: '#FAF3E1', fontWeight: 600 }}>Uploading...</span>
+                      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                      <span style={{ fontSize: '12px', color: 'var(--color-cream)', fontWeight: 600 }}>Uploading...</span>
                     </div>
                   )}
 
@@ -291,7 +291,7 @@ export default function NewPostPage() {
                     <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '5px' }}>
                       {slides.map((_, i) => (
                         <button key={i} type="button" onClick={() => setActiveSlide(i)}
-                          style={{ width: i === activeSlide ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === activeSlide ? '#FF6D1F' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
+                          style={{ width: i === activeSlide ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === activeSlide ? 'var(--color-primary)' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
                       ))}
                     </div>
                   )}
@@ -306,7 +306,7 @@ export default function NewPostPage() {
                 {/* Per-slide prompt + tool */}
                 <div style={{ padding: '10px 14px', background: 'rgba(255,109,31,0.04)', borderTop: '1px solid rgba(255,109,31,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>✦ Image {activeSlide + 1} prompt</span>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)' }}>✦ Image {activeSlide + 1} prompt</span>
                     <span style={{ fontSize: '11px', color: '#555' }}>(optional)</span>
                   </div>
                   <textarea
@@ -314,12 +314,12 @@ export default function NewPostPage() {
                     onChange={e => updateSlide(activeSlide, 'prompt_text', e.target.value)}
                     placeholder="Prompt used for this image..."
                     rows={2}
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: '#F5E7C6', fontFamily: 'monospace', resize: 'none', outline: 'none', lineHeight: 1.6 }}
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: 'var(--color-beige)', fontFamily: 'monospace', resize: 'none', outline: 'none', lineHeight: 1.6 }}
                   />
                   {/* Per-slide AI tool */}
                   <div ref={toolDropdownRef} style={{ position: 'relative', marginTop: '6px' }}>
                     <button type="button" onClick={() => setShowToolDropdown(v => !v)}
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '7px 10px', fontSize: '12px', color: slides[activeSlide]?.ai_tool ? '#FAF3E1' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}>
+                      style={{ width: '100%', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '7px 10px', fontSize: '12px', color: slides[activeSlide]?.ai_tool ? 'var(--color-cream)' : '#9a8f7a', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}>
                       <span>{slides[activeSlide]?.ai_tool || 'AI tool for this image...'}</span>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ flexShrink: 0, transform: showToolDropdown ? 'rotate(180deg)' : 'rotate(0)' }}><path d="M2 4l4 4 4-4"/></svg>
                     </button>
@@ -331,7 +331,7 @@ export default function NewPostPage() {
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>None</div>
                         {aiTools.map(t => (
                           <div key={t} onClick={() => { updateSlide(activeSlide, 'ai_tool', t); setShowToolDropdown(false) }}
-                            style={{ padding: '9px 12px', fontSize: '12px', color: slides[activeSlide]?.ai_tool === t ? '#FF6D1F' : '#FAF3E1', cursor: 'pointer', background: slides[activeSlide]?.ai_tool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                            style={{ padding: '9px 12px', fontSize: '12px', color: slides[activeSlide]?.ai_tool === t ? 'var(--color-primary)' : 'var(--color-cream)', cursor: 'pointer', background: slides[activeSlide]?.ai_tool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                             onMouseEnter={e => { if (slides[activeSlide]?.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
                             onMouseLeave={e => { if (slides[activeSlide]?.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}>
                             {t}{slides[activeSlide]?.ai_tool === t && <span>✓</span>}
@@ -346,7 +346,7 @@ export default function NewPostPage() {
                 <div style={{ display: 'flex', gap: '6px', padding: '10px 14px', overflowX: 'auto', alignItems: 'center' }}>
                   {slides.map((s, i) => (
                     <div key={i} onClick={() => setActiveSlide(i)}
-                      style={{ position: 'relative', width: '52px', height: '52px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, cursor: 'pointer', border: `2px solid ${i === activeSlide ? '#FF6D1F' : 'transparent'}`, transition: 'border-color 0.15s' }}>
+                      style={{ position: 'relative', width: '52px', height: '52px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, cursor: 'pointer', border: `2px solid ${i === activeSlide ? 'var(--color-primary)' : 'transparent'}`, transition: 'border-color 0.15s' }}>
                       <img src={s.preview || s.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       {/* Reorder buttons */}
                       {i > 0 && (
@@ -362,7 +362,7 @@ export default function NewPostPage() {
                       )}
                       {uploadingSlot === i && (
                         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <div style={{ width: '16px', height: '16px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                          <div style={{ width: '16px', height: '16px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
                         </div>
                       )}
                     </div>
@@ -388,11 +388,11 @@ export default function NewPostPage() {
               <label style={{ display: 'block', margin: '0', cursor: 'pointer' }}>
                 <input type="file" accept="image/*" multiple style={{ display: 'none' }}
                   onChange={e => handleImagePick(e, 0)} />
-                <div style={{ border: `2px dashed ${dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)'}`, margin: '0 18px 14px', borderRadius: '12px', padding: '28px 20px', textAlign: 'center', transition: 'all 0.15s', background: dragOver ? 'rgba(255,109,31,0.04)' : 'transparent' }}
+                <div style={{ border: `2px dashed ${dragOver ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)'}`, margin: '0 18px 14px', borderRadius: '12px', padding: '28px 20px', textAlign: 'center', transition: 'all 0.15s', background: dragOver ? 'rgba(255,109,31,0.04)' : 'transparent' }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.4)')}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)')}>
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = dragOver ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)')}>
                   <div style={{ fontSize: '28px', marginBottom: '8px' }}>🖼</div>
-                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', margin: '0 0 4px' }}>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-cream)', margin: '0 0 4px' }}>
                     {dragOver ? 'Drop images here' : 'Click to add images'}
                   </p>
                   <p style={{ fontSize: '12px', color: '#9a8f7a', margin: 0 }}>Up to 10 images · each per-image prompt & AI tool · JPG, PNG, WebP</p>
@@ -407,7 +407,7 @@ export default function NewPostPage() {
               <div style={{ position: 'relative', paddingBottom: '56.25%' }}>
                 <img src={youtubeThumbnail} alt="Video" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{ color: '#fff', fontSize: '16px', marginLeft: '3px' }}>▶</span>
                   </div>
                 </div>
@@ -429,7 +429,7 @@ export default function NewPostPage() {
                 </svg>
                 <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)}
                   placeholder="Paste YouTube link..."
-                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: '13px', color: '#FAF3E1', fontFamily: 'inherit' }}
+                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: '13px', color: 'var(--color-cream)', fontFamily: 'inherit' }}
                 />
               </div>
               {youtubeLink && !youtubeId && (
@@ -461,9 +461,9 @@ export default function NewPostPage() {
               <input type="file" accept="image/*" multiple style={{ display: 'none' }} disabled={!!youtubeId}
                 onChange={e => handleImagePick(e, slides.length)} />
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <rect x="1.5" y="3" width="15" height="12" rx="2" stroke={slides.length > 0 ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
-                <circle cx="6" cy="7.5" r="1.5" stroke={slides.length > 0 ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
-                <path d="M1.5 12L5.5 8.5L8.5 11.5L11.5 8.5L16.5 13" stroke={slides.length > 0 ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="1.5" y="3" width="15" height="12" rx="2" stroke={slides.length > 0 ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="1.3"/>
+                <circle cx="6" cy="7.5" r="1.5" stroke={slides.length > 0 ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="1.3"/>
+                <path d="M1.5 12L5.5 8.5L8.5 11.5L11.5 8.5L16.5 13" stroke={slides.length > 0 ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </label>
 
@@ -474,8 +474,8 @@ export default function NewPostPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = (showVideo || youtubeId) ? 'rgba(255,109,31,0.15)' : 'transparent' }}
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <rect x="1.5" y="3.5" width="11" height="11" rx="2" stroke={(showVideo || youtubeId) ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3"/>
-                <path d="M12.5 6.5L16.5 4.5V13.5L12.5 11.5" stroke={(showVideo || youtubeId) ? '#FF6D1F' : '#9a8f7a'} strokeWidth="1.3" strokeLinejoin="round"/>
+                <rect x="1.5" y="3.5" width="11" height="11" rx="2" stroke={(showVideo || youtubeId) ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="1.3"/>
+                <path d="M12.5 6.5L16.5 4.5V13.5L12.5 11.5" stroke={(showVideo || youtubeId) ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="1.3" strokeLinejoin="round"/>
               </svg>
             </button>
 
@@ -490,7 +490,7 @@ export default function NewPostPage() {
 
             {/* Character count + slide count */}
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {slides.length > 0 && <span style={{ fontSize: '11px', color: '#FF6D1F', fontWeight: 600 }}>{slides.length} image{slides.length > 1 ? 's' : ''}</span>}
+              {slides.length > 0 && <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 600 }}>{slides.length} image{slides.length > 1 ? 's' : ''}</span>}
               {text.length > 0 && <span style={{ fontSize: '12px', color: '#555' }}>{text.length}</span>}
             </div>
           </div>

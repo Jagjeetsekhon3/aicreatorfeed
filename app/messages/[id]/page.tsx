@@ -119,7 +119,7 @@ export default function ConversationPage() {
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -137,10 +137,10 @@ export default function ConversationPage() {
         </button>
         {otherUser?.avatar_url
           ? <img src={otherUser.avatar_url} alt="" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover' }} />
-          : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
+          : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
         }
         <div style={{ flex: 1 }}>
-          <Link href={`/profile/${otherUser?.username}`} style={{ fontSize: '15px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{otherUser?.full_name}</Link>
+          <Link href={`/profile/${otherUser?.username}`} style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{otherUser?.full_name}</Link>
           <p style={{ fontSize: '12px', color: '#9a8f7a', margin: 0 }}>@{otherUser?.username}</p>
         </div>
       </div>
@@ -151,9 +151,9 @@ export default function ConversationPage() {
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '40px 0' }}>
             {otherUser?.avatar_url
               ? <img src={otherUser.avatar_url} alt="" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', marginBottom: '4px' }} />
-              : <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', fontWeight: 700, marginBottom: '4px' }}>{otherUser?.full_name?.[0]}</div>
+              : <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', fontWeight: 700, marginBottom: '4px' }}>{otherUser?.full_name?.[0]}</div>
             }
-            <div style={{ fontWeight: 700, color: '#FAF3E1', fontSize: '15px' }}>{otherUser?.full_name}</div>
+            <div style={{ fontWeight: 700, color: 'var(--color-cream)', fontSize: '15px' }}>{otherUser?.full_name}</div>
             <div style={{ fontSize: '13px', color: '#9a8f7a' }}>@{otherUser?.username}</div>
             <p style={{ fontSize: '13px', color: '#9a8f7a', textAlign: 'center', marginTop: '8px' }}>
               {isPending && !isRequester ? 'Accept this request to start chatting' : 'Send a message to start the conversation'}
@@ -179,15 +179,15 @@ export default function ConversationPage() {
                   <div style={{ width: '28px', flexShrink: 0, visibility: showAvatar ? 'visible' : 'hidden' }}>
                     {otherUser?.avatar_url
                       ? <img src={otherUser.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-                      : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
+                      : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
                     }
                   </div>
                 )}
                 <div style={{ maxWidth: '72%' }}>
                   <div style={{
                     padding: '10px 14px', borderRadius: isMine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                    background: isMine ? '#FF6D1F' : '#2f2f2f',
-                    color: isMine ? '#fff' : '#F5E7C6',
+                    background: isMine ? 'var(--color-primary)' : '#2f2f2f',
+                    color: isMine ? '#fff' : 'var(--color-beige)',
                     fontSize: '14px', lineHeight: 1.5, wordBreak: 'break-word',
                     opacity: msg.id?.startsWith('temp-') ? 0.7 : 1,
                   }}>
@@ -209,13 +209,13 @@ export default function ConversationPage() {
       {isPending && !isRequester && (
         <div style={{ padding: '14px 16px', background: '#2a2a2a', borderTop: '1px solid rgba(255,255,255,0.07)', textAlign: 'center' }}>
           <p style={{ fontSize: '13px', color: '#9a8f7a', marginBottom: '10px' }}>
-            <strong style={{ color: '#FAF3E1' }}>{otherUser?.full_name}</strong> wants to send you a message
+            <strong style={{ color: 'var(--color-cream)' }}>{otherUser?.full_name}</strong> wants to send you a message
           </p>
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
             <button onClick={async () => {
               await fetch('/api/messages?action=accept', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` }, body: JSON.stringify({ conv_id: id }) })
               setConversation((c: any) => ({ ...c, status: 'accepted' }))
-            }} style={{ padding: '9px 24px', background: '#FF6D1F', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
+            }} style={{ padding: '9px 24px', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
               Accept
             </button>
             <button onClick={async () => {
@@ -242,7 +242,7 @@ export default function ConversationPage() {
             maxLength={1000}
             style={{
               flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '20px', padding: '10px 16px', fontSize: '14px', color: '#FAF3E1',
+              borderRadius: '20px', padding: '10px 16px', fontSize: '14px', color: 'var(--color-cream)',
               fontFamily: 'inherit', resize: 'none', outline: 'none', lineHeight: 1.5,
               opacity: isPending && isRequester ? 0.5 : 1,
             }}
@@ -250,7 +250,7 @@ export default function ConversationPage() {
           />
           <button type="submit" disabled={!text.trim() || sending || (isPending && isRequester)} style={{
             width: '40px', height: '40px', borderRadius: '50%', border: 'none', flexShrink: 0,
-            background: text.trim() && !isPending ? '#FF6D1F' : '#333',
+            background: text.trim() && !isPending ? 'var(--color-primary)' : '#333',
             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: text.trim() ? 'pointer' : 'default',
             transition: 'background 0.2s',
           }}>

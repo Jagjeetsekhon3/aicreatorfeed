@@ -167,7 +167,7 @@ export async function POST(req: NextRequest) {
     const slug = name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
     const { data, error } = await admin.from('spaces').insert({
       name: slug, display_name, description: description || null,
-      icon: icon || '✨', cover_color: cover_color || '#FF6D1F',
+      icon: icon || '✨', cover_color: cover_color || 'var(--color-primary)',
       rules: rules || null, is_official: is_official || false,
       member_count: 0, post_count: 0,
     }).select().single()

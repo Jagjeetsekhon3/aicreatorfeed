@@ -128,7 +128,7 @@ export default function PostPage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -136,7 +136,7 @@ export default function PostPage() {
     <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
       <div style={{ fontSize: '40px' }}>🔍</div>
       <p style={{ color: '#9a8f7a' }}>Post not found</p>
-      <Link href="/feed" style={{ color: '#FF6D1F', textDecoration: 'none' }}>← Back to feed</Link>
+      <Link href="/feed" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>← Back to feed</Link>
     </div>
   )
 
@@ -186,7 +186,7 @@ export default function PostPage() {
                 <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '5px' }}>
                   {slides.map((_: any, i: number) => (
                     <button key={i} onClick={() => setCarouselIdx(i)}
-                      style={{ width: i === carouselIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === carouselIdx ? '#FF6D1F' : 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
+                      style={{ width: i === carouselIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === carouselIdx ? 'var(--color-primary)' : 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
                   ))}
                 </div>
               )}
@@ -210,11 +210,11 @@ export default function PostPage() {
             <Link href={`/profile/${post.user.username}`} style={{ textDecoration: 'none', flexShrink: 0 }}>
               {post.user.avatar_url
                 ? <img src={post.user.avatar_url} alt="" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,109,31,0.3)' }} />
-                : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+                : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
               }
             </Link>
             <div>
-              <Link href={`/profile/${post.user.username}`} style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{post.user.full_name}</Link>
+              <Link href={`/profile/${post.user.username}`} style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{post.user.full_name}</Link>
               <div style={{ fontSize: '12px', color: '#9a8f7a' }}>@{post.user.username} · {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</div>
             </div>
 
@@ -224,7 +224,7 @@ export default function PostPage() {
                 <button onClick={() => setShowMenu(m => !m)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', padding: '4px 8px', borderRadius: '8px', fontSize: '18px', fontFamily: 'inherit', lineHeight: 1 }}>⋯</button>
                 {showMenu && (
                   <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: '4px', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '6px', width: '150px', zIndex: 50, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-                    <Link href={`/post/${id}/edit`} onClick={() => setShowMenu(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 12px', borderRadius: '8px', fontSize: '13px', color: '#FAF3E1', textDecoration: 'none', fontWeight: 500 }}
+                    <Link href={`/post/${id}/edit`} onClick={() => setShowMenu(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 12px', borderRadius: '8px', fontSize: '13px', color: 'var(--color-cream)', textDecoration: 'none', fontWeight: 500 }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       ✏️ Edit post
@@ -241,7 +241,7 @@ export default function PostPage() {
           </div>
 
           {/* Caption */}
-          {post.caption && <p style={{ fontSize: '15px', color: '#F5E7C6', lineHeight: 1.65, marginBottom: '14px', whiteSpace: 'pre-wrap' }}><RenderWithMentions text={post.caption} /></p>}
+          {post.caption && <p style={{ fontSize: '15px', color: 'var(--color-beige)', lineHeight: 1.65, marginBottom: '14px', whiteSpace: 'pre-wrap' }}><RenderWithMentions text={post.caption} /></p>}
 
           {/* Prompt — shows current slide's prompt for carousel posts */}
           {(() => {
@@ -253,11 +253,11 @@ export default function PostPage() {
             return (
               <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '12px', padding: '12px 14px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)' }}>
                     ✦ AI PROMPT {slideTool ? `· ${slideTool}` : ''}{isCarousel ? ` (image ${carouselIdx + 1})` : ''}
                   </span>
                   <button onClick={async () => { await navigator.clipboard.writeText(slidePrompt); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: copied ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit' }}>
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: copied ? 'var(--color-primary)' : '#9a8f7a', fontFamily: 'inherit' }}>
                     {copied ? '✓ Copied' : 'Copy'}
                   </button>
                 </div>
@@ -275,7 +275,7 @@ export default function PostPage() {
 
           {/* Actions */}
           <div style={{ display: 'flex', gap: '20px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <button onClick={handleLike} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: liked ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit' }}>
+            <button onClick={handleLike} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: liked ? 'var(--color-primary)' : '#9a8f7a', fontFamily: 'inherit' }}>
               <span style={{ fontSize: '18px' }}>{liked ? '♥' : '♡'}</span> {likeCount}
             </button>
             <button onClick={() => commentRef.current?.focus()} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: '#9a8f7a', fontFamily: 'inherit' }}>
@@ -288,7 +288,7 @@ export default function PostPage() {
       {/* Comments section */}
       <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden' }}>
         <div style={{ padding: '16px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#FAF3E1', margin: 0 }}>Comments ({comments.length})</h3>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', margin: 0 }}>Comments ({comments.length})</h3>
         </div>
 
         {/* Comment input */}
@@ -302,10 +302,10 @@ export default function PostPage() {
               rows={2}
               maxLength={500}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleComment(e as any) } }}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '10px 12px', fontSize: '14px', color: '#FAF3E1', fontFamily: 'inherit', resize: 'none', outline: 'none', lineHeight: 1.5 }}
+              style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '10px 12px', fontSize: '14px', color: 'var(--color-cream)', fontFamily: 'inherit', resize: 'none', outline: 'none', lineHeight: 1.5 }}
             />
             <button type="submit" disabled={!commentText.trim() || posting} style={{
-              background: commentText.trim() ? '#FF6D1F' : 'rgba(255,255,255,0.08)',
+              background: commentText.trim() ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)',
               color: commentText.trim() ? '#fff' : '#555',
               border: 'none', borderRadius: '10px', padding: '10px 16px',
               fontSize: '13px', fontWeight: 700, cursor: commentText.trim() ? 'pointer' : 'not-allowed',
@@ -316,7 +316,7 @@ export default function PostPage() {
           </form>
         ) : (
           <div style={{ padding: '16px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
-            <Link href="/auth/login" style={{ color: '#FF6D1F', fontWeight: 600, textDecoration: 'none', fontSize: '14px' }}>Sign in to comment</Link>
+            <Link href="/auth/login" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', fontSize: '14px' }}>Sign in to comment</Link>
           </div>
         )}
 
@@ -335,18 +335,18 @@ export default function PostPage() {
                 <Link href={`/profile/${comment.user.username}`} style={{ flexShrink: 0 }}>
                   {comment.user.avatar_url
                     ? <img src={comment.user.avatar_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
-                    : <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700 }}>{comment.user.full_name?.[0]}</div>
+                    : <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700 }}>{comment.user.full_name?.[0]}</div>
                   }
                 </Link>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <Link href={`/profile/${comment.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{comment.user.full_name}</Link>
+                    <Link href={`/profile/${comment.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{comment.user.full_name}</Link>
                     <span style={{ fontSize: '11px', color: '#9a8f7a' }}>{formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}</span>
                     {currentUserId === comment.user_id && (
                       <button onClick={() => handleDeleteComment(comment.id)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: '#9a8f7a', fontFamily: 'inherit', padding: '2px 4px' }}>Delete</button>
                     )}
                   </div>
-                  <p style={{ fontSize: '14px', color: '#F5E7C6', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{comment.content}</p>
+                  <p style={{ fontSize: '14px', color: 'var(--color-beige)', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{comment.content}</p>
                 </div>
               </div>
             ))

@@ -103,7 +103,7 @@ export default function MentionInput({ value, onChange, onKeyDown, placeholder, 
         style={{
           width: '100%', boxSizing: 'border-box',
           background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '10px', color: '#FAF3E1', fontSize: '14px',
+          borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px',
           padding: '10px 12px', fontFamily: 'inherit', outline: 'none',
           resize: 'none',
           ...style,
@@ -128,10 +128,10 @@ export default function MentionInput({ value, onChange, onKeyDown, placeholder, 
             >
               {u.avatar_url
                 ? <img src={u.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
+                : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
               }
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name}</div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name}</div>
                 <div style={{ fontSize: '11px', color: '#9a8f7a' }}>@{u.username}</div>
               </div>
             </div>
@@ -151,7 +151,7 @@ export function RenderWithMentions({ text, style }: { text: string; style?: Reac
       {parts.map((part, i) =>
         part.startsWith('@') ? (
           <Link key={i} href={`/profile/${part.slice(1)}`}
-            style={{ color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}
+            style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}
             onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
             onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
           >{part}</Link>

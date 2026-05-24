@@ -49,7 +49,7 @@ function weekDelta(val: number, label: string) {
   return <span style={{ color: '#4ade80', fontSize: '11px' }}>+{val.toLocaleString()} {label}</span>
 }
 
-function Bar({ value, max, color = '#FF6D1F' }: { value: number; max: number; color?: string }) {
+function Bar({ value, max, color = 'var(--color-primary)' }: { value: number; max: number; color?: string }) {
   return (
     <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.07)', borderRadius: '3px', overflow: 'hidden' }}>
       <div style={{ width: `${max ? Math.round((value / max) * 100) : 0}%`, height: '100%', background: color, borderRadius: '3px', transition: 'width 0.4s ease' }} />
@@ -71,7 +71,7 @@ export default function AnalyticsTab() {
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -107,12 +107,12 @@ export default function AnalyticsTab() {
       {/* ── KPI GRID ─────────────────────────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', marginBottom: '20px' }}>
         {[
-          { label: 'Total users',      value: data.totalUsers,      sub: delta(data.newUsersToday, data.newUsersYesterday),     accent: '#FF6D1F' },
+          { label: 'Total users',      value: data.totalUsers,      sub: delta(data.newUsersToday, data.newUsersYesterday),     accent: 'var(--color-primary)' },
           { label: 'Total posts',      value: data.totalPosts,      sub: delta(data.newPostsToday, data.newPostsYesterday),     accent: '#a78bfa' },
           { label: 'Total likes',      value: data.totalLikes,      sub: weekDelta(data.newLikesWeek, 'this week'),             accent: '#f472b6' },
           { label: 'Total comments',   value: data.totalComments,   sub: weekDelta(data.newCommentsWeek, 'this week'),         accent: '#34d399' },
           { label: 'Avg likes / post', value: data.engagementRate,  sub: <span style={{ fontSize: '11px', color: '#9a8f7a' }}>all time avg</span>, accent: '#facc15' },
-          { label: 'Bookmarks',        value: data.totalBookmarks,  sub: <span style={{ fontSize: '11px', color: '#9a8f7a' }}>saved posts</span>,  accent: '#FF6D1F' },
+          { label: 'Bookmarks',        value: data.totalBookmarks,  sub: <span style={{ fontSize: '11px', color: '#9a8f7a' }}>saved posts</span>,  accent: 'var(--color-primary)' },
           { label: 'Follows',          value: data.totalFollows,    sub: weekDelta(data.newFollowsToday, 'today'),              accent: '#60a5fa' },
           { label: 'Open tickets',     value: data.openTickets,     sub: <span style={{ fontSize: '11px', color: data.openTickets > 5 ? '#ff8080' : '#4ade80' }}>{data.openTickets > 5 ? 'needs attention' : 'looking good'}</span>, accent: '#facc15' },
         ].map(({ label, value, sub, accent }) => (
@@ -120,7 +120,7 @@ export default function AnalyticsTab() {
             <div style={{ fontSize: '22px', fontWeight: 900, color: accent, marginBottom: '2px', fontVariantNumeric: 'tabular-nums' }}>
               {typeof value === 'number' ? value.toLocaleString() : value}
             </div>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: '#FAF3E1', marginBottom: '3px' }}>{label}</div>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-cream)', marginBottom: '3px' }}>{label}</div>
             <div>{sub}</div>
           </div>
         ))}
@@ -129,10 +129,10 @@ export default function AnalyticsTab() {
       {/* ── GROWTH CHART ─────────────────────────────────────────────────── */}
       <div style={{ ...card, marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>30-day trend</h3>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>30-day trend</h3>
           <div style={{ display: 'flex', gap: '6px' }}>
             {(['users', 'posts'] as const).map(m => (
-              <button key={m} onClick={() => setChartMode(m)} style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', background: chartMode === m ? 'rgba(255,109,31,0.15)' : 'transparent', borderColor: chartMode === m ? '#FF6D1F' : 'rgba(255,255,255,0.1)', color: chartMode === m ? '#FF6D1F' : '#9a8f7a' }}>
+              <button key={m} onClick={() => setChartMode(m)} style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', background: chartMode === m ? 'rgba(255,109,31,0.15)' : 'transparent', borderColor: chartMode === m ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)', color: chartMode === m ? 'var(--color-primary)' : '#9a8f7a' }}>
                 {m === 'users' ? 'Users' : 'Posts'}
               </button>
             ))}
@@ -141,12 +141,12 @@ export default function AnalyticsTab() {
         <svg ref={svgRef} viewBox={`0 0 ${W} ${H + 24}`} style={{ width: '100%', height: '140px' }}>
           <defs>
             <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FF6D1F" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#FF6D1F" stopOpacity="0" />
+              <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
             </linearGradient>
           </defs>
           <polygon points={fillPts} fill="url(#lineGrad)" />
-          <polyline points={pts} fill="none" stroke="#FF6D1F" strokeWidth="2" strokeLinejoin="round" />
+          <polyline points={pts} fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinejoin="round" />
           {/* Labels: first, mid, last */}
           {[0, Math.floor(chartData.length / 2), chartData.length - 1].map(i => (
             <text key={i} x={(i / (chartData.length - 1)) * W} y={H + 18} textAnchor="middle" fontSize="10" fill="#9a8f7a">
@@ -163,18 +163,18 @@ export default function AnalyticsTab() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
         {/* Post types donut */}
         <div style={card}>
-          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>Post types</h3>
+          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>Post types</h3>
           {(() => {
             const total = (data.postTypes.image || 0) + (data.postTypes.video || 0) + (data.postTypes.text || 0) || 1
             const types = [
-              { label: 'Images', value: data.postTypes.image || 0, color: '#FF6D1F' },
+              { label: 'Images', value: data.postTypes.image || 0, color: 'var(--color-primary)' },
               { label: 'Prompts / Text', value: data.postTypes.text || 0, color: '#a78bfa' },
               { label: 'Videos', value: data.postTypes.video || 0, color: '#34d399' },
             ]
             return types.map(({ label, value, color }) => (
               <div key={label} style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                  <span style={{ color: '#F5E7C6' }}>{label}</span>
+                  <span style={{ color: 'var(--color-beige)' }}>{label}</span>
                   <span style={{ color: '#9a8f7a' }}>{value.toLocaleString()} · {Math.round(value / total * 100)}%</span>
                 </div>
                 <div style={{ height: '6px', background: 'rgba(255,255,255,0.07)', borderRadius: '3px', overflow: 'hidden' }}>
@@ -187,15 +187,15 @@ export default function AnalyticsTab() {
 
         {/* Top AI tools */}
         <div style={card}>
-          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>Top AI tools</h3>
+          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>Top AI tools</h3>
           {data.topTools.length === 0 && <p style={{ color: '#9a8f7a', fontSize: '13px' }}>No tool data yet</p>}
           {data.topTools.slice(0, 6).map(([tool, count], i) => {
             const max = data.topTools[0]?.[1] || 1
-            const colors = ['#FF6D1F','#FF8540','#a78bfa','#34d399','#60a5fa','#facc15']
+            const colors = ['var(--color-primary)','#FF8540','#a78bfa','#34d399','#60a5fa','#facc15']
             return (
               <div key={tool} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '11px', color: '#9a8f7a', width: '14px', textAlign: 'right', flexShrink: 0 }}>{i + 1}</span>
-                <span style={{ fontSize: '12px', color: '#FAF3E1', width: '90px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tool}</span>
+                <span style={{ fontSize: '12px', color: 'var(--color-cream)', width: '90px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tool}</span>
                 <Bar value={count} max={max} color={colors[i]} />
                 <span style={{ fontSize: '11px', color: '#9a8f7a', width: '36px', textAlign: 'right', flexShrink: 0 }}>{count.toLocaleString()}</span>
               </div>
@@ -206,7 +206,7 @@ export default function AnalyticsTab() {
 
       {/* ── HEATMAP ──────────────────────────────────────────────────────── */}
       <div style={{ ...card, marginBottom: '16px' }}>
-        <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>
+        <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>
           Posting activity heatmap
           <span style={{ fontSize: '11px', fontWeight: 400, color: '#9a8f7a', marginLeft: '8px' }}>last 30 days · hour × day</span>
         </h3>
@@ -248,7 +248,7 @@ export default function AnalyticsTab() {
       {/* ── WORLD MAP ────────────────────────────────────────────────────── */}
       <div style={{ ...card, marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
-          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>
             🌍 Users worldwide
             <span style={{ fontSize: '11px', fontWeight: 400, color: '#9a8f7a', marginLeft: '8px' }}>{data.topCountries.length} countries</span>
           </h3>
@@ -287,7 +287,7 @@ export default function AnalyticsTab() {
                     <circle cx={cx} cy={cy} r={r + 3} fill={`rgba(255,109,31,${(opacity * 0.3).toFixed(2)})`} />
                     <circle cx={cx} cy={cy} r={r} fill={`rgba(255,109,31,${opacity.toFixed(2)})`} />
                     {i < 3 && (
-                      <text x={cx + r + 3} y={cy + 4} fontSize="9" fill="#FAF3E1" fontWeight="500">{c.code}</text>
+                      <text x={cx + r + 3} y={cy + 4} fontSize="9" fill="var(--color-cream)" fontWeight="500">{c.code}</text>
                     )}
                   </g>
                 )
@@ -303,7 +303,7 @@ export default function AnalyticsTab() {
           <div>
             {data.topCountries.length === 0 ? (
               <div style={{ padding: '12px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px' }}>
-                <p style={{ fontSize: '12px', fontWeight: 700, color: '#FF6D1F', margin: '0 0 6px' }}>How to collect country data</p>
+                <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)', margin: '0 0 6px' }}>How to collect country data</p>
                 <ol style={{ fontSize: '11px', color: '#9a8f7a', margin: 0, paddingLeft: '16px', lineHeight: 1.8 }}>
                   <li>Add a Country field to your signup form in Settings</li>
                   <li>Or use Supabase Edge Function to detect from IP on sign-up</li>
@@ -317,8 +317,8 @@ export default function AnalyticsTab() {
                   <div key={c.code} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '11px', color: '#9a8f7a', width: '16px', textAlign: 'right', flexShrink: 0 }}>{i + 1}</span>
                     <span style={{ fontSize: '13px', width: '20px', flexShrink: 0 }}>{getFlagEmoji(c.code)}</span>
-                    <span style={{ fontSize: '12px', color: '#FAF3E1', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
-                    <Bar value={c.count} max={maxCountry} color="#FF6D1F" />
+                    <span style={{ fontSize: '12px', color: 'var(--color-cream)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+                    <Bar value={c.count} max={maxCountry} color="var(--color-primary)" />
                     <span style={{ fontSize: '11px', color: '#9a8f7a', width: '32px', textAlign: 'right', flexShrink: 0 }}>{c.count}</span>
                   </div>
                 ))}
@@ -331,7 +331,7 @@ export default function AnalyticsTab() {
       {/* ── TOP CREATORS ─────────────────────────────────────────────────── */}
       <div style={{ ...card, padding: 0, overflow: 'hidden', marginBottom: '16px' }}>
         <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>Top creators</h3>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>Top creators</h3>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
           <thead>
@@ -349,18 +349,18 @@ export default function AnalyticsTab() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {c.avatar_url
                       ? <img src={c.avatar_url} alt="" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      : <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>{c.full_name?.[0]}</div>
+                      : <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>{c.full_name?.[0]}</div>
                     }
                     <div>
-                      <div style={{ color: '#FAF3E1', fontWeight: 600 }}>{c.full_name}</div>
+                      <div style={{ color: 'var(--color-cream)', fontWeight: 600 }}>{c.full_name}</div>
                       <div style={{ color: '#9a8f7a', fontSize: '11px' }}>@{c.username}</div>
                     </div>
                   </div>
                 </td>
-                <td style={{ padding: '10px 14px', textAlign: 'center', color: '#FAF3E1' }}>{(c.posts_count || 0).toLocaleString()}</td>
-                <td style={{ padding: '10px 14px', textAlign: 'center', color: '#FAF3E1' }}>{(c.followers_count || 0).toLocaleString()}</td>
+                <td style={{ padding: '10px 14px', textAlign: 'center', color: 'var(--color-cream)' }}>{(c.posts_count || 0).toLocaleString()}</td>
+                <td style={{ padding: '10px 14px', textAlign: 'center', color: 'var(--color-cream)' }}>{(c.followers_count || 0).toLocaleString()}</td>
                 <td style={{ padding: '10px 14px', textAlign: 'center' }}>
-                  {c.is_official ? <span style={{ color: '#FF6D1F', fontSize: '13px' }}>●</span> : c.is_verified ? <span style={{ color: '#FF6D1F', fontSize: '13px' }}>✓</span> : <span style={{ color: '#333' }}>—</span>}
+                  {c.is_official ? <span style={{ color: 'var(--color-primary)', fontSize: '13px' }}>●</span> : c.is_verified ? <span style={{ color: 'var(--color-primary)', fontSize: '13px' }}>✓</span> : <span style={{ color: '#333' }}>—</span>}
                 </td>
               </tr>
             ))}
@@ -372,7 +372,7 @@ export default function AnalyticsTab() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
         {/* Top posts */}
         <div style={card}>
-          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>Most liked posts</h3>
+          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>Most liked posts</h3>
           {data.topPosts.length === 0 && <p style={{ color: '#9a8f7a', fontSize: '12px' }}>No posts yet</p>}
           {data.topPosts.map((p, i) => {
             const user = Array.isArray(p.user) ? p.user[0] : p.user
@@ -381,7 +381,7 @@ export default function AnalyticsTab() {
                 <span style={{ fontSize: '11px', color: '#9a8f7a', width: '14px', flexShrink: 0 }}>{i + 1}</span>
                 {p.image_url && <img src={p.image_url} alt="" style={{ width: '36px', height: '36px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }} />}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '12px', color: '#FAF3E1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.caption || p.prompt_text || 'No caption'}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--color-cream)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.caption || p.prompt_text || 'No caption'}</div>
                   <div style={{ fontSize: '11px', color: '#9a8f7a' }}>@{user?.username} · ♥ {(p.likes_count || 0).toLocaleString()}</div>
                 </div>
               </div>
@@ -391,14 +391,14 @@ export default function AnalyticsTab() {
 
         {/* Top tags */}
         <div style={card}>
-          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>Trending tags</h3>
+          <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>Trending tags</h3>
           {data.topTags.length === 0 && <p style={{ color: '#9a8f7a', fontSize: '12px' }}>No tag data yet</p>}
           {data.topTags.map(([tag, count], i) => {
             const max = data.topTags[0]?.[1] || 1
             return (
               <div key={tag} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '11px', color: '#9a8f7a', width: '14px', textAlign: 'right', flexShrink: 0 }}>{i + 1}</span>
-                <span style={{ fontSize: '12px', color: '#FF6D1F', width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>#{tag}</span>
+                <span style={{ fontSize: '12px', color: 'var(--color-primary)', width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>#{tag}</span>
                 <Bar value={count} max={max} />
                 <span style={{ fontSize: '11px', color: '#9a8f7a', width: '32px', textAlign: 'right', flexShrink: 0 }}>{count}</span>
               </div>
@@ -410,7 +410,7 @@ export default function AnalyticsTab() {
       {/* ── REVENUE OVERVIEW ─────────────────────────────────────────── */}
       <div style={{ ...card, marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>💰 Revenue</h3>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>💰 Revenue</h3>
           <span style={{ fontSize: '12px', color: '#9a8f7a' }}>{data.revenue.transactionCount} paid transactions</span>
         </div>
 
@@ -425,7 +425,7 @@ export default function AnalyticsTab() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px', marginBottom: '16px' }}>
               {[
                 { label: 'Total revenue',   value: data.revenue.total,        color: '#4ade80' },
-                { label: 'This month',      value: data.revenue.thisMonth,     color: '#FF6D1F' },
+                { label: 'This month',      value: data.revenue.thisMonth,     color: 'var(--color-primary)' },
                 { label: 'This week',       value: data.revenue.thisWeek,      color: '#a78bfa' },
                 { label: 'Today',           value: data.revenue.today,         color: '#60a5fa' },
                 { label: 'From donations',  value: data.revenue.donation,      color: '#facc15' },
@@ -451,7 +451,7 @@ export default function AnalyticsTab() {
                   { label: 'Ad campaigns',   value: data.revenue.ad,           color: '#34d399' },
                 ].filter(r => r.value > 0).map(({ label, value, color }) => (
                   <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '12px', color: '#FAF3E1', width: '110px', flexShrink: 0 }}>{label}</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-cream)', width: '110px', flexShrink: 0 }}>{label}</span>
                     <div style={{ flex: 1, height: '8px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden' }}>
                       <div style={{ width: `${Math.round((value / data.revenue.total) * 100)}%`, height: '100%', background: color, borderRadius: '4px', transition: 'width 0.6s ease' }} />
                     </div>
@@ -503,12 +503,12 @@ export default function AnalyticsTab() {
                       <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
                         {user?.avatar_url
                           ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                          : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#FF6D1F', fontWeight: 700, flexShrink: 0 }}>
+                          : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: 'var(--color-primary)', fontWeight: 700, flexShrink: 0 }}>
                               {user?.full_name?.[0] || '?'}
                             </div>
                         }
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#FAF3E1' }}>{user?.full_name || 'Guest'}</div>
+                          <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-cream)' }}>{user?.full_name || 'Guest'}</div>
                           <div style={{ fontSize: '11px', color: '#9a8f7a' }}>@{user?.username || '—'}</div>
                         </div>
                         <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', flexShrink: 0, background: p.type === 'donation' ? 'rgba(250,204,21,0.1)' : p.type === 'subscription' ? 'rgba(244,114,182,0.1)' : 'rgba(52,211,153,0.1)', color: p.type === 'donation' ? '#facc15' : p.type === 'subscription' ? '#f472b6' : '#34d399' }}>
@@ -531,8 +531,8 @@ export default function AnalyticsTab() {
       {/* ── AD CAMPAIGNS ─────────────────────────────────────────────────── */}
       <div style={{ ...card, marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>📢 Ad Campaigns</h3>
-          <a href="/acfjagjeetadmin/dashboard?tab=ads" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>Manage ads →</a>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>📢 Ad Campaigns</h3>
+          <a href="/acfjagjeetadmin/dashboard?tab=ads" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>Manage ads →</a>
         </div>
 
         {/* Ad stats row */}
@@ -541,7 +541,7 @@ export default function AnalyticsTab() {
             { label: 'Active campaigns', value: data.adStats.activeAds,       color: '#4ade80' },
             { label: 'Pending review',   value: data.adStats.pendingAds,       color: '#facc15' },
             { label: 'Total impressions',value: data.adStats.totalImpressions, color: '#60a5fa' },
-            { label: 'Total clicks',     value: data.adStats.totalClicks,      color: '#FF6D1F' },
+            { label: 'Total clicks',     value: data.adStats.totalClicks,      color: 'var(--color-primary)' },
             { label: 'Avg CTR',          value: data.adStats.totalImpressions > 0 ? parseFloat(((data.adStats.totalClicks / data.adStats.totalImpressions) * 100).toFixed(1)) : 0, color: '#a78bfa', suffix: '%' },
           ].map(({ label, value, color, suffix }) => (
             <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '12px' }}>
@@ -569,7 +569,7 @@ export default function AnalyticsTab() {
 
                   {/* Ad title + advertiser */}
                   <div style={{ flex: 1, minWidth: '140px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#FAF3E1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ad.title}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-cream)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ad.title}</div>
                     <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{user?.full_name || 'Unknown'} · {ad.slot}</div>
                   </div>
 
@@ -580,7 +580,7 @@ export default function AnalyticsTab() {
                       <div style={{ fontSize: '10px', color: '#9a8f7a' }}>views</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#FF6D1F' }}>{(ad.clicks || 0).toLocaleString()}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-primary)' }}>{(ad.clicks || 0).toLocaleString()}</div>
                       <div style={{ fontSize: '10px', color: '#9a8f7a' }}>clicks</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
@@ -606,7 +606,7 @@ export default function AnalyticsTab() {
 
       {/* ── COMMUNITY HEALTH ─────────────────────────────────────────────── */}
       <div style={{ ...card }}>
-        <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>Community health</h3>
+        <h3 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>Community health</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px' }}>
           {[
             { label: 'Spaces', value: data.totalSpaces, icon: '👥' },
@@ -618,7 +618,7 @@ export default function AnalyticsTab() {
           ].map(({ label, value, icon }) => (
             <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '12px', textAlign: 'center' }}>
               <div style={{ fontSize: '20px', marginBottom: '6px' }}>{icon}</div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: '#FAF3E1' }}>{value.toLocaleString()}</div>
+              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-cream)' }}>{value.toLocaleString()}</div>
               <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '2px' }}>{label}</div>
             </div>
           ))}

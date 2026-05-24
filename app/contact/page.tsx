@@ -87,10 +87,10 @@ export default function ContactPage() {
 
       {/* Header */}
       <div style={{ marginBottom: '40px', animation: 'fadeUp 0.3s ease' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.2)', color: '#FF6D1F', fontSize: '12px', fontWeight: 700, padding: '5px 14px', borderRadius: '999px', marginBottom: '16px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.2)', color: 'var(--color-primary)', fontSize: '12px', fontWeight: 700, padding: '5px 14px', borderRadius: '999px', marginBottom: '16px' }}>
           ✦ GET IN TOUCH
         </div>
-        <h1 style={{ fontSize: 'clamp(28px, 6vw, 44px)', fontWeight: 900, color: '#FAF3E1', letterSpacing: '-1px', marginBottom: '12px', lineHeight: 1.1 }}>
+        <h1 style={{ fontSize: 'clamp(28px, 6vw, 44px)', fontWeight: 900, color: 'var(--color-cream)', letterSpacing: '-1px', marginBottom: '12px', lineHeight: 1.1 }}>
           Contact Us
         </h1>
         <p style={{ fontSize: '15px', color: '#9a8f7a', lineHeight: 1.7, maxWidth: '520px' }}>
@@ -117,7 +117,7 @@ export default function ContactPage() {
                       {link.icon}
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1' }}>{link.label}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)' }}>{link.label}</div>
                       <div style={{ fontSize: '12px', color: '#9a8f7a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.handle}</div>
                     </div>
                     <svg style={{ marginLeft: 'auto', flexShrink: 0, color: '#555' }} width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
@@ -133,16 +133,16 @@ export default function ContactPage() {
               <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#9a8f7a', marginBottom: '10px', letterSpacing: '0.05em' }}>EMAIL US</h3>
               <a href={`mailto:${contactEmail}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
                 <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>✉️</div>
-                <span style={{ fontSize: '13px', color: '#FF6D1F', fontWeight: 600 }}>{contactEmail}</span>
+                <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600 }}>{contactEmail}</span>
               </a>
             </div>
           )}
 
           {/* Response time note */}
           <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '14px', padding: '16px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#FF6D1F', marginBottom: '6px' }}>⏱ Response time</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '6px' }}>⏱ Response time</div>
             <p style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.6, margin: 0 }}>
-              We typically reply within <strong style={{ color: '#FAF3E1' }}>24–48 hours</strong> on weekdays. For urgent issues, mention it in your subject line.
+              We typically reply within <strong style={{ color: 'var(--color-cream)' }}>24–48 hours</strong> on weekdays. For urgent issues, mention it in your subject line.
             </p>
           </div>
 
@@ -156,7 +156,7 @@ export default function ContactPage() {
                 { href: '/tutorials', icon: '🎬', label: 'Watch tutorials' },
                 { href: '/community', icon: '👥', label: 'Join community' },
               ].map(({ href, icon, label }) => (
-                <Link key={href} href={href} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', borderRadius: '8px', textDecoration: 'none', color: '#F5E7C6', fontSize: '13px', transition: 'background 0.15s' }}
+                <Link key={href} href={href} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', borderRadius: '8px', textDecoration: 'none', color: 'var(--color-beige)', fontSize: '13px', transition: 'background 0.15s' }}
                   onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.05)'}
                   onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}
                 >
@@ -174,19 +174,19 @@ export default function ContactPage() {
             /* Success state */
             <div style={{ textAlign: 'center', padding: '40px 20px' }}>
               <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(74,222,128,0.1)', border: '2px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '28px' }}>✓</div>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#FAF3E1', marginBottom: '10px' }}>Message sent!</h3>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-cream)', marginBottom: '10px' }}>Message sent!</h3>
               <p style={{ fontSize: '14px', color: '#9a8f7a', lineHeight: 1.7, marginBottom: '24px' }}>
-                Thanks for reaching out. We&apos;ll get back to you at <strong style={{ color: '#FAF3E1' }}>{email}</strong> within 24–48 hours.
+                Thanks for reaching out. We&apos;ll get back to you at <strong style={{ color: 'var(--color-cream)' }}>{email}</strong> within 24–48 hours.
               </p>
               <button onClick={() => { setSubmitted(false); setSubject(''); setMessage(''); setCategory('general') }}
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#F5E7C6', padding: '10px 24px', borderRadius: '10px', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--color-beige)', padding: '10px 24px', borderRadius: '10px', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
                 Send another message
               </button>
             </div>
           ) : (
             /* Form */
             <>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#FAF3E1', marginBottom: '20px' }}>Send us a message</h2>
+              <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-cream)', marginBottom: '20px' }}>Send us a message</h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
@@ -195,12 +195,12 @@ export default function ContactPage() {
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>Your name</label>
                     <input value={name} onChange={e => setName(e.target.value)} placeholder="Jagjeet Singh"
-                      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
+                      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
                   </div>
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>Email address *</label>
                     <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com"
-                      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
+                      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
                   </div>
                 </div>
 
@@ -210,7 +210,7 @@ export default function ContactPage() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
                     {categories.map(c => (
                       <button key={c.value} onClick={() => setCategory(c.value)}
-                        style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: '1px solid', transition: 'all 0.15s', background: category === c.value ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.04)', borderColor: category === c.value ? '#FF6D1F' : 'rgba(255,255,255,0.08)', color: category === c.value ? '#FF6D1F' : '#9a8f7a' }}>
+                        style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: '1px solid', transition: 'all 0.15s', background: category === c.value ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.04)', borderColor: category === c.value ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)', color: category === c.value ? 'var(--color-primary)' : '#9a8f7a' }}>
                         {c.label}
                       </button>
                     ))}
@@ -221,14 +221,14 @@ export default function ContactPage() {
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>Subject *</label>
                   <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="What's this about?"
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
                 </div>
 
                 {/* Message */}
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>Message *</label>
                   <textarea value={message} onChange={e => setMessage(e.target.value)} rows={5} placeholder="Tell us everything…"
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none', resize: 'vertical' }} />
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none', resize: 'vertical' }} />
                   <div style={{ fontSize: '11px', color: message.length > 1000 ? '#ff8080' : '#555', textAlign: 'right', marginTop: '3px' }}>{message.length}/1000</div>
                 </div>
 
@@ -241,7 +241,7 @@ export default function ContactPage() {
 
                 {/* Submit */}
                 <button onClick={handleSubmit} disabled={submitting}
-                  style={{ background: '#FF6D1F', border: 'none', color: '#fff', fontWeight: 800, padding: '13px', borderRadius: '12px', fontSize: '14px', cursor: submitting ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: submitting ? 0.8 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'opacity 0.2s' }}>
+                  style={{ background: 'var(--color-primary)', border: 'none', color: '#fff', fontWeight: 800, padding: '13px', borderRadius: '12px', fontSize: '14px', cursor: submitting ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: submitting ? 0.8 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'opacity 0.2s' }}>
                   {submitting ? (
                     <><div style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} /> Sending…</>
                   ) : '✉️ Send message'}

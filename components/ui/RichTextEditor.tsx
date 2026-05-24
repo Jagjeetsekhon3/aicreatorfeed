@@ -117,7 +117,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write y
                 ...btn.style,
                 background: activeFormats.has(btn.cmd) ? 'rgba(255,109,31,0.2)' : 'transparent',
                 border: activeFormats.has(btn.cmd) ? '1px solid rgba(255,109,31,0.4)' : '1px solid transparent',
-                color: activeFormats.has(btn.cmd) ? '#FF6D1F' : '#9a8f7a',
+                color: activeFormats.has(btn.cmd) ? 'var(--color-primary)' : '#9a8f7a',
                 borderRadius: '6px', padding: '4px 8px', cursor: 'pointer',
                 fontSize: '13px', fontFamily: 'inherit', minWidth: '28px',
                 transition: 'all 0.1s',
@@ -149,26 +149,26 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write y
           onPaste={handlePaste}
           style={{
             minHeight: `${minHeight}px`, padding: '14px', outline: 'none',
-            color: '#F5E7C6', fontSize: '14px', lineHeight: 1.7, fontFamily: 'inherit',
+            color: 'var(--color-beige)', fontSize: '14px', lineHeight: 1.7, fontFamily: 'inherit',
           }}
         />
       </div>
 
       {/* Editor styles */}
       <style>{`
-        [contenteditable] h2 { font-size: 20px; font-weight: 800; color: #FAF3E1; margin: 16px 0 8px; }
-        [contenteditable] h3 { font-size: 16px; font-weight: 700; color: #FAF3E1; margin: 14px 0 6px; }
+        [contenteditable] h2 { font-size: 20px; font-weight: 800; color: var(--color-cream); margin: 16px 0 8px; }
+        [contenteditable] h3 { font-size: 16px; font-weight: 700; color: var(--color-cream); margin: 14px 0 6px; }
         [contenteditable] p  { margin: 0 0 10px; }
         [contenteditable] ul { padding-left: 22px; margin: 8px 0; list-style: disc; }
         [contenteditable] ol { padding-left: 22px; margin: 8px 0; list-style: decimal; }
         [contenteditable] li { margin-bottom: 4px; }
-        [contenteditable] a  { color: #FF6D1F; text-decoration: underline; }
+        [contenteditable] a  { color: var(--color-primary); text-decoration: underline; }
         [contenteditable] blockquote {
-          border-left: 3px solid #FF6D1F; margin: 12px 0; padding: 8px 14px;
+          border-left: 3px solid var(--color-primary); margin: 12px 0; padding: 8px 14px;
           background: rgba(255,109,31,0.05); border-radius: 0 8px 8px 0;
           color: #9a8f7a; font-style: italic;
         }
-        [contenteditable] strong, [contenteditable] b { color: #FAF3E1; }
+        [contenteditable] strong, [contenteditable] b { color: var(--color-cream); }
         [contenteditable] img { max-width: 100%; border-radius: 8px; margin: 8px 0; }
         [contenteditable]:focus { outline: none; }
       `}</style>

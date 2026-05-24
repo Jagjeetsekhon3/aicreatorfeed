@@ -40,8 +40,8 @@ export default function ImageUpload({ onUpload, folder = 'posts', maxSizeMB = 10
       <img src={preview} alt="Preview" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
       {uploading && (
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-          <div style={{ width: '32px', height: '32px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-          <span style={{ color: '#FAF3E1', fontSize: '13px' }}>Uploading...</span>
+          <div style={{ width: '32px', height: '32px', border: '3px solid var(--color-primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <span style={{ color: 'var(--color-cream)', fontSize: '13px' }}>Uploading...</span>
         </div>
       )}
       {!uploading && (
@@ -62,7 +62,7 @@ export default function ImageUpload({ onUpload, folder = 'posts', maxSizeMB = 10
         style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           gap: '12px', width: '100%', aspectRatio: '1', borderRadius: '16px',
-          border: `2px dashed ${dragOver ? '#FF6D1F' : 'rgba(255,255,255,0.1)'}`,
+          border: `2px dashed ${dragOver ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)'}`,
           background: dragOver ? 'rgba(255,109,31,0.05)' : '#2f2f2f', cursor: 'pointer',
         }}
       >
@@ -71,7 +71,7 @@ export default function ImageUpload({ onUpload, folder = 'posts', maxSizeMB = 10
           🖼️
         </div>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '13px', color: '#F5E7C6' }}><span style={{ color: '#FF6D1F' }}>Click to upload</span> or drag & drop</p>
+          <p style={{ fontSize: '13px', color: 'var(--color-beige)' }}><span style={{ color: 'var(--color-primary)' }}>Click to upload</span> or drag & drop</p>
           <p style={{ fontSize: '12px', color: '#9a8f7a', marginTop: '4px' }}>PNG, JPG, WebP up to {maxSizeMB}MB</p>
         </div>
       </label>

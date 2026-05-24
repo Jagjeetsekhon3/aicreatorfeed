@@ -75,11 +75,11 @@ export default function SpacePostPage() {
   if (loading || !post) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
-  const inp: React.CSSProperties = { width: '100%', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '11px 14px', fontSize: '14px', color: '#FAF3E1', outline: 'none', fontFamily: 'inherit', resize: 'none' }
+  const inp: React.CSSProperties = { width: '100%', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '11px 14px', fontSize: '14px', color: 'var(--color-cream)', outline: 'none', fontFamily: 'inherit', resize: 'none' }
 
   return (
     <div style={{ maxWidth: '720px', margin: '0 auto', padding: '24px 0 80px' }}>
@@ -89,7 +89,7 @@ export default function SpacePostPage() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '13px', color: '#9a8f7a' }}>
         <Link href="/community" style={{ color: '#9a8f7a', textDecoration: 'none' }}>Community</Link>
         <span>›</span>
-        <Link href={`/community/${name}`} style={{ color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>
+        <Link href={`/community/${name}`} style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
           {post.space?.icon} {post.space?.display_name}
         </Link>
       </div>
@@ -98,21 +98,21 @@ export default function SpacePostPage() {
       <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px', marginBottom: '20px', display: 'flex', gap: '16px' }}>
         {/* Votes */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-          <button onClick={handleVotePost} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: postVoted ? '#FF6D1F' : '#9a8f7a', lineHeight: 1 }}>▲</button>
-          <span style={{ fontSize: '16px', fontWeight: 800, color: postVoted ? '#FF6D1F' : '#FAF3E1' }}>{post.upvotes}</span>
+          <button onClick={handleVotePost} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: postVoted ? 'var(--color-primary)' : '#9a8f7a', lineHeight: 1 }}>▲</button>
+          <span style={{ fontSize: '16px', fontWeight: 800, color: postVoted ? 'var(--color-primary)' : 'var(--color-cream)' }}>{post.upvotes}</span>
         </div>
 
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: '20px', fontWeight: 900, color: '#FAF3E1', marginBottom: '12px', lineHeight: 1.3 }}>{post.title}</h1>
-          <p style={{ fontSize: '15px', color: '#F5E7C6', lineHeight: 1.7, marginBottom: '16px', whiteSpace: 'pre-wrap' }}>{post.content}</p>
+          <h1 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '12px', lineHeight: 1.3 }}>{post.title}</h1>
+          <p style={{ fontSize: '15px', color: 'var(--color-beige)', lineHeight: 1.7, marginBottom: '16px', whiteSpace: 'pre-wrap' }}>{post.content}</p>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.07)', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
               {post.user.avatar_url
                 ? <img src={post.user.avatar_url} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
-                : <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+                : <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
               }
-              <Link href={`/profile/${post.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{post.user.full_name}</Link>
+              <Link href={`/profile/${post.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{post.user.full_name}</Link>
               {(post.user.is_official || post.user.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={13} />}
             </div>
             <span style={{ fontSize: '12px', color: '#9a8f7a' }}>{formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</span>
@@ -120,7 +120,7 @@ export default function SpacePostPage() {
             {currentUserId === post.user_id && (
               <button onClick={handleDelete} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: 'rgba(255,80,80,0.6)', fontFamily: 'inherit' }}>Delete post</button>
             )}
-            <button onClick={() => replyRef.current?.focus()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#FF6D1F', fontFamily: 'inherit', fontWeight: 600, marginLeft: currentUserId === post.user_id ? '0' : 'auto' }}>
+            <button onClick={() => replyRef.current?.focus()} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: 'var(--color-primary)', fontFamily: 'inherit', fontWeight: 600, marginLeft: currentUserId === post.user_id ? '0' : 'auto' }}>
               Reply ↓
             </button>
           </div>
@@ -129,7 +129,7 @@ export default function SpacePostPage() {
 
       {/* Replies */}
       <div style={{ marginBottom: '20px' }}>
-        <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#FAF3E1', marginBottom: '14px' }}>
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '14px' }}>
           {replies.length} {replies.length === 1 ? 'Reply' : 'Replies'}
         </h3>
         {replies.length === 0 ? (
@@ -141,20 +141,20 @@ export default function SpacePostPage() {
             {replies.map((reply, i) => (
               <div key={reply.id} style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '12px', animation: `fadeIn 0.2s ease ${i * 0.04}s both` }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
-                  <button onClick={() => handleVoteReply(reply.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: votedReplies.has(reply.id) ? '#FF6D1F' : '#9a8f7a', lineHeight: 1 }}>▲</button>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: votedReplies.has(reply.id) ? '#FF6D1F' : '#9a8f7a' }}>{reply.upvotes}</span>
+                  <button onClick={() => handleVoteReply(reply.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: votedReplies.has(reply.id) ? 'var(--color-primary)' : '#9a8f7a', lineHeight: 1 }}>▲</button>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: votedReplies.has(reply.id) ? 'var(--color-primary)' : '#9a8f7a' }}>{reply.upvotes}</span>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                     {reply.user.avatar_url
                       ? <img src={reply.user.avatar_url} alt="" style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
-                      : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
+                      : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
                     }
-                    <Link href={`/profile/${reply.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{reply.user.full_name}</Link>
+                    <Link href={`/profile/${reply.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{reply.user.full_name}</Link>
                     {(reply.user.is_official || reply.user.is_verified) && <VerifiedBadge isOfficial={reply.user.is_official} size={12} />}
                     <span style={{ fontSize: '11px', color: '#9a8f7a' }}>{formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}</span>
                   </div>
-                  <p style={{ fontSize: '14px', color: '#F5E7C6', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>{reply.content}</p>
+                  <p style={{ fontSize: '14px', color: 'var(--color-beige)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>{reply.content}</p>
                 </div>
               </div>
             ))}
@@ -164,7 +164,7 @@ export default function SpacePostPage() {
 
       {/* Reply form */}
       <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '16px' }}>
-        <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', marginBottom: '12px' }}>Leave a reply</h3>
+        <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '12px' }}>Leave a reply</h3>
         {currentUserId ? (
           <form onSubmit={handleReply} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <textarea ref={replyRef} value={replyText} onChange={e => setReplyText(e.target.value)}
@@ -173,14 +173,14 @@ export default function SpacePostPage() {
               style={inp} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '11px', color: '#9a8f7a' }}>⌘+Enter to submit</span>
-              <button type="submit" disabled={posting || !replyText.trim()} style={{ padding: '9px 20px', background: replyText.trim() ? '#FF6D1F' : '#333', color: replyText.trim() ? '#fff' : '#555', border: 'none', borderRadius: '8px', cursor: replyText.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700 }}>
+              <button type="submit" disabled={posting || !replyText.trim()} style={{ padding: '9px 20px', background: replyText.trim() ? 'var(--color-primary)' : '#333', color: replyText.trim() ? '#fff' : '#555', border: 'none', borderRadius: '8px', cursor: replyText.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700 }}>
                 {posting ? 'Posting...' : 'Post reply'}
               </button>
             </div>
           </form>
         ) : (
           <div style={{ textAlign: 'center', padding: '20px' }}>
-            <Link href="/auth/login" style={{ color: '#FF6D1F', fontWeight: 600, textDecoration: 'none', fontSize: '14px' }}>Sign in to reply</Link>
+            <Link href="/auth/login" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', fontSize: '14px' }}>Sign in to reply</Link>
           </div>
         )}
       </div>

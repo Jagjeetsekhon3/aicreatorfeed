@@ -44,12 +44,12 @@ export default function AdBanner({ slot = 'feed_mid' }: { slot?: string }) {
           <img src={ad.image_url} alt={ad.title} style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }} />
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', marginBottom: '3px' }}>{ad.title}</div>
+          <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '3px' }}>{ad.title}</div>
           {ad.description && <div style={{ fontSize: '12px', color: '#9a8f7a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ad.description}</div>}
         </div>
         <a href={ad.link_url} target="_blank" rel="noopener noreferrer"
           onClick={() => trackClick(ad.id)}
-          style={{ flexShrink: 0, background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '7px 14px', borderRadius: '8px', textDecoration: 'none', fontSize: '12px', whiteSpace: 'nowrap' }}>
+          style={{ flexShrink: 0, background: 'var(--color-primary)', color: '#fff', fontWeight: 700, padding: '7px 14px', borderRadius: '8px', textDecoration: 'none', fontSize: '12px', whiteSpace: 'nowrap' }}>
           {ad.cta_text}
         </a>
       </div>

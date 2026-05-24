@@ -6,13 +6,13 @@ import { createClient } from '@/lib/supabase/client'
 const inp: React.CSSProperties = {
   width: '100%', background: '#2a2a2a',
   border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
-  padding: '12px 16px', fontSize: '14px', color: '#FAF3E1',
+  padding: '12px 16px', fontSize: '14px', color: 'var(--color-cream)',
   outline: 'none', fontFamily: 'inherit',
 }
 
 const label: React.CSSProperties = {
   display: 'block', fontSize: '13px', fontWeight: 600,
-  color: '#F5E7C6', marginBottom: '7px',
+  color: 'var(--color-beige)', marginBottom: '7px',
 }
 
 const hint: React.CSSProperties = {
@@ -26,7 +26,7 @@ const section: React.CSSProperties = {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#FAF3E1', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+    <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
       {children}
     </h2>
   )
@@ -35,7 +35,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function SaveButton({ loading, saved }: { loading: boolean; saved: boolean }) {
   return (
     <button type="submit" disabled={loading} style={{
-      background: saved ? '#22c55e' : '#FF6D1F', color: '#fff',
+      background: saved ? '#22c55e' : 'var(--color-primary)', color: '#fff',
       border: 'none', borderRadius: '10px', padding: '10px 24px',
       fontSize: '13px', fontWeight: 700, cursor: loading ? 'wait' : 'pointer',
       fontFamily: 'inherit', transition: 'background 0.3s',
@@ -48,7 +48,7 @@ function SaveButton({ loading, saved }: { loading: boolean; saved: boolean }) {
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: '28px', height: '28px', border: '3px solid #FF6D1F', borderTopColor: 'transparent', borderRadius: '50%' }} /></div>}>
+    <Suspense fallback={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: '28px', height: '28px', border: '3px solid var(--color-primary)', borderTopColor: 'transparent', borderRadius: '50%' }} /></div>}>
       <SettingsForm />
     </Suspense>
   )
@@ -244,7 +244,7 @@ function SettingsForm() {
   if (pageLoading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -259,7 +259,7 @@ function SettingsForm() {
 
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#FAF3E1', marginBottom: '4px' }}>Settings</h1>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '4px' }}>Settings</h1>
         <p style={{ fontSize: '14px', color: '#9a8f7a' }}>Manage your profile and account</p>
       </div>
 
@@ -269,7 +269,7 @@ function SettingsForm() {
           <button key={key} onClick={() => { setActiveTab(key); setError('') }} style={{
             flex: 1, padding: '9px 12px', borderRadius: '9px', border: 'none', cursor: 'pointer',
             fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
-            background: activeTab === key ? '#FF6D1F' : 'transparent',
+            background: activeTab === key ? 'var(--color-primary)' : 'transparent',
             color: activeTab === key ? '#fff' : '#9a8f7a',
             transition: 'all 0.2s',
           }}>{label}</button>
@@ -303,7 +303,7 @@ function SettingsForm() {
               >
                 {avatarPreview
                   ? <img src={avatarPreview} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <span style={{ fontSize: '28px', fontWeight: 700, color: '#FF6D1F' }}>{fullName?.[0] || '?'}</span>
+                  : <span style={{ fontSize: '28px', fontWeight: 700, color: 'var(--color-primary)' }}>{fullName?.[0] || '?'}</span>
                 }
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
@@ -316,7 +316,7 @@ function SettingsForm() {
               <div>
                 <button type="button" onClick={() => fileRef.current?.click()} style={{
                   background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)',
-                  color: '#FF6D1F', borderRadius: '10px', padding: '8px 16px',
+                  color: 'var(--color-primary)', borderRadius: '10px', padding: '8px 16px',
                   fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                 }}>
                   Change photo
@@ -446,7 +446,7 @@ function SettingsForm() {
               </div>
 
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#9a8f7a' }}>
-                <input type="checkbox" checked={showPasswords} onChange={e => setShowPasswords(e.target.checked)} style={{ accentColor: '#FF6D1F' }} />
+                <input type="checkbox" checked={showPasswords} onChange={e => setShowPasswords(e.target.checked)} style={{ accentColor: 'var(--color-primary)' }} />
                 Show passwords
               </label>
             </div>

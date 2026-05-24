@@ -60,7 +60,7 @@ export default function AdvertisePage() {
   if (step === 'success') return (
     <div style={{ maxWidth: '480px', margin: '60px auto', padding: '0 16px', textAlign: 'center' }}>
       <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎯</div>
-      <h1 style={{ fontSize: '26px', fontWeight: 900, color: '#FAF3E1', marginBottom: '10px' }}>Ad submitted for review!</h1>
+      <h1 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '10px' }}>Ad submitted for review!</h1>
       <p style={{ color: '#9a8f7a', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
         Our team will review your ad within 24 hours. You'll be notified when it goes live.
       </p>
@@ -74,7 +74,7 @@ export default function AdvertisePage() {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px', animation: 'fadeIn 0.3s ease' }}>
         <div style={{ fontSize: '36px', marginBottom: '12px' }}>📢</div>
-        <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#FAF3E1', marginBottom: '8px' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '8px' }}>
           {pricing.advertise_page_title}
         </h1>
         <p style={{ color: '#9a8f7a', fontSize: '15px', lineHeight: 1.7 }}>
@@ -90,7 +90,7 @@ export default function AdvertisePage() {
           { label: 'AI-focused niche', value: '100%' },
         ].map(({ label, value }) => (
           <div key={label} style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '14px', textAlign: 'center' }}>
-            <div style={{ fontSize: '22px', fontWeight: 900, color: '#FF6D1F' }}>{value}</div>
+            <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-primary)' }}>{value}</div>
             <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '3px' }}>{label}</div>
           </div>
         ))}
@@ -102,16 +102,16 @@ export default function AdvertisePage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '24px', animation: 'fadeIn 0.35s ease' }}>
             {AD_PLANS.map(plan => (
               <div key={plan.id} onClick={() => setSelected(plan.id)}
-                style={{ background: '#2f2f2f', border: `2px solid ${selected === plan.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'}`, borderRadius: '16px', padding: '20px', cursor: 'pointer', transition: 'border-color 0.15s', position: 'relative' }}>
+                style={{ background: '#2f2f2f', border: `2px solid ${selected === plan.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)'}`, borderRadius: '16px', padding: '20px', cursor: 'pointer', transition: 'border-color 0.15s', position: 'relative' }}>
                 {plan.popular && (
-                  <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: '#FF6D1F', color: '#fff', fontSize: '10px', fontWeight: 800, padding: '3px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>MOST POPULAR</div>
+                  <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: 'var(--color-primary)', color: '#fff', fontSize: '10px', fontWeight: 800, padding: '3px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>MOST POPULAR</div>
                 )}
                 <div style={{ marginBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>{plan.label}</span>
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{plan.label}</span>
                   <span style={{ fontSize: '10px', color: '#9a8f7a', background: 'rgba(255,255,255,0.06)', padding: '2px 7px', borderRadius: '4px' }}>{plan.days} days</span>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
-                  <span style={{ fontSize: '26px', fontWeight: 900, color: '#FF6D1F' }}>₹{plan.price.toLocaleString()}</span>
+                  <span style={{ fontSize: '26px', fontWeight: 900, color: 'var(--color-primary)' }}>₹{plan.price.toLocaleString()}</span>
                 </div>
                 <div style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '10px' }}>📍 {plan.slot}</div>
                 <div style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '12px' }}>👁 {plan.impressions} est. impressions</div>
@@ -139,7 +139,7 @@ export default function AdvertisePage() {
 
       {step === 'setup' && (
         <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '20px', padding: '24px', animation: 'fadeIn 0.3s ease' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#FAF3E1', marginBottom: '4px' }}>Setup your ad</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '4px' }}>Setup your ad</h3>
           <p style={{ fontSize: '13px', color: '#9a8f7a', marginBottom: '20px' }}>Payment confirmed ✓ — now tell us about your ad</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -153,7 +153,7 @@ export default function AdvertisePage() {
               <div key={key}>
                 <label style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>{label}</label>
                 <input value={(adForm as any)[key]} onChange={e => setAdForm(p => ({ ...p, [key]: e.target.value }))} placeholder={placeholder}
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }} />
               </div>
             ))}
           </div>
@@ -165,16 +165,16 @@ export default function AdvertisePage() {
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 {adForm.image_url && <img src={adForm.image_url} alt="" style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />}
                 <div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>{adForm.title}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{adForm.title}</div>
                   {adForm.description && <div style={{ fontSize: '12px', color: '#9a8f7a', marginTop: '2px' }}>{adForm.description}</div>}
                 </div>
-                <div style={{ marginLeft: 'auto', flexShrink: 0, background: '#FF6D1F', color: '#fff', padding: '5px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>{adForm.cta_text}</div>
+                <div style={{ marginLeft: 'auto', flexShrink: 0, background: 'var(--color-primary)', color: '#fff', padding: '5px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>{adForm.cta_text}</div>
               </div>
             </div>
           )}
 
           <button onClick={saveAdDetails} disabled={saving || !adForm.title || !adForm.link_url}
-            style={{ marginTop: '20px', width: '100%', background: '#FF6D1F', border: 'none', color: '#fff', fontWeight: 800, cursor: 'pointer', borderRadius: '12px', padding: '13px', fontSize: '14px', fontFamily: 'inherit', opacity: (!adForm.title || !adForm.link_url) ? 0.5 : 1 }}>
+            style={{ marginTop: '20px', width: '100%', background: 'var(--color-primary)', border: 'none', color: '#fff', fontWeight: 800, cursor: 'pointer', borderRadius: '12px', padding: '13px', fontSize: '14px', fontFamily: 'inherit', opacity: (!adForm.title || !adForm.link_url) ? 0.5 : 1 }}>
             {saving ? 'Saving...' : 'Submit ad for review →'}
           </button>
         </div>

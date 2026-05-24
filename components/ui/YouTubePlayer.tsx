@@ -36,7 +36,7 @@ export default function YouTubePlayer({ videoId }: { videoId: string }) {
       }}>
         <div style={{
           width: '60px', height: '60px', borderRadius: '50%',
-          background: '#FF6D1F',
+          background: 'var(--color-primary)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(255,109,31,0.5)',
           transition: 'transform 0.15s',

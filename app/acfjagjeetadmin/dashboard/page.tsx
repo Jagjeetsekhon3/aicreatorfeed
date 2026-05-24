@@ -16,8 +16,8 @@ type Ticket = { id: string; user_email: string; subject: string; message: string
 
 // ── Styles ─────────────────────────────────────────────────────────────────
 const card: React.CSSProperties = { background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px' }
-const inp: React.CSSProperties = { background: '#222', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '9px 12px', fontSize: '13px', color: '#FAF3E1', outline: 'none', fontFamily: 'inherit', width: '100%' }
-const btn = (active = true): React.CSSProperties => ({ background: active ? '#FF6D1F' : '#2a2a2a', color: active ? '#fff' : '#9a8f7a', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' })
+const inp: React.CSSProperties = { background: '#222', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '9px 12px', fontSize: '13px', color: 'var(--color-cream)', outline: 'none', fontFamily: 'inherit', width: '100%' }
+const btn = (active = true): React.CSSProperties => ({ background: active ? 'var(--color-primary)' : '#2a2a2a', color: active ? '#fff' : '#9a8f7a', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' })
 
 const SIDEBAR_ITEMS = [
   { key: 'overview',   icon: '📊', label: 'Overview' },
@@ -36,8 +36,8 @@ const SIDEBAR_ITEMS = [
   { key: 'logs',       icon: '📋', label: 'Activity Log' },
 ]
 
-const STATUS_COLORS: Record<string, string> = { open: '#FF6D1F', in_progress: '#facc15', resolved: '#4ade80', closed: '#9a8f7a' }
-const PRIORITY_COLORS: Record<string, string> = { low: '#9a8f7a', normal: '#FAF3E1', high: '#facc15', urgent: '#ff8080' }
+const STATUS_COLORS: Record<string, string> = { open: 'var(--color-primary)', in_progress: '#facc15', resolved: '#4ade80', closed: '#9a8f7a' }
+const PRIORITY_COLORS: Record<string, string> = { low: '#9a8f7a', normal: 'var(--color-cream)', high: '#facc15', urgent: '#ff8080' }
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
   const [editingSpace, setEditingSpace] = useState<any>(null)
   const [spaceEditForm, setSpaceEditForm] = useState({ display_name: '', description: '', icon: '', cover_color: '', rules: '', is_official: false })
   const [showCreateSpace, setShowCreateSpace] = useState(false)
-  const [createSpaceForm, setCreateSpaceForm] = useState({ name: '', display_name: '', description: '', icon: '✨', cover_color: '#FF6D1F', rules: '', is_official: false })
+  const [createSpaceForm, setCreateSpaceForm] = useState({ name: '', display_name: '', description: '', icon: '✨', cover_color: 'var(--color-primary)', rules: '', is_official: false })
   const [createSpaceLoading, setCreateSpaceLoading] = useState(false)
 
   // SEO state
@@ -320,7 +320,7 @@ export default function AdminDashboard() {
     if (!createSpaceForm.name || !createSpaceForm.display_name) { showToast('Slug and display name are required'); return }
     setCreateSpaceLoading(true)
     await action('create_space', createSpaceForm)
-    setCreateSpaceForm({ name: '', display_name: '', description: '', icon: '✨', cover_color: '#FF6D1F', rules: '', is_official: false })
+    setCreateSpaceForm({ name: '', display_name: '', description: '', icon: '✨', cover_color: 'var(--color-primary)', rules: '', is_official: false })
     setShowCreateSpace(false)
     const d = await api('spaces_admin')
     if (d) setSpaces(d.spaces)
@@ -486,17 +486,17 @@ export default function AdminDashboard() {
   if (loading) return (
     <div style={{ minHeight: '100vh', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#111', color: '#FAF3E1', display: 'flex', fontFamily: 'inherit' }}>
+    <div style={{ minHeight: '100vh', background: '#111', color: 'var(--color-cream)', display: 'flex', fontFamily: 'inherit' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}} @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}} * { box-sizing: border-box } scrollbar-width: thin;`}</style>
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', background: '#FF6D1F', color: '#fff', padding: '12px 20px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, zIndex: 1000, animation: 'toastIn 0.2s ease', boxShadow: '0 4px 20px rgba(255,109,31,0.4)' }}>
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', background: 'var(--color-primary)', color: '#fff', padding: '12px 20px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, zIndex: 1000, animation: 'toastIn 0.2s ease', boxShadow: '0 4px 20px rgba(255,109,31,0.4)' }}>
           ✓ {toast}
         </div>
       )}
@@ -505,9 +505,9 @@ export default function AdminDashboard() {
       <aside style={{ width: '220px', background: '#141414', borderRight: '1px solid rgba(255,255,255,0.07)', display: 'flex', flexDirection: 'column', flexShrink: 0, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
         <div style={{ padding: '20px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', background: '#FF6D1F', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>🛡️</div>
+            <div style={{ width: '32px', height: '32px', background: 'var(--color-primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>🛡️</div>
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 800, color: '#FAF3E1' }}>Admin Panel</div>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--color-cream)' }}>Admin Panel</div>
               <div style={{ fontSize: '10px', color: '#6b6460' }}>AiCreatorFeed</div>
             </div>
           </div>
@@ -519,7 +519,7 @@ export default function AdminDashboard() {
               display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
               padding: '10px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
               background: tab === item.key ? 'rgba(255,109,31,0.12)' : 'transparent',
-              color: tab === item.key ? '#FF6D1F' : '#9a8f7a',
+              color: tab === item.key ? 'var(--color-primary)' : '#9a8f7a',
               fontSize: '13px', fontWeight: tab === item.key ? 600 : 400,
               fontFamily: 'inherit', textAlign: 'left', marginBottom: '2px',
               transition: 'all 0.15s',
@@ -527,7 +527,7 @@ export default function AdminDashboard() {
               <span style={{ fontSize: '15px' }}>{item.icon}</span>
               {item.label}
               {item.key === 'tickets' && tickets.filter(t => t.status === 'open').length > 0 && (
-                <span style={{ marginLeft: 'auto', background: '#FF6D1F', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '999px' }}>
+                <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '999px' }}>
                   {tickets.filter(t => t.status === 'open').length}
                 </span>
               )}
@@ -560,7 +560,7 @@ export default function AdminDashboard() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                     {editingUser.avatar_url
                       ? <img src={editingUser.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
-                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{editingUser.full_name?.[0]}</div>
+                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{editingUser.full_name?.[0]}</div>
                     }
                     <div>
                       <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Edit User</h3>
@@ -605,12 +605,12 @@ export default function AdminDashboard() {
                       <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
                         <button
                           onClick={() => setEditUserForm(p => ({ ...p, [key]: !(p as any)[key] }))}
-                          style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: (editUserForm as any)[key] ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
+                          style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: (editUserForm as any)[key] ? 'var(--color-primary)' : '#333', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
                         >
                           <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: (editUserForm as any)[key] ? '21px' : '3px', transition: 'left 0.2s' }} />
                         </button>
                         <div>
-                          <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1' }}>{label}</div>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)' }}>{label}</div>
                           <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{desc}</div>
                         </div>
                       </div>
@@ -637,7 +637,7 @@ export default function AdminDashboard() {
               <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
                 <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,80,80,0.3)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '380px', textAlign: 'center' }}>
                   <div style={{ fontSize: '40px', marginBottom: '12px' }}>⚠️</div>
-                  <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#FAF3E1', marginBottom: '8px' }}>Delete @{deleteConfirmUser.username}?</h3>
+                  <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '8px' }}>Delete @{deleteConfirmUser.username}?</h3>
                   <p style={{ fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6, marginBottom: '24px' }}>
                     This will permanently delete their account, all posts, comments, and data. <strong style={{ color: '#ff8080' }}>This cannot be undone.</strong>
                   </p>
@@ -675,21 +675,21 @@ export default function AdminDashboard() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           {user.avatar_url
                             ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-                            : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{user.full_name?.[0]}</div>
+                            : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{user.full_name?.[0]}</div>
                           }
-                          <span style={{ fontWeight: 600, color: '#FAF3E1' }}>{user.full_name}</span>
+                          <span style={{ fontWeight: 600, color: 'var(--color-cream)' }}>{user.full_name}</span>
                         </div>
                       </td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a' }}>@{user.username}</td>
-                      <td style={{ padding: '12px 14px', color: '#F5E7C6' }}>{user.posts_count}</td>
-                      <td style={{ padding: '12px 14px', color: '#F5E7C6' }}>{user.followers_count}</td>
+                      <td style={{ padding: '12px 14px', color: 'var(--color-beige)' }}>{user.posts_count}</td>
+                      <td style={{ padding: '12px 14px', color: 'var(--color-beige)' }}>{user.followers_count}</td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a' }}>{new Date(user.created_at).toLocaleDateString()}</td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                           {user.is_verified && <span style={{ fontSize: '14px' }} title="Verified">✓</span>}
-                          {user.is_official && <span style={{ fontSize: '11px', color: '#FF6D1F', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>Official</span>}
+                          {user.is_official && <span style={{ fontSize: '11px', color: 'var(--color-primary)', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>Official</span>}
                           <a href={`/profile/${user.username}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#9a8f7a', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>View</a>
-                          <button onClick={() => openEditUser(user)} style={{ fontSize: '12px', color: '#FF6D1F', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.25)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>✏️ Edit</button>
+                          <button onClick={() => openEditUser(user)} style={{ fontSize: '12px', color: 'var(--color-primary)', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.25)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>✏️ Edit</button>
                           <button onClick={() => setDeleteConfirmUser(user)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>🗑</button>
                         </div>
                       </td>
@@ -722,18 +722,18 @@ export default function AdminDashboard() {
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       <td style={{ padding: '12px 14px', maxWidth: '220px' }}>
-                        <p style={{ margin: 0, color: '#F5E7C6', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, fontSize: '12px' }}>{post.caption || '(no caption)'}</p>
+                        <p style={{ margin: 0, color: 'var(--color-beige)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, fontSize: '12px' }}>{post.caption || '(no caption)'}</p>
                       </td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap' }}>@{post.user?.username}</td>
                       <td style={{ padding: '12px 14px' }}>
-                        <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: '#FF6D1F', fontWeight: 600 }}>{post.media_type}</span>
+                        <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)', fontWeight: 600 }}>{post.media_type}</span>
                       </td>
-                      <td style={{ padding: '12px 14px', color: '#F5E7C6' }}>{post.likes_count}</td>
-                      <td style={{ padding: '12px 14px', color: '#F5E7C6' }}>{post.comments_count}</td>
+                      <td style={{ padding: '12px 14px', color: 'var(--color-beige)' }}>{post.likes_count}</td>
+                      <td style={{ padding: '12px 14px', color: 'var(--color-beige)' }}>{post.comments_count}</td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap' }}>{new Date(post.created_at).toLocaleDateString()}</td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <a href={`/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                          <a href={`/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
                           <button onClick={() => deletePost(post.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Delete</button>
                         </div>
                       </td>
@@ -757,7 +757,7 @@ export default function AdminDashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>💳</div>
                   <div>
-                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#FAF3E1' }}>Razorpay Configuration</div>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--color-cream)' }}>Razorpay Configuration</div>
                     {!razorpayStatus ? (
                       <div style={{ fontSize: '12px', color: '#9a8f7a' }}>Checking connection...</div>
                     ) : razorpayStatus.configured ? (
@@ -868,7 +868,7 @@ export default function AdminDashboard() {
               return (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '20px' }}>
                   <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#4ade80' }}>₹{(total / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Total revenue</div></div>
-                  <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#FF6D1F' }}>₹{((byType.donation || 0) / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Donations</div></div>
+                  <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--color-primary)' }}>₹{((byType.donation || 0) / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Donations</div></div>
                   <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#a78bfa' }}>₹{((byType.subscription || 0) / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Subscriptions</div></div>
                   <div style={card}><div style={{ fontSize: '20px', fontWeight: 900, color: '#facc15' }}>₹{((byType.ad || 0) / 100).toLocaleString('en-IN')}</div><div style={{ fontSize: '12px', color: '#9a8f7a' }}>Ad revenue</div></div>
                 </div>
@@ -879,7 +879,7 @@ export default function AdminDashboard() {
             <div style={{ ...card, marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
-                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#FAF3E1' }}>🏷 Pricing & Package Settings</div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--color-cream)' }}>🏷 Pricing & Package Settings</div>
                   <div style={{ fontSize: '12px', color: '#9a8f7a', marginTop: '2px' }}>Edit prices and labels — live on your donation, verify, and advertise pages instantly</div>
                 </div>
                 <button onClick={savePricingSettings} disabled={pricingSaving} style={btn()}>
@@ -1040,11 +1040,11 @@ export default function AdminDashboard() {
                   <tbody>
                     {payments.map(p => (
                       <tr key={p.id} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                        <td style={{ padding: '10px 14px', color: '#FAF3E1' }}>{p.user?.full_name || 'Guest'}</td>
+                        <td style={{ padding: '10px 14px', color: 'var(--color-cream)' }}>{p.user?.full_name || 'Guest'}</td>
                         <td style={{ padding: '10px 14px' }}>
                           <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', fontWeight: 600, background: p.type === 'donation' ? 'rgba(74,222,128,0.1)' : p.type === 'subscription' ? 'rgba(167,139,250,0.1)' : 'rgba(250,204,21,0.1)', color: p.type === 'donation' ? '#4ade80' : p.type === 'subscription' ? '#a78bfa' : '#facc15' }}>{p.type}</span>
                         </td>
-                        <td style={{ padding: '10px 14px', color: '#FAF3E1', fontWeight: 600 }}>₹{(p.amount / 100).toFixed(0)}</td>
+                        <td style={{ padding: '10px 14px', color: 'var(--color-cream)', fontWeight: 600 }}>₹{(p.amount / 100).toFixed(0)}</td>
                         <td style={{ padding: '10px 14px' }}>
                           <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: p.status === 'paid' ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.05)', color: p.status === 'paid' ? '#4ade80' : '#9a8f7a' }}>{p.status}</span>
                         </td>
@@ -1088,7 +1088,7 @@ export default function AdminDashboard() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {ad.image_url && <img src={ad.image_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }} />}
                             <div>
-                              <div style={{ color: '#FAF3E1', fontWeight: 600, fontSize: '12px' }}>{ad.title}</div>
+                              <div style={{ color: 'var(--color-cream)', fontWeight: 600, fontSize: '12px' }}>{ad.title}</div>
                               {ad.description && <div style={{ color: '#9a8f7a', fontSize: '11px' }}>{ad.description?.slice(0, 40)}</div>}
                             </div>
                           </div>
@@ -1140,7 +1140,7 @@ export default function AdminDashboard() {
 
             {/* Add new tool */}
             <div style={{ ...card, marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '14px', color: '#FF6D1F' }}>➕ Add new tool</h3>
+              <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '14px', color: 'var(--color-primary)' }}>➕ Add new tool</h3>
               <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: '180px' }}>
                   <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Tool name *</label>
@@ -1222,12 +1222,12 @@ export default function AdminDashboard() {
                   ) : (
                     <>
                       <div style={{ flex: 1 }}>
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1' }}>{tool.name}</span>
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)' }}>{tool.name}</span>
                         <span style={{ marginLeft: '10px', fontSize: '12px', padding: '2px 8px', borderRadius: '5px', background: `${tool.color}22`, color: tool.color, border: `1px solid ${tool.color}33`, fontWeight: 700 }}>{tool.name}</span>
                       </div>
                       <span style={{ fontSize: '11px', color: '#555', fontFamily: 'monospace' }}>#{idx + 1}</span>
                       <button onClick={() => setEditingTool({ ...tool })}
-                        style={{ background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.2)', color: '#FF6D1F', padding: '5px 10px', borderRadius: '7px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                        style={{ background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.2)', color: 'var(--color-primary)', padding: '5px 10px', borderRadius: '7px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
                         ✏️ Edit
                       </button>
                       <button onClick={() => deleteAiTool(tool.id, tool.name)}
@@ -1241,7 +1241,7 @@ export default function AdminDashboard() {
             </div>
 
             <div style={{ marginTop: '14px', padding: '12px 16px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '12px', fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6 }}>
-              💡 Changes apply <strong style={{ color: '#FAF3E1' }}>immediately</strong> — users will see the updated list next time they open the post form or explore page.
+              💡 Changes apply <strong style={{ color: 'var(--color-cream)' }}>immediately</strong> — users will see the updated list next time they open the post form or explore page.
             </div>
           </div>
         )}
@@ -1257,7 +1257,7 @@ export default function AdminDashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>☁️</div>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', marginBottom: '2px' }}>Cloudinary — Image Storage</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '2px' }}>Cloudinary — Image Storage</div>
                     {!cloudinaryStatus ? (
                       <div style={{ fontSize: '12px', color: '#9a8f7a' }}>Checking connection...</div>
                     ) : cloudinaryStatus.configured ? (
@@ -1289,10 +1289,10 @@ export default function AdminDashboard() {
                     </div>
                   )}
                   <div style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.8 }}>
-                    <strong style={{ color: '#FAF3E1' }}>How to fix:</strong><br/>
-                    1. Go to <a href="https://cloudinary.com/console" target="_blank" rel="noopener" style={{ color: '#FF6D1F' }}>cloudinary.com/console</a> → Dashboard<br/>
+                    <strong style={{ color: 'var(--color-cream)' }}>How to fix:</strong><br/>
+                    1. Go to <a href="https://cloudinary.com/console" target="_blank" rel="noopener" style={{ color: 'var(--color-primary)' }}>cloudinary.com/console</a> → Dashboard<br/>
                     2. Copy your Cloud name, API Key, and API Secret<br/>
-                    3. Add them in <a href="https://vercel.com/dashboard" target="_blank" rel="noopener" style={{ color: '#FF6D1F' }}>Vercel</a> → Your project → Settings → Environment Variables<br/>
+                    3. Add them in <a href="https://vercel.com/dashboard" target="_blank" rel="noopener" style={{ color: 'var(--color-primary)' }}>Vercel</a> → Your project → Settings → Environment Variables<br/>
                     4. Redeploy (Vercel → Deployments → Redeploy)
                   </div>
                 </div>
@@ -1303,18 +1303,20 @@ export default function AdminDashboard() {
 
               {/* Brand colors */}
               <div style={{ ...card }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>🎨 Brand Colors</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: 'var(--color-primary)' }}>🎨 Brand Colors</h3>
+                <p style={{ fontSize: '11px', color: '#9a8f7a', marginBottom: '14px' }}>Changes apply site-wide on next page load.</p>
                 {[
-                  { key: 'accent_color', label: 'Accent color' },
-                  { key: 'bg_color', label: 'Background color' },
-                  { key: 'text_primary', label: 'Primary text color' },
-                ].map(({ key, label }) => {
-                  const val = settingVal(key)
+                  { key: 'brand_primary',    label: 'Primary / Accent',  default: '#FF6D1F' },
+                  { key: 'brand_background', label: 'Background',         default: '#222222' },
+                  { key: 'brand_cream',      label: 'Cream (text)',       default: '#FAF3E1' },
+                  { key: 'brand_beige',      label: 'Beige (secondary)',  default: '#F5E7C6' },
+                ].map(({ key, label, default: def }) => {
+                  const val = settingVal(key) || def
                   return (
                     <div key={key} style={{ marginBottom: '14px' }}>
                       <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>{label}</label>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <input type="color" value={val} onChange={e => setSettings(prev => prev.map(s => s.key === key ? { ...s, value: e.target.value } : s))}
+                        <input type="color" value={val} onChange={e => setSettings(prev => prev.map(s => s.key === key ? { ...s, value: e.target.value } : s.key === key ? { key, value: e.target.value } : s))}
                           style={{ width: '40px', height: '36px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: 'transparent', padding: 0 }} />
                         <input type="text" value={val} onChange={e => setSettings(prev => prev.map(s => s.key === key ? { ...s, value: e.target.value } : s))}
                           style={{ ...inp, flex: 1 }} />
@@ -1327,7 +1329,7 @@ export default function AdminDashboard() {
 
               {/* Site identity */}
               <div style={{ ...card }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>✦ Site Identity</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: 'var(--color-primary)' }}>✦ Site Identity</h3>
                 {[
                   { key: 'site_name', label: 'Site name' },
                   { key: 'tagline', label: 'Tagline' },
@@ -1348,7 +1350,7 @@ export default function AdminDashboard() {
 
               {/* Site controls */}
               <div style={{ ...card, gridColumn: '1 / -1' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>⚙️ Site Controls</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: 'var(--color-primary)' }}>⚙️ Site Controls</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
                   {[
                     { key: 'maintenance_mode', label: 'Maintenance mode', desc: 'Show maintenance page to visitors' },
@@ -1361,10 +1363,10 @@ export default function AdminDashboard() {
                     return (
                       <div key={key} style={{ background: '#222', borderRadius: '10px', padding: '14px', border: '1px solid rgba(255,255,255,0.07)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                          <span style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1' }}>{label}</span>
+                          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)' }}>{label}</span>
                           <button onClick={() => saveSetting(key, String(!enabled))} style={{
                             width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                            background: enabled ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s',
+                            background: enabled ? 'var(--color-primary)' : '#333', position: 'relative', transition: 'background 0.2s',
                           }}>
                             <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: enabled ? '21px' : '3px', transition: 'left 0.2s' }} />
                           </button>
@@ -1378,7 +1380,7 @@ export default function AdminDashboard() {
 
               {/* Social Links */}
               <div style={{ ...card, gridColumn: '1 / -1' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>📣 Social Links</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: 'var(--color-primary)' }}>📣 Social Links</h3>
                 <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px', marginTop: 0 }}>These appear on the Contact page. Leave blank to hide.</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '14px' }}>
                   {[
@@ -1414,7 +1416,7 @@ export default function AdminDashboard() {
 
               {/* Contact info */}
               <div style={{ ...card, gridColumn: '1 / -1' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>✉️ Contact Page Info</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: 'var(--color-primary)' }}>✉️ Contact Page Info</h3>
                 <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px', marginTop: 0 }}>Shown on the /contact page above the form.</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
@@ -1445,7 +1447,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div style={{ marginTop: '12px' }}>
-                  <a href="/contact" target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>
+                  <a href="/contact" target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
                     → Preview contact page ↗
                   </a>
                 </div>
@@ -1453,7 +1455,7 @@ export default function AdminDashboard() {
 
               {/* Favicon */}
               <div style={{ ...card, gridColumn: '1 / -1' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>🌐 Favicon</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: 'var(--color-primary)' }}>🌐 Favicon</h3>
                 <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px', marginTop: 0 }}>The small icon shown in browser tabs and bookmarks.</p>
 
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
@@ -1493,10 +1495,10 @@ export default function AdminDashboard() {
                     </div>
 
                     <div style={{ marginTop: '12px', padding: '12px', background: '#222', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F', marginBottom: '6px' }}>HOW TO ADD A FAVICON</div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '6px' }}>HOW TO ADD A FAVICON</div>
                       <ol style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.8, paddingLeft: '16px', margin: 0 }}>
                         <li>Create a 32×32 or 64×64px icon (PNG works great)</li>
-                        <li>Upload it to <strong style={{ color: '#FAF3E1' }}>Cloudinary</strong> (same account you use for posts)</li>
+                        <li>Upload it to <strong style={{ color: 'var(--color-cream)' }}>Cloudinary</strong> (same account you use for posts)</li>
                         <li>Copy the Cloudinary URL and paste above</li>
                         <li>Click Save — takes effect on next page load</li>
                       </ol>
@@ -1521,12 +1523,12 @@ export default function AdminDashboard() {
               {flags.map(flag => (
                 <div key={flag.id} style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', marginBottom: '3px' }}>{flag.name}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-cream)', marginBottom: '3px' }}>{flag.name}</div>
                     <div style={{ fontSize: '12px', color: '#9a8f7a' }}>{flag.description}</div>
                   </div>
                   <button onClick={() => toggleFlag(flag.name, !flag.enabled)} style={{
                     width: '48px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', flexShrink: 0,
-                    background: flag.enabled ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s',
+                    background: flag.enabled ? 'var(--color-primary)' : '#333', position: 'relative', transition: 'background 0.2s',
                   }}>
                     <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: flag.enabled ? '25px' : '3px', transition: 'left 0.2s' }} />
                   </button>
@@ -1559,7 +1561,7 @@ export default function AdminDashboard() {
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '8px' }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', marginBottom: '3px' }}>{ticket.subject}</div>
+                        <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-cream)', marginBottom: '3px' }}>{ticket.subject}</div>
                         <div style={{ fontSize: '12px', color: '#9a8f7a' }}>{ticket.user_email} · {new Date(ticket.created_at).toLocaleDateString()}</div>
                       </div>
                       <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
@@ -1587,15 +1589,15 @@ export default function AdminDashboard() {
                     <button onClick={() => setSelectedTicket(null)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '16px' }}>✕</button>
                   </div>
                   <div style={{ marginBottom: '14px' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', marginBottom: '4px' }}>{selectedTicket.subject}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '4px' }}>{selectedTicket.subject}</div>
                     <div style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '12px' }}>From: {selectedTicket.user_email}</div>
-                    <div style={{ background: '#222', borderRadius: '10px', padding: '12px', fontSize: '13px', color: '#F5E7C6', lineHeight: 1.6, marginBottom: '12px' }}>
+                    <div style={{ background: '#222', borderRadius: '10px', padding: '12px', fontSize: '13px', color: 'var(--color-beige)', lineHeight: 1.6, marginBottom: '12px' }}>
                       {selectedTicket.message}
                     </div>
                     {selectedTicket.admin_reply && (
                       <div style={{ background: 'rgba(255,109,31,0.06)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
-                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F', marginBottom: '6px' }}>YOUR REPLY</div>
-                        <p style={{ fontSize: '13px', color: '#F5E7C6', margin: 0, lineHeight: 1.6 }}>{selectedTicket.admin_reply}</p>
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '6px' }}>YOUR REPLY</div>
+                        <p style={{ fontSize: '13px', color: 'var(--color-beige)', margin: 0, lineHeight: 1.6 }}>{selectedTicket.admin_reply}</p>
                       </div>
                     )}
                   </div>
@@ -1640,7 +1642,7 @@ export default function AdminDashboard() {
             {/* Add tutorial form */}
             {showTutorialForm && (
               <div style={{ ...card, marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>🎬 New Tutorial</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: 'var(--color-primary)' }}>🎬 New Tutorial</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Title *</label>
@@ -1690,7 +1692,7 @@ export default function AdminDashboard() {
                 <div key={t.id} style={{ ...card, display: 'flex', gap: '14px', alignItems: 'center' }}>
                   <img src={t.thumbnail_url || `https://img.youtube.com/vi/${t.youtube_video_id}/hqdefault.jpg`} alt={t.title} style={{ width: '100px', height: '56px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.08)' }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', marginBottom: '3px' }}>{t.title}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-cream)', marginBottom: '3px' }}>{t.title}</div>
                     <div style={{ fontSize: '12px', color: '#9a8f7a', display: 'flex', gap: '12px' }}>
                       <span>⏱ {t.duration_minutes}m</span>
                       <span>👁 {(t.views_count || 0).toLocaleString()}</span>
@@ -1789,13 +1791,13 @@ export default function AdminDashboard() {
                         >
                           {newsImageUploading ? (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                              <div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                              <div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
                               <span style={{ fontSize: '13px', color: '#9a8f7a' }}>Uploading to Cloudinary...</span>
                             </div>
                           ) : (
                             <>
                               <div style={{ fontSize: '28px', marginBottom: '8px' }}>🖼</div>
-                              <p style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1', margin: '0 0 4px' }}>Click to upload image</p>
+                              <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)', margin: '0 0 4px' }}>Click to upload image</p>
                               <p style={{ fontSize: '11px', color: '#9a8f7a', margin: 0 }}>JPG, PNG, WebP — max 10MB • 16:9 recommended</p>
                             </>
                           )}
@@ -1849,20 +1851,20 @@ export default function AdminDashboard() {
                   {newsItems.map(item => (
                     <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                       <td style={{ padding: '12px 14px', maxWidth: '280px' }}>
-                        <p style={{ margin: 0, color: '#F5E7C6', fontSize: '13px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{item.title}</p>
+                        <p style={{ margin: 0, color: 'var(--color-beige)', fontSize: '13px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{item.title}</p>
                       </td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap' }}>{item.source_name}</td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                           {(item.tags || []).slice(0, 2).map((t: string) => (
-                            <span key={t} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: '#FF6D1F' }}>{t}</span>
+                            <span key={t} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>{t}</span>
                           ))}
                         </div>
                       </td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap', fontSize: '12px' }}>{new Date(item.published_at).toLocaleDateString()}</td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <a href={item.source_url} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                          <a href={item.source_url} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
                           <button onClick={() => deleteNews(item.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Delete</button>
                         </div>
                       </td>
@@ -1897,7 +1899,7 @@ export default function AdminDashboard() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: 'rgba(255,255,255,0.04)', borderRadius: '10px', marginBottom: '16px', border: '1px solid rgba(255,255,255,0.07)' }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: `${createSpaceForm.cover_color}22`, border: `2px solid ${createSpaceForm.cover_color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>{createSpaceForm.icon}</div>
                       <div>
-                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>{createSpaceForm.display_name}</div>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{createSpaceForm.display_name}</div>
                         <div style={{ fontSize: '12px', color: '#9a8f7a' }}>/{createSpaceForm.name || 'slug'}</div>
                       </div>
                     </div>
@@ -1931,10 +1933,10 @@ export default function AdminDashboard() {
                       <textarea value={createSpaceForm.rules} onChange={e => setCreateSpaceForm(p => ({ ...p, rules: e.target.value }))} rows={2} placeholder="1. Be respectful..." style={{ ...inp, resize: 'none' as any }} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <button onClick={() => setCreateSpaceForm(p => ({ ...p, is_official: !p.is_official }))} style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: createSpaceForm.is_official ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
+                      <button onClick={() => setCreateSpaceForm(p => ({ ...p, is_official: !p.is_official }))} style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: createSpaceForm.is_official ? 'var(--color-primary)' : '#333', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
                         <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: createSpaceForm.is_official ? '21px' : '3px', transition: 'left 0.2s' }} />
                       </button>
-                      <span style={{ fontSize: '13px', color: '#F5E7C6' }}>Official space</span>
+                      <span style={{ fontSize: '13px', color: 'var(--color-beige)' }}>Official space</span>
                     </div>
                   </div>
 
@@ -1978,10 +1980,10 @@ export default function AdminDashboard() {
                       <textarea value={spaceEditForm.rules} onChange={e => setSpaceEditForm(p => ({ ...p, rules: e.target.value }))} rows={2} style={{ ...inp, resize: 'none' as any }} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <button onClick={() => setSpaceEditForm(p => ({ ...p, is_official: !p.is_official }))} style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: spaceEditForm.is_official ? '#FF6D1F' : '#333', position: 'relative', transition: 'background 0.2s' }}>
+                      <button onClick={() => setSpaceEditForm(p => ({ ...p, is_official: !p.is_official }))} style={{ width: '42px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: spaceEditForm.is_official ? 'var(--color-primary)' : '#333', position: 'relative', transition: 'background 0.2s' }}>
                         <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: spaceEditForm.is_official ? '21px' : '3px', transition: 'left 0.2s' }} />
                       </button>
-                      <span style={{ fontSize: '13px', color: '#F5E7C6' }}>Official space (AiCreatorFeed badge)</span>
+                      <span style={{ fontSize: '13px', color: 'var(--color-beige)' }}>Official space (AiCreatorFeed badge)</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '18px', justifyContent: 'flex-end' }}>
@@ -2010,9 +2012,9 @@ export default function AdminDashboard() {
                     >
                       <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${space.cover_color}22`, border: `1px solid ${space.cover_color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>{space.icon}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAF3E1', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)', display: 'flex', alignItems: 'center', gap: '5px' }}>
                           {space.display_name}
-                          {space.is_official && <span style={{ fontSize: '9px', color: '#FF6D1F', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '999px', fontWeight: 700 }}>Official</span>}
+                          {space.is_official && <span style={{ fontSize: '9px', color: 'var(--color-primary)', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '999px', fontWeight: 700 }}>Official</span>}
                         </div>
                         <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{space.member_count} members · {space.post_count} posts</div>
                       </div>
@@ -2039,7 +2041,7 @@ export default function AdminDashboard() {
                     <div style={{ ...card, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '14px' }}>
                       <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: `${selectedSpace.cover_color}22`, border: `2px solid ${selectedSpace.cover_color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>{selectedSpace.icon}</div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '16px', fontWeight: 800, color: '#FAF3E1', marginBottom: '2px' }}>{selectedSpace.display_name}</div>
+                        <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--color-cream)', marginBottom: '2px' }}>{selectedSpace.display_name}</div>
                         <div style={{ fontSize: '12px', color: '#9a8f7a' }}>{selectedSpace.member_count} members · {selectedSpace.post_count} posts · /{selectedSpace.name}</div>
                       </div>
                       <div style={{ display: 'flex', gap: '8px' }}>
@@ -2068,21 +2070,21 @@ export default function AdminDashboard() {
                               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                             >
                               <td style={{ padding: '10px 14px', maxWidth: '200px' }}>
-                                <p style={{ margin: 0, color: '#F5E7C6', fontSize: '12px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{post.title}</p>
+                                <p style={{ margin: 0, color: 'var(--color-beige)', fontSize: '12px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{post.title}</p>
                               </td>
                               <td style={{ padding: '10px 14px', color: '#9a8f7a', fontSize: '12px', whiteSpace: 'nowrap' }}>@{post.user?.username}</td>
-                              <td style={{ padding: '10px 14px', color: '#F5E7C6' }}>▲ {post.upvotes}</td>
-                              <td style={{ padding: '10px 14px', color: '#F5E7C6' }}>💬 {post.reply_count}</td>
+                              <td style={{ padding: '10px 14px', color: 'var(--color-beige)' }}>▲ {post.upvotes}</td>
+                              <td style={{ padding: '10px 14px', color: 'var(--color-beige)' }}>💬 {post.reply_count}</td>
                               <td style={{ padding: '10px 14px' }}>
-                                <span style={{ fontSize: '12px', color: post.is_pinned ? '#FF6D1F' : '#555' }}>{post.is_pinned ? '📌' : '—'}</span>
+                                <span style={{ fontSize: '12px', color: post.is_pinned ? 'var(--color-primary)' : '#555' }}>{post.is_pinned ? '📌' : '—'}</span>
                               </td>
                               <td style={{ padding: '10px 14px', color: '#9a8f7a', fontSize: '11px', whiteSpace: 'nowrap' }}>{new Date(post.created_at).toLocaleDateString()}</td>
                               <td style={{ padding: '10px 14px' }}>
                                 <div style={{ display: 'flex', gap: '5px' }}>
-                                  <button onClick={() => pinSpacePost(post.id, post.is_pinned)} title={post.is_pinned ? 'Unpin' : 'Pin'} style={{ fontSize: '12px', padding: '3px 8px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: post.is_pinned ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.06)', color: post.is_pinned ? '#FF6D1F' : '#9a8f7a' }}>
+                                  <button onClick={() => pinSpacePost(post.id, post.is_pinned)} title={post.is_pinned ? 'Unpin' : 'Pin'} style={{ fontSize: '12px', padding: '3px 8px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: post.is_pinned ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.06)', color: post.is_pinned ? 'var(--color-primary)' : '#9a8f7a' }}>
                                     {post.is_pinned ? 'Unpin' : '📌 Pin'}
                                   </button>
-                                  <a href={`/community/${selectedSpace.name}/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', padding: '3px 8px', borderRadius: '5px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                                  <a href={`/community/${selectedSpace.name}/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '3px 8px', borderRadius: '5px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
                                   <button onClick={() => deleteSpacePost(post.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '5px', padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Del</button>
                                 </div>
                               </td>
@@ -2116,7 +2118,7 @@ export default function AdminDashboard() {
 
               {/* Page title & description */}
               <div style={{ ...card, gridColumn: '1 / -1' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>🔍 Search Engine (Google)</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: 'var(--color-primary)' }}>🔍 Search Engine (Google)</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div>
                     <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '5px' }}>Meta Title <span style={{ color: '#555' }}>(recommended: 50–60 chars)</span></label>
@@ -2146,7 +2148,7 @@ export default function AdminDashboard() {
 
               {/* Open Graph */}
               <div style={card}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: '#FF6D1F' }}>📣 Open Graph (Social Sharing)</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px', color: 'var(--color-primary)' }}>📣 Open Graph (Social Sharing)</h3>
                 <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '14px' }}>Controls how pages look when shared on Twitter, Facebook, Discord etc. Leave blank to use meta title/description.</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
@@ -2175,7 +2177,7 @@ export default function AdminDashboard() {
 
               {/* Favicon */}
               <div style={card}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: '#FF6D1F' }}>🌐 Favicon</h3>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px', color: 'var(--color-primary)' }}>🌐 Favicon</h3>
                 <p style={{ fontSize: '12px', color: '#9a8f7a', marginBottom: '16px' }}>The small icon shown in browser tabs. Paste a URL to an .ico, .png, or .svg file (32×32 recommended).</p>
 
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '14px' }}>
@@ -2198,7 +2200,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div style={{ marginTop: '14px', padding: '12px', background: '#222', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <div style={{ fontSize: '11px', color: '#FF6D1F', fontWeight: 700, marginBottom: '6px' }}>HOW TO ADD A FAVICON</div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 700, marginBottom: '6px' }}>HOW TO ADD A FAVICON</div>
                   <ol style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.7, paddingLeft: '16px', margin: 0 }}>
                     <li>Create a 32×32px or 64×64px icon (PNG or ICO)</li>
                     <li>Upload it to Cloudinary or any CDN</li>
@@ -2236,7 +2238,7 @@ function AdminLogs() {
         : logs.map(log => (
           <div key={log.id} style={{ display: 'flex', gap: '12px', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px' }}>
             <span style={{ color: '#9a8f7a', whiteSpace: 'nowrap', fontSize: '12px' }}>{new Date(log.created_at).toLocaleString()}</span>
-            <span style={{ color: '#F5E7C6' }}>{log.action}</span>
+            <span style={{ color: 'var(--color-beige)' }}>{log.action}</span>
           </div>
         ))
       }

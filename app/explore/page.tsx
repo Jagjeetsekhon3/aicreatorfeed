@@ -97,7 +97,7 @@ export default function ExplorePage() {
 
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: 900, color: '#FAF3E1', marginBottom: '4px' }}>Explore</h1>
+        <h1 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '4px' }}>Explore</h1>
         <p style={{ fontSize: '14px', color: '#9a8f7a' }}>Discover trending prompts, images and videos from the community</p>
       </div>
 
@@ -110,9 +110,9 @@ export default function ExplorePage() {
               <path d="M11 11L14 14" stroke="#9a8f7a" strokeWidth="1.3" strokeLinecap="round"/>
             </svg>
             <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search posts, prompts, tools..."
-              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: '#FAF3E1', fontFamily: 'inherit', padding: '12px 0' }} />
+              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: 'var(--color-cream)', fontFamily: 'inherit', padding: '12px 0' }} />
           </div>
-          <button type="submit" style={{ background: '#FF6D1F', color: '#fff', border: 'none', borderRadius: '12px', padding: '0 20px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Search</button>
+          <button type="submit" style={{ background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '12px', padding: '0 20px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Search</button>
         </div>
       </form>
 
@@ -123,7 +123,7 @@ export default function ExplorePage() {
           <button key={s.key} onClick={() => setSort(s.key)} style={{
             padding: '7px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
             border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-            background: sort === s.key ? '#FF6D1F' : '#2f2f2f',
+            background: sort === s.key ? 'var(--color-primary)' : '#2f2f2f',
             color: sort === s.key ? '#fff' : '#9a8f7a',
           }}>{s.label}</button>
         ))}
@@ -136,7 +136,7 @@ export default function ExplorePage() {
             padding: '7px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
             border: 'none', cursor: 'pointer', fontFamily: 'inherit',
             background: type === t ? 'rgba(255,109,31,0.15)' : '#2f2f2f',
-            color: type === t ? '#FF6D1F' : '#9a8f7a',
+            color: type === t ? 'var(--color-primary)' : '#9a8f7a',
           }}>{t}</button>
         ))}
       </div>
@@ -146,10 +146,10 @@ export default function ExplorePage() {
         {tools.map(t => (
           <button key={t} onClick={() => setTool(t)} style={{
             padding: '5px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
-            border: `1px solid ${tool === t ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`,
+            border: `1px solid ${tool === t ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`,
             cursor: 'pointer', fontFamily: 'inherit',
             background: tool === t ? 'rgba(255,109,31,0.12)' : 'transparent',
-            color: tool === t ? '#FF6D1F' : '#9a8f7a',
+            color: tool === t ? 'var(--color-primary)' : '#9a8f7a',
           }}>{t}</button>
         ))}
       </div>
@@ -165,7 +165,7 @@ export default function ExplorePage() {
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)',
                 color: '#9a8f7a', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
               }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,109,31,0.1)'; (e.currentTarget as HTMLButtonElement).style.color = '#FF6D1F'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,109,31,0.3)' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,109,31,0.1)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-primary)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,109,31,0.3)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = '#9a8f7a'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.07)' }}
               >#{t}</button>
             ))}
@@ -177,7 +177,7 @@ export default function ExplorePage() {
       {tag && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
           <span style={{ fontSize: '13px', color: '#9a8f7a' }}>Showing:</span>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#FF6D1F', background: 'rgba(255,109,31,0.1)', padding: '4px 12px', borderRadius: '999px' }}>#{tag}</span>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-primary)', background: 'rgba(255,109,31,0.1)', padding: '4px 12px', borderRadius: '999px' }}>#{tag}</span>
           <button onClick={() => setTag('')} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit' }}>✕ Clear</button>
         </div>
       )}
@@ -185,7 +185,7 @@ export default function ExplorePage() {
       {/* Loading */}
       {loading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
       )}
 
@@ -193,7 +193,7 @@ export default function ExplorePage() {
       {!loading && posts.length === 0 && (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{ fontSize: '40px', marginBottom: '12px' }}>🔭</div>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#FAF3E1', marginBottom: '8px' }}>Nothing found</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '8px' }}>Nothing found</h3>
           <p style={{ color: '#9a8f7a', fontSize: '14px' }}>Try different filters or be the first to post!</p>
         </div>
       )}
@@ -214,7 +214,7 @@ export default function ExplorePage() {
       {!loading && hasMore && posts.length > 0 && (
         <div style={{ textAlign: 'center', marginTop: '32px' }}>
           <button onClick={() => loadPosts()} style={{
-            background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.1)', color: '#F5E7C6',
+            background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--color-beige)',
             padding: '10px 32px', borderRadius: '12px', fontSize: '14px', fontWeight: 600,
             cursor: 'pointer', fontFamily: 'inherit',
           }}>Load more</button>
@@ -258,17 +258,17 @@ function ExploreCard({ post, index, currentUserId, accessToken, onTagClick, onLi
           <Link href={`/profile/${post.user.username}`} style={{ textDecoration: 'none' }}>
             {post.user.avatar_url
               ? <img src={post.user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-              : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+              : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
             }
           </Link>
-          <Link href={`/profile/${post.user.username}`} style={{ fontSize: '12px', fontWeight: 600, color: '#F5E7C6', textDecoration: 'none' }}>{post.user.full_name}</Link>
+          <Link href={`/profile/${post.user.username}`} style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-beige)', textDecoration: 'none' }}>{post.user.full_name}</Link>
           {(post.user.is_official || post.user.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={12} />}
-          {post.ai_tool && <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.12)', color: '#FF6D1F' }}>{post.ai_tool}</span>}
+          {post.ai_tool && <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.12)', color: 'var(--color-primary)' }}>{post.ai_tool}</span>}
         </div>
 
         {/* Caption */}
         {post.caption && (
-          <p style={{ fontSize: '13px', color: '#F5E7C6', lineHeight: 1.5, marginBottom: '8px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
+          <p style={{ fontSize: '13px', color: 'var(--color-beige)', lineHeight: 1.5, marginBottom: '8px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
             <RenderWithMentions text={post.caption} />
           </p>
         )}
@@ -277,9 +277,9 @@ function ExploreCard({ post, index, currentUserId, accessToken, onTagClick, onLi
         {post.prompt_text && (
           <div style={{ background: 'rgba(255,109,31,0.04)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '8px', padding: '8px 10px', marginBottom: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-              <span style={{ fontSize: '10px', fontWeight: 700, color: '#FF6D1F' }}>✦ PROMPT</span>
+              <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--color-primary)' }}>✦ PROMPT</span>
               <button onClick={async () => { await navigator.clipboard.writeText(post.prompt_text); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '10px', color: copied ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit', fontWeight: 600 }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '10px', color: copied ? 'var(--color-primary)' : '#9a8f7a', fontFamily: 'inherit', fontWeight: 600 }}>
                 {copied ? '✓' : 'Copy'}
               </button>
             </div>
@@ -298,7 +298,7 @@ function ExploreCard({ post, index, currentUserId, accessToken, onTagClick, onLi
 
         {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <button onClick={handleLike} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: liked ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit' }}>
+          <button onClick={handleLike} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: liked ? 'var(--color-primary)' : '#9a8f7a', fontFamily: 'inherit' }}>
             {liked ? '♥' : '♡'} {likeCount}
           </button>
           <Link href={`/post/${post.id}`} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>

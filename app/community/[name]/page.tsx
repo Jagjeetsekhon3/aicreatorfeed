@@ -100,11 +100,11 @@ export default function SpacePage() {
   if (!space || loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
-  const inp: React.CSSProperties = { width: '100%', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '11px 14px', fontSize: '14px', color: '#FAF3E1', outline: 'none', fontFamily: 'inherit' }
+  const inp: React.CSSProperties = { width: '100%', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '11px 14px', fontSize: '14px', color: 'var(--color-cream)', outline: 'none', fontFamily: 'inherit' }
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 0 80px' }}>
@@ -119,20 +119,20 @@ export default function SpacePage() {
           </div>
           <div style={{ flex: 1, minWidth: '200px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
-              <h1 style={{ fontSize: '20px', fontWeight: 900, color: '#FAF3E1', margin: 0 }}>{space.display_name}</h1>
-              {space.is_official && <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: '#FF6D1F' }}>Official</span>}
+              <h1 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--color-cream)', margin: 0 }}>{space.display_name}</h1>
+              {space.is_official && <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>Official</span>}
             </div>
             <p style={{ fontSize: '13px', color: '#9a8f7a', margin: '0 0 12px' }}>{space.description}</p>
             <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: '#9a8f7a' }}>
-              <span><strong style={{ color: '#FAF3E1' }}>{space.member_count.toLocaleString()}</strong> members</span>
-              <span><strong style={{ color: '#FAF3E1' }}>{space.post_count}</strong> posts</span>
+              <span><strong style={{ color: 'var(--color-cream)' }}>{space.member_count.toLocaleString()}</strong> members</span>
+              <span><strong style={{ color: 'var(--color-cream)' }}>{space.post_count}</strong> posts</span>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button onClick={() => { if (!currentUserId) { router.push('/auth/login'); return }; setShowNewPost(true) }} style={{ padding: '9px 18px', background: '#FF6D1F', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
+            <button onClick={() => { if (!currentUserId) { router.push('/auth/login'); return }; setShowNewPost(true) }} style={{ padding: '9px 18px', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
               + New post
             </button>
-            <button onClick={handleJoin} disabled={joining} style={{ padding: '9px 18px', background: isJoined ? 'rgba(255,255,255,0.06)' : 'rgba(255,109,31,0.1)', color: isJoined ? '#9a8f7a' : '#FF6D1F', border: `1px solid ${isJoined ? 'rgba(255,255,255,0.1)' : 'rgba(255,109,31,0.3)'}`, borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
+            <button onClick={handleJoin} disabled={joining} style={{ padding: '9px 18px', background: isJoined ? 'rgba(255,255,255,0.06)' : 'rgba(255,109,31,0.1)', color: isJoined ? '#9a8f7a' : 'var(--color-primary)', border: `1px solid ${isJoined ? 'rgba(255,255,255,0.1)' : 'rgba(255,109,31,0.3)'}`, borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
               {joining ? '...' : isJoined ? 'Joined' : '+ Join'}
             </button>
           </div>
@@ -145,7 +145,7 @@ export default function SpacePage() {
           {showNewPost && (
             <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,109,31,0.2)', borderRadius: '14px', padding: '18px', marginBottom: '16px', animation: 'fadeIn 0.2s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#FAF3E1', margin: 0 }}>New discussion</h3>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', margin: 0 }}>New discussion</h3>
                 <button onClick={() => setShowNewPost(false)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '18px' }}>×</button>
               </div>
               <form onSubmit={handlePost} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -154,7 +154,7 @@ export default function SpacePage() {
                   style={{ ...inp, resize: 'none', lineHeight: 1.6 }} />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                   <button type="button" onClick={() => setShowNewPost(false)} style={{ padding: '9px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#9a8f7a', borderRadius: '8px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', fontWeight: 600 }}>Cancel</button>
-                  <button type="submit" disabled={posting || !title.trim() || !content.trim()} style={{ padding: '9px 20px', background: '#FF6D1F', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700 }}>
+                  <button type="submit" disabled={posting || !title.trim() || !content.trim()} style={{ padding: '9px 20px', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700 }}>
                     {posting ? 'Posting...' : 'Post discussion'}
                   </button>
                 </div>
@@ -165,7 +165,7 @@ export default function SpacePage() {
           {/* Sort */}
           <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
             {(['new', 'top'] as const).map(s => (
-              <button key={s} onClick={() => setSort(s)} style={{ padding: '7px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: sort === s ? '#FF6D1F' : '#2f2f2f', color: sort === s ? '#fff' : '#9a8f7a' }}>
+              <button key={s} onClick={() => setSort(s)} style={{ padding: '7px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: sort === s ? 'var(--color-primary)' : '#2f2f2f', color: sort === s ? '#fff' : '#9a8f7a' }}>
                 {s === 'new' ? '✨ New' : '🔥 Top'}
               </button>
             ))}
@@ -175,9 +175,9 @@ export default function SpacePage() {
           {posts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', background: '#2f2f2f', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.07)' }}>
               <div style={{ fontSize: '40px', marginBottom: '12px' }}>💬</div>
-              <h3 style={{ color: '#FAF3E1', marginBottom: '8px' }}>No posts yet</h3>
+              <h3 style={{ color: 'var(--color-cream)', marginBottom: '8px' }}>No posts yet</h3>
               <p style={{ color: '#9a8f7a', fontSize: '14px', marginBottom: '16px' }}>Start the first discussion in this space</p>
-              <button onClick={() => setShowNewPost(true)} style={{ background: '#FF6D1F', color: '#fff', border: 'none', borderRadius: '10px', padding: '9px 20px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
+              <button onClick={() => setShowNewPost(true)} style={{ background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '10px', padding: '9px 20px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
                 + Start discussion
               </button>
             </div>
@@ -190,22 +190,22 @@ export default function SpacePage() {
                 >
                   {/* Vote */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                    <button onClick={() => handleVote(post.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: votedIds.has(post.id) ? '#FF6D1F' : '#9a8f7a', lineHeight: 1, padding: '2px' }}>▲</button>
-                    <span style={{ fontSize: '14px', fontWeight: 700, color: votedIds.has(post.id) ? '#FF6D1F' : '#FAF3E1' }}>{post.upvotes}</span>
+                    <button onClick={() => handleVote(post.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: votedIds.has(post.id) ? 'var(--color-primary)' : '#9a8f7a', lineHeight: 1, padding: '2px' }}>▲</button>
+                    <span style={{ fontSize: '14px', fontWeight: 700, color: votedIds.has(post.id) ? 'var(--color-primary)' : 'var(--color-cream)' }}>{post.upvotes}</span>
                   </div>
 
                   {/* Content */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    {post.is_pinned && <span style={{ fontSize: '11px', color: '#FF6D1F', fontWeight: 700, marginBottom: '4px', display: 'block' }}>📌 Pinned</span>}
+                    {post.is_pinned && <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 700, marginBottom: '4px', display: 'block' }}>📌 Pinned</span>}
                     <Link href={`/community/${name}/post/${post.id}`} style={{ textDecoration: 'none' }}>
-                      <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#FAF3E1', margin: '0 0 6px', lineHeight: 1.4 }}>{post.title}</h3>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)', margin: '0 0 6px', lineHeight: 1.4 }}>{post.title}</h3>
                     </Link>
                     <p style={{ fontSize: '13px', color: '#9a8f7a', margin: '0 0 10px', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{post.content}</p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         {post.user.avatar_url
                           ? <img src={post.user.avatar_url} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
-                          : <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+                          : <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
                         }
                         <Link href={`/profile/${post.user.username}`} style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', textDecoration: 'none' }}>{post.user.full_name}</Link>
                         {(post.user.is_official || post.user.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={12} />}
@@ -225,22 +225,22 @@ export default function SpacePage() {
         {/* Sidebar */}
         <aside style={{ position: 'sticky', top: '80px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '16px' }}>
-            <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', marginBottom: '10px' }}>About this space</h3>
+            <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '10px' }}>About this space</h3>
             <p style={{ fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6, marginBottom: '12px' }}>{space.description || 'A community space for discussion.'}</p>
             {space.rules && (
               <>
-                <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#FAF3E1', marginBottom: '6px' }}>Rules</h4>
+                <h4 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '6px' }}>Rules</h4>
                 <p style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.6 }}>{space.rules}</p>
               </>
             )}
             <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: '#9a8f7a' }}>Members</span>
-                <span style={{ fontWeight: 700, color: '#FAF3E1' }}>{space.member_count.toLocaleString()}</span>
+                <span style={{ fontWeight: 700, color: 'var(--color-cream)' }}>{space.member_count.toLocaleString()}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: '#9a8f7a' }}>Posts</span>
-                <span style={{ fontWeight: 700, color: '#FAF3E1' }}>{space.post_count}</span>
+                <span style={{ fontWeight: 700, color: 'var(--color-cream)' }}>{space.post_count}</span>
               </div>
             </div>
           </div>

@@ -9,9 +9,9 @@ import { createClient } from '@/lib/supabase/client'
 function Logo() {
   return (
     <svg width="34" height="34" viewBox="-54 -100 108 170" fill="none">
-      <polygon points="0,-72 54,60 36,60 0,-12 -36,60 -54,60" fill="#FF6D1F"/>
-      <rect x="-28" y="14" width="56" height="13" fill="#222222"/>
-      <circle cx="0" cy="-88" r="13" fill="#FF6D1F"/>
+      <polygon points="0,-72 54,60 36,60 0,-12 -36,60 -54,60" fill="var(--color-primary)"/>
+      <rect x="-28" y="14" width="56" height="13" fill="var(--color-bg)"/>
+      <circle cx="0" cy="-88" r="13" fill="var(--color-primary)"/>
     </svg>
   )
 }
@@ -19,7 +19,7 @@ function Logo() {
 // ── Icons ─────────────────────────────────────────────────────────────────
 function FeedIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
       <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
     </svg>
@@ -27,22 +27,22 @@ function FeedIcon({ active }: { active: boolean }) {
 }
 function ExploreIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="9"/>
-      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill={active ? '#FF6D1F' : 'none'}/>
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill={active ? 'var(--color-primary)' : 'none'}/>
     </svg>
   )
 }
 function PostIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? '#FF6D1F' : 'none'} stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? 'var(--color-primary)' : 'none'} stroke={active ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round">
       <circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
     </svg>
   )
 }
 function CommunityIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
       <path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/>
     </svg>
@@ -50,7 +50,7 @@ function CommunityIcon({ active }: { active: boolean }) {
 }
 function MessagesIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#FF6D1F' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill={active ? 'rgba(255,109,31,0.2)' : 'none'}/>
     </svg>
   )
@@ -84,12 +84,12 @@ function ProfileDropdown({ user, signOut }: { user: any; signOut: () => void }) 
       <button onClick={() => setOpen(!open)} style={{
         width: '36px', height: '36px', borderRadius: '50%',
         background: avatar ? 'transparent' : 'rgba(255,109,31,0.2)',
-        border: `2px solid ${open ? '#FF6D1F' : 'rgba(255,109,31,0.4)'}`,
+        border: `2px solid ${open ? 'var(--color-primary)' : 'rgba(255,109,31,0.4)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', padding: 0, overflow: 'hidden', transition: 'border-color 0.2s',
       }}>
         {avatar ? <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          : <span style={{ fontSize: '13px', fontWeight: 700, color: '#FF6D1F' }}>{initial}</span>}
+          : <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-primary)' }}>{initial}</span>}
       </button>
 
       {open && (
@@ -102,7 +102,7 @@ function ProfileDropdown({ user, signOut }: { user: any; signOut: () => void }) 
         }}>
           <style>{`@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}`}</style>
           <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>{user.user_metadata?.full_name || 'Creator'}</div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{user.user_metadata?.full_name || 'Creator'}</div>
             <div style={{ fontSize: '12px', color: '#9a8f7a', marginTop: '2px' }}>@{username || '...'}</div>
           </div>
           <div style={{ padding: '6px' }}>
@@ -113,7 +113,7 @@ function ProfileDropdown({ user, signOut }: { user: any; signOut: () => void }) 
               <Link key={href} href={href} onClick={() => setOpen(false)} style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
-                color: '#F5E7C6', fontSize: '14px', transition: 'background 0.15s',
+                color: 'var(--color-beige)', fontSize: '14px', transition: 'background 0.15s',
               }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -203,7 +203,7 @@ function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
                 background: pathname.startsWith(href) ? 'rgba(255,109,31,0.1)' : 'transparent',
-                color: pathname.startsWith(href) ? '#FF6D1F' : '#F5E7C6',
+                color: pathname.startsWith(href) ? 'var(--color-primary)' : 'var(--color-beige)',
                 fontSize: '14px', fontWeight: pathname.startsWith(href) ? 600 : 400,
                 transition: 'background 0.15s',
               }}
@@ -316,8 +316,8 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
             <Logo />
-            <span style={{ fontWeight: 900, fontSize: '18px', color: '#FAF3E1', letterSpacing: '-0.5px' }}>
-              Ai<span style={{ color: '#FF6D1F' }}>Creator</span>Feed
+            <span style={{ fontWeight: 900, fontSize: '18px', color: 'var(--color-cream)', letterSpacing: '-0.5px' }}>
+              Ai<span style={{ color: 'var(--color-primary)' }}>Creator</span>Feed
             </span>
           </Link>
 
@@ -329,7 +329,7 @@ export default function Navbar() {
                 <Link key={href} href={href} style={{
                   padding: '8px 12px', borderRadius: '8px', fontSize: '13px', textDecoration: 'none',
                   background: active ? 'rgba(255,109,31,0.12)' : 'transparent',
-                  color: active ? '#FF6D1F' : '#9a8f7a', fontWeight: active ? 600 : 400,
+                  color: active ? 'var(--color-primary)' : '#9a8f7a', fontWeight: active ? 600 : 400,
                 }}>{label}</Link>
               )
             })}
@@ -350,11 +350,11 @@ export default function Navbar() {
             {user && (
               <Link href="/notifications" title="Notifications" onClick={() => setUnreadCount(0)} style={{ position: "relative", width: "36px", height: "36px", borderRadius: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                 <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#9a8f7a" strokeWidth="1.5" strokeLinecap="round"><path d="M8.5 2a5.5 5.5 0 0 1 5.5 5.5c0 2.5.5 3.5 1 4.5H2c.5-1 1-2 1-4.5A5.5 5.5 0 0 1 8.5 2Z"/><path d="M7 14.5a1.5 1.5 0 0 0 3 0"/></svg>
-                {unreadCount > 0 && <span style={{ position: "absolute", top: "-3px", right: "-3px", background: "#FF6D1F", color: "#fff", fontSize: "10px", fontWeight: 800, width: "17px", height: "17px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #222" }}>{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                {unreadCount > 0 && <span style={{ position: "absolute", top: "-3px", right: "-3px", background: "var(--color-primary)", color: "#fff", fontSize: "10px", fontWeight: 800, width: "17px", height: "17px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #222" }}>{unreadCount > 9 ? "9+" : unreadCount}</span>}
               </Link>
             )}
             <Link href="/post/new" title="Create post" style={{
-              width: '36px', height: '36px', borderRadius: '10px', background: '#FF6D1F',
+              width: '36px', height: '36px', borderRadius: '10px', background: 'var(--color-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               textDecoration: 'none', boxShadow: '0 2px 8px rgba(255,109,31,0.35)',
             }}>
@@ -368,7 +368,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
-                <Link href="/auth/signup" style={{ fontSize: '13px', fontWeight: 600, background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)', color: '#FF6D1F', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none' }}>Join free</Link>
+                <Link href="/auth/signup" style={{ fontSize: '13px', fontWeight: 600, background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)', color: 'var(--color-primary)', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none' }}>Join free</Link>
               </>
             )}
           </div>
@@ -385,8 +385,8 @@ export default function Navbar() {
         <div style={{ padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           <Logo />
-          <span style={{ fontWeight: 900, fontSize: '16px', color: '#FAF3E1' }}>
-            Ai<span style={{ color: '#FF6D1F' }}>Creator</span>Feed
+          <span style={{ fontWeight: 900, fontSize: '16px', color: 'var(--color-cream)' }}>
+            Ai<span style={{ color: 'var(--color-primary)' }}>Creator</span>Feed
           </span>
         </Link>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -402,7 +402,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
-              <Link href="/auth/signup" style={{ fontSize: '12px', fontWeight: 700, background: '#FF6D1F', color: '#fff', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Join free</Link>
+              <Link href="/auth/signup" style={{ fontSize: '12px', fontWeight: 700, background: 'var(--color-primary)', color: '#fff', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Join free</Link>
             </>
           )}
         </div>
@@ -426,7 +426,7 @@ export default function Navbar() {
             }}>
               {isPost ? (
                 <div style={{
-                  width: '48px', height: '48px', borderRadius: '14px', background: '#FF6D1F',
+                  width: '48px', height: '48px', borderRadius: '14px', background: 'var(--color-primary)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: '0 4px 16px rgba(255,109,31,0.4)', marginTop: '-18px',
                 }}>
@@ -437,7 +437,7 @@ export default function Navbar() {
               ) : (
                 <>
                   <Icon active={active} />
-                  <span style={{ fontSize: '10px', fontWeight: active ? 600 : 400, color: active ? '#FF6D1F' : '#9a8f7a' }}>{label}</span>
+                  <span style={{ fontSize: '10px', fontWeight: active ? 600 : 400, color: active ? 'var(--color-primary)' : '#9a8f7a' }}>{label}</span>
                 </>
               )}
             </Link>

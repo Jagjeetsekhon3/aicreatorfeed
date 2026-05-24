@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     if (!name || !display_name) return NextResponse.json({ error: 'Name required' }, { status: 400 })
     const slug = name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-')
 
-    const { data, error } = await db.from('spaces').insert({ name: slug, display_name, description, icon: icon || '💬', cover_color: cover_color || '#FF6D1F', created_by: user.id }).select().single()
+    const { data, error } = await db.from('spaces').insert({ name: slug, display_name, description, icon: icon || '💬', cover_color: cover_color || 'var(--color-primary)', created_by: user.id }).select().single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     // Auto-join as owner

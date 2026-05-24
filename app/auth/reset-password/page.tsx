@@ -6,13 +6,13 @@ import { createClient } from '@/lib/supabase/client'
 const inp: React.CSSProperties = {
   width: '100%', background: '#2a2a2a',
   border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
-  padding: '14px 16px', fontSize: '15px', color: '#FAF3E1',
+  padding: '14px 16px', fontSize: '15px', color: 'var(--color-cream)',
   outline: 'none', fontFamily: 'inherit',
 }
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#222222' }} />}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--color-bg)' }} />}>
       <ResetPasswordForm />
     </Suspense>
   )
@@ -37,10 +37,10 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#222222', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
       <div style={{ width: '100%', maxWidth: '420px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#FAF3E1' }}>Set new password</h1>
+          <h1 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-cream)' }}>Set new password</h1>
           <p style={{ fontSize: '14px', color: '#9a8f7a', marginTop: '6px' }}>Choose a strong password</p>
         </div>
         <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '20px', padding: '32px' }}>
@@ -51,16 +51,16 @@ function ResetPasswordForm() {
           )}
           <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>New password</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }}>New password</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required style={inp} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>Confirm password</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }}>Confirm password</label>
               <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="••••••••" required style={inp} />
             </div>
             <button type="submit" disabled={loading || !password || !confirm} style={{
               width: '100%', padding: '14px', borderRadius: '12px',
-              background: '#FF6D1F', border: 'none', cursor: 'pointer',
+              background: 'var(--color-primary)', border: 'none', cursor: 'pointer',
               fontSize: '15px', fontWeight: 700, color: '#fff', fontFamily: 'inherit',
               opacity: (!password || !confirm) ? 0.5 : 1,
             }}>

@@ -24,9 +24,9 @@ type Comment = {
 
 const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
   'Midjourney':         { bg: 'rgba(255,109,31,0.15)', color: '#FF8540' },
-  'DALL·E 3':           { bg: 'rgba(250,243,225,0.1)',  color: '#FAF3E1' },
-  'Stable Diffusion':   { bg: 'rgba(245,231,198,0.1)',  color: '#F5E7C6' },
-  'Sora':               { bg: 'rgba(255,109,31,0.1)',   color: '#FF6D1F' },
+  'DALL·E 3':           { bg: 'rgba(250,243,225,0.1)',  color: 'var(--color-cream)' },
+  'Stable Diffusion':   { bg: 'rgba(245,231,198,0.1)',  color: 'var(--color-beige)' },
+  'Sora':               { bg: 'rgba(255,109,31,0.1)',   color: 'var(--color-primary)' },
   'Runway':             { bg: 'rgba(255,122,48,0.12)',  color: '#FF7A30' },
 }
 
@@ -239,12 +239,12 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
           <Link href={`/profile/${post.user.username}`} style={{ flexShrink: 0 }}>
             {post.user.avatar_url
               ? <img src={post.user.avatar_url} alt="" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover' }} />
-              : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+              : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
             }
           </Link>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Link href={`/profile/${post.user.username}`} style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{post.user.full_name}</Link>
+              <Link href={`/profile/${post.user.username}`} style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{post.user.full_name}</Link>
               {(post.user.is_verified || post.user.is_official) && <VerifiedBadge isOfficial={post.user.is_official} />}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -263,7 +263,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
               <button onClick={() => setShowMenu(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', padding: '4px 6px', borderRadius: '8px', fontSize: '18px', lineHeight: 1 }}>⋯</button>
               {showMenu && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', overflow: 'hidden', minWidth: '150px', boxShadow: '0 8px 24px rgba(0,0,0,0.4)', zIndex: 50 }}>
-                  <Link href={`/post/${post.id}/edit`} onClick={() => setShowMenu(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '11px 14px', textDecoration: 'none', color: '#F5E7C6', fontSize: '13px' }}
+                  <Link href={`/post/${post.id}/edit`} onClick={() => setShowMenu(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '11px 14px', textDecoration: 'none', color: 'var(--color-beige)', fontSize: '13px' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                     ✏️ Edit post
@@ -281,7 +281,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
 
         {/* Caption with @mentions */}
         {post.caption && (
-          <p style={{ fontSize: '14px', color: '#F5E7C6', lineHeight: 1.6, marginBottom: '10px', whiteSpace: 'pre-wrap' }}>
+          <p style={{ fontSize: '14px', color: 'var(--color-beige)', lineHeight: 1.6, marginBottom: '10px', whiteSpace: 'pre-wrap' }}>
             <RenderWithMentions text={post.caption} />
           </p>
         )}
@@ -304,7 +304,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
         {(activeSlideData?.prompt_text || post.prompt_text) && (
           <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', padding: '10px 12px', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#FF6D1F' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)' }}>
                 ✦ AI Prompt
                 {(activeSlideData?.ai_tool || post.ai_tool) && ` · ${activeSlideData?.ai_tool || post.ai_tool}`}
                 {allSlides.length > 1 && ` (image ${carouselIdx + 1})`}
@@ -314,7 +314,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                   <button onClick={() => setShowFullPrompt(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: '#9a8f7a', fontFamily: 'inherit' }}>{showFullPrompt ? 'Less' : 'More'}</button>
                 )}
                 <button onClick={async () => { await navigator.clipboard.writeText(activeSlideData?.prompt_text || post.prompt_text || ''); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: copied ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit', fontWeight: 600 }}>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: copied ? 'var(--color-primary)' : '#9a8f7a', fontFamily: 'inherit', fontWeight: 600 }}>
                   {copied ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
@@ -366,7 +366,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
             <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '5px' }}>
               {allSlides.map((_, i) => (
                 <button key={i} onClick={() => setCarouselIdx(i)}
-                  style={{ width: i === carouselIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === carouselIdx ? '#FF6D1F' : 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
+                  style={{ width: i === carouselIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === carouselIdx ? 'var(--color-primary)' : 'rgba(255,255,255,0.6)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: 0 }} />
               ))}
             </div>
           )}
@@ -384,20 +384,20 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
         {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', paddingBottom: '10px', borderBottom: showComments ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
           {/* Like */}
-          <button onClick={handleLike} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: liked ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit', padding: '4px 0', transition: 'color 0.15s' }}>
+          <button onClick={handleLike} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: liked ? 'var(--color-primary)' : '#9a8f7a', fontFamily: 'inherit', padding: '4px 0', transition: 'color 0.15s' }}>
             <span style={{ fontSize: '18px' }}>{liked ? '♥' : '♡'}</span>
             <span>{likeCount}</span>
           </button>
 
           {/* Comment */}
-          <button onClick={handleToggleComments} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: showComments ? '#FF6D1F' : '#9a8f7a', fontFamily: 'inherit', padding: '4px 0' }}>
+          <button onClick={handleToggleComments} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: showComments ? 'var(--color-primary)' : '#9a8f7a', fontFamily: 'inherit', padding: '4px 0' }}>
             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 10.5C14.5 11.052 14.052 11.5 13.5 11.5H4.5L2 14V3.5C2 2.948 2.448 2.5 3 2.5H13.5C14.052 2.5 14.5 2.948 14.5 3.5V10.5Z"/></svg>
             <span>{commentCount}</span>
           </button>
 
           {/* Share */}
           <div ref={shareRef} style={{ position: 'relative' }}>
-            <button onClick={() => setShowShare(v => !v)} title="Share" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', color: showShare ? '#FF6D1F' : '#9a8f7a', padding: '4px 0', transition: 'color 0.15s' }}>
+            <button onClick={() => setShowShare(v => !v)} title="Share" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', color: showShare ? 'var(--color-primary)' : '#9a8f7a', padding: '4px 0', transition: 'color 0.15s' }}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="3" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="13" r="1.5"/>
                 <line x1="5.47" y1="7.28" x2="10.54" y2="4.22"/><line x1="5.47" y1="8.72" x2="10.54" y2="11.78"/>
@@ -411,7 +411,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                   { label: '💬 Share on WhatsApp', action: () => { window.open(`https://wa.me/?text=${encodeURIComponent(`${post.caption?.slice(0,80) || 'Check this out'} ${window.location.origin}/post/${post.id}`)}`, '_blank'); setShowShare(false) } },
                   { label: '📋 Copy post URL',  action: handleCopyLink },
                 ].map(({ label, action }) => (
-                  <button key={label} onClick={action} style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', color: '#F5E7C6', fontSize: '13px', fontFamily: 'inherit', textAlign: 'left' }}
+                  <button key={label} onClick={action} style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-beige)', fontSize: '13px', fontFamily: 'inherit', textAlign: 'left' }}
                     onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)')}
                     onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}>
                     {linkCopied && label.includes('Copy') ? '✓ Copied!' : label}
@@ -424,9 +424,9 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
           {/* Save to collection */}
           <div ref={saveRef} style={{ marginLeft: 'auto', position: 'relative' }}>
             <button onClick={openSaveMenu} disabled={!currentUserId} title="Save to collection"
-              style={{ background: 'none', border: 'none', cursor: currentUserId ? 'pointer' : 'default', color: bookmarked ? '#FF6D1F' : '#9a8f7a', padding: '4px', transition: 'color 0.15s, transform 0.1s', transform: bookmarking ? 'scale(0.85)' : 'scale(1)', display: 'flex', alignItems: 'center' }}>
+              style={{ background: 'none', border: 'none', cursor: currentUserId ? 'pointer' : 'default', color: bookmarked ? 'var(--color-primary)' : '#9a8f7a', padding: '4px', transition: 'color 0.15s, transform 0.1s', transform: bookmarking ? 'scale(0.85)' : 'scale(1)', display: 'flex', alignItems: 'center' }}>
               {bookmarked ? (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="#FF6D1F" stroke="#FF6D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2h10v13l-5-3-5 3V2z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--color-primary)" stroke="var(--color-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2h10v13l-5-3-5 3V2z"/></svg>
               ) : (
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2h10v13l-5-3-5 3V2z"/></svg>
               )}
@@ -438,14 +438,14 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                   <div style={{ padding: '10px 14px', fontSize: '12px', color: '#9a8f7a' }}>No collections yet</div>
                 )}
                 {collections.map(c => (
-                  <button key={c.id} onClick={() => saveToCollection(c.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', color: '#F5E7C6', fontSize: '13px', fontFamily: 'inherit', textAlign: 'left' }}
+                  <button key={c.id} onClick={() => saveToCollection(c.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-beige)', fontSize: '13px', fontFamily: 'inherit', textAlign: 'left' }}
                     onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)')}
                     onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}>
                     <span>📁 {c.name}</span>
-                    {c._saved && <span style={{ color: '#FF6D1F', fontSize: '12px' }}>✓</span>}
+                    {c._saved && <span style={{ color: 'var(--color-primary)', fontSize: '12px' }}>✓</span>}
                   </button>
                 ))}
-                <button onClick={createAndSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%', padding: '10px 14px', background: 'none', border: 'none', borderTop: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', color: '#FF6D1F', fontSize: '13px', fontFamily: 'inherit', fontWeight: 600 }}
+                <button onClick={createAndSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%', padding: '10px 14px', background: 'none', border: 'none', borderTop: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', color: 'var(--color-primary)', fontSize: '13px', fontFamily: 'inherit', fontWeight: 600 }}
                   onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,109,31,0.08)')}
                   onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}>
                   + New collection
@@ -460,7 +460,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
           <div style={{ paddingTop: '12px', animation: 'fadeIn 0.2s ease' }}>
             {!commentsLoaded && (
               <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
-                <div style={{ width: '20px', height: '20px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{ width: '20px', height: '20px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
               </div>
             )}
             {commentsLoaded && comments.length === 0 && (
@@ -475,12 +475,12 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                     <Link href={`/profile/${comment.user.username}`} style={{ flexShrink: 0 }}>
                       {comment.user.avatar_url
                         ? <img src={comment.user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-                        : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{comment.user.full_name?.[0]}</div>
+                        : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{comment.user.full_name?.[0]}</div>
                       }
                     </Link>
                     <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '8px 10px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                        <Link href={`/profile/${comment.user.username}`} style={{ fontSize: '12px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{comment.user.full_name}</Link>
+                        <Link href={`/profile/${comment.user.username}`} style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{comment.user.full_name}</Link>
                         <span style={{ fontSize: '11px', color: '#9a8f7a' }}>{formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}</span>
                         <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', alignItems: 'center' }}>
                           {currentUserId && (
@@ -494,7 +494,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                           )}
                         </div>
                       </div>
-                      <p style={{ fontSize: '13px', color: '#F5E7C6', margin: 0, lineHeight: 1.5, wordBreak: 'break-word' }}>
+                      <p style={{ fontSize: '13px', color: 'var(--color-beige)', margin: 0, lineHeight: 1.5, wordBreak: 'break-word' }}>
                         <RenderWithMentions text={comment.content} />
                       </p>
                     </div>
@@ -509,18 +509,18 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                           <Link href={`/profile/${reply.user.username}`} style={{ flexShrink: 0 }}>
                             {reply.user.avatar_url
                               ? <img src={reply.user.avatar_url} alt="" style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
-                              : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
+                              : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
                             }
                           </Link>
                           <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '6px 10px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                              <Link href={`/profile/${reply.user.username}`} style={{ fontSize: '11px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{reply.user.full_name}</Link>
+                              <Link href={`/profile/${reply.user.username}`} style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{reply.user.full_name}</Link>
                               <span style={{ fontSize: '10px', color: '#9a8f7a' }}>{formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}</span>
                               {currentUserId === reply.user_id && (
                                 <button onClick={() => handleDeleteComment(reply.id, comment.id)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '10px', color: 'rgba(255,80,80,0.6)', fontFamily: 'inherit' }}>✕</button>
                               )}
                             </div>
-                            <p style={{ fontSize: '12px', color: '#F5E7C6', margin: 0, lineHeight: 1.5, wordBreak: 'break-word' }}>
+                            <p style={{ fontSize: '12px', color: 'var(--color-beige)', margin: 0, lineHeight: 1.5, wordBreak: 'break-word' }}>
                               <RenderWithMentions text={reply.content} />
                             </p>
                           </div>
@@ -541,7 +541,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleReply(comment) } if (e.key === 'Escape') setReplyingTo(null) }}
                       />
                       <button onClick={() => handleReply(comment)} disabled={!replyText.trim() || postingReply}
-                        style={{ background: replyText.trim() ? '#FF6D1F' : 'rgba(255,255,255,0.06)', color: replyText.trim() ? '#fff' : '#555', border: 'none', borderRadius: '8px', padding: '7px 12px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
+                        style={{ background: replyText.trim() ? 'var(--color-primary)' : 'rgba(255,255,255,0.06)', color: replyText.trim() ? '#fff' : '#555', border: 'none', borderRadius: '8px', padding: '7px 12px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
                         {postingReply ? '...' : 'Reply'}
                       </button>
                     </div>
@@ -563,12 +563,12 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleComment(e as any) } }}
                 />
                 <button type="submit" disabled={!commentText.trim() || posting}
-                  style={{ background: commentText.trim() ? '#FF6D1F' : 'rgba(255,255,255,0.06)', color: commentText.trim() ? '#fff' : '#555', border: 'none', borderRadius: '10px', padding: '9px 14px', fontSize: '13px', fontWeight: 700, cursor: commentText.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit', flexShrink: 0 }}>
+                  style={{ background: commentText.trim() ? 'var(--color-primary)' : 'rgba(255,255,255,0.06)', color: commentText.trim() ? '#fff' : '#555', border: 'none', borderRadius: '10px', padding: '9px 14px', fontSize: '13px', fontWeight: 700, cursor: commentText.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit', flexShrink: 0 }}>
                   {posting ? '...' : 'Post'}
                 </button>
               </form>
             ) : (
-              <Link href="/auth/login" style={{ display: 'block', textAlign: 'center', fontSize: '13px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600, padding: '8px' }}>
+              <Link href="/auth/login" style={{ display: 'block', textAlign: 'center', fontSize: '13px', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600, padding: '8px' }}>
                 Sign in to comment
               </Link>
             )}

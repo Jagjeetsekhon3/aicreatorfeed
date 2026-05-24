@@ -41,11 +41,11 @@ export default function DonatePage() {
   if (success) return (
     <div style={{ maxWidth: '480px', margin: '60px auto', padding: '0 16px', textAlign: 'center' }}>
       <div style={{ fontSize: '56px', marginBottom: '16px' }}>🙏</div>
-      <h1 style={{ fontSize: '26px', fontWeight: 900, color: '#FAF3E1', marginBottom: '10px' }}>Thank you!</h1>
+      <h1 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '10px' }}>Thank you!</h1>
       <p style={{ color: '#9a8f7a', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
         Your support keeps AiCreatorFeed running and helps us build better tools for the AI creator community.
       </p>
-      <Link href="/feed" style={{ display: 'inline-block', background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none' }}>
+      <Link href="/feed" style={{ display: 'inline-block', background: 'var(--color-primary)', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '12px', textDecoration: 'none' }}>
         Back to feed →
       </Link>
     </div>
@@ -53,7 +53,7 @@ export default function DonatePage() {
 
   if (pricingLoading) return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
@@ -64,7 +64,7 @@ export default function DonatePage() {
 
       <div style={{ textAlign: 'center', marginBottom: '36px', animation: 'fadeIn 0.3s ease' }}>
         <div style={{ fontSize: '48px', marginBottom: '12px' }}>💛</div>
-        <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#FAF3E1', marginBottom: '8px' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '8px' }}>
           {pricing.donation_page_title}
         </h1>
         <p style={{ color: '#9a8f7a', fontSize: '15px', lineHeight: 1.7 }}>
@@ -78,31 +78,31 @@ export default function DonatePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
           {presets.map(p => (
             <button key={p.key} onClick={() => { setSelected(p.key); setIsCustom(false) }}
-              style={{ padding: '14px 8px', borderRadius: '12px', border: `2px solid ${!isCustom && selected === p.key ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`, background: !isCustom && selected === p.key ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', transition: 'all 0.15s' }}>
-              <div style={{ fontSize: '18px', fontWeight: 900, color: !isCustom && selected === p.key ? '#FF6D1F' : '#FAF3E1' }}>₹{p.amount}</div>
+              style={{ padding: '14px 8px', borderRadius: '12px', border: `2px solid ${!isCustom && selected === p.key ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: !isCustom && selected === p.key ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', transition: 'all 0.15s' }}>
+              <div style={{ fontSize: '18px', fontWeight: 900, color: !isCustom && selected === p.key ? 'var(--color-primary)' : 'var(--color-cream)' }}>₹{p.amount}</div>
               <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '3px' }}>{p.label}</div>
             </button>
           ))}
         </div>
 
         <button onClick={() => setIsCustom(true)}
-          style={{ width: '100%', padding: '12px', borderRadius: '12px', border: `2px solid ${isCustom ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`, background: isCustom ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '20px', transition: 'all 0.15s' }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: isCustom ? '#FF6D1F' : '#9a8f7a' }}>✏️ Custom amount</div>
+          style={{ width: '100%', padding: '12px', borderRadius: '12px', border: `2px solid ${isCustom ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: isCustom ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '20px', transition: 'all 0.15s' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: isCustom ? 'var(--color-primary)' : '#9a8f7a' }}>✏️ Custom amount</div>
         </button>
 
         {isCustom && (
           <div style={{ marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,109,31,0.3)', borderRadius: '10px', padding: '10px 14px' }}>
-              <span style={{ color: '#FF6D1F', fontWeight: 700, fontSize: '18px', marginRight: '8px' }}>₹</span>
+              <span style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '18px', marginRight: '8px' }}>₹</span>
               <input type="number" value={customAmt} onChange={e => setCustomAmt(e.target.value)} min="10" placeholder="Enter amount"
-                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#FAF3E1', fontSize: '18px', fontWeight: 700, fontFamily: 'inherit' }} />
+                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--color-cream)', fontSize: '18px', fontWeight: 700, fontFamily: 'inherit' }} />
             </div>
             <p style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '6px' }}>Minimum ₹10</p>
           </div>
         )}
 
         <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.1)', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
-          <p style={{ fontSize: '12px', fontWeight: 700, color: '#FF6D1F', margin: '0 0 8px' }}>Your donation goes towards:</p>
+          <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)', margin: '0 0 8px' }}>Your donation goes towards:</p>
           {['🖥 Server & hosting costs', '🛠 New features & improvements', '🎬 Tutorial production', '🌍 Growing the AI creator community'].map(item => (
             <p key={item} style={{ fontSize: '12px', color: '#9a8f7a', margin: '4px 0' }}>{item}</p>
           ))}

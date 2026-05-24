@@ -22,7 +22,7 @@ export default function SearchPage() {
     <Suspense fallback={
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-        <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     }>
       <SearchContent />
@@ -98,7 +98,7 @@ function SearchContent() {
           onBlurCapture={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
         >
           {loading
-            ? <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+            ? <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
             : <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
                 <circle cx="8" cy="8" r="5.5" stroke="#9a8f7a" strokeWidth="1.6"/>
                 <path d="M12.5 12.5L16 16" stroke="#9a8f7a" strokeWidth="1.6" strokeLinecap="round"/>
@@ -111,7 +111,7 @@ function SearchContent() {
             placeholder="Search people, posts, spaces, news, tags..."
             style={{
               flex: 1, background: 'transparent', border: 'none', outline: 'none',
-              fontSize: '16px', color: '#FAF3E1', fontFamily: 'inherit', padding: '13px 0',
+              fontSize: '16px', color: 'var(--color-cream)', fontFamily: 'inherit', padding: '13px 0',
             }}
           />
           {query && (
@@ -126,9 +126,9 @@ function SearchContent() {
         {FILTERS.map(({ key, label, icon }) => (
           <button key={key} onClick={() => handleFilter(key)} style={{
             padding: '7px 14px', borderRadius: '999px', fontSize: '13px', fontWeight: 600,
-            border: `1px solid ${filter === key ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`,
+            border: `1px solid ${filter === key ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`,
             background: filter === key ? 'rgba(255,109,31,0.12)' : 'transparent',
-            color: filter === key ? '#FF6D1F' : '#9a8f7a',
+            color: filter === key ? 'var(--color-primary)' : '#9a8f7a',
             cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
             display: 'flex', alignItems: 'center', gap: '5px',
           }}>
@@ -147,10 +147,10 @@ function SearchContent() {
                 <button key={term} onClick={() => { setQuery(term); handleInput(term) }} style={{
                   padding: '8px 16px', borderRadius: '999px', fontSize: '13px', fontWeight: 600,
                   background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: '#F5E7C6', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+                  color: 'var(--color-beige)', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
                 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,109,31,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,109,31,0.3)'; (e.currentTarget as HTMLButtonElement).style.color = '#FF6D1F' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = '#F5E7C6' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,109,31,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,109,31,0.3)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-primary)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-beige)' }}
                 >
                   🔍 {term}
                 </button>
@@ -171,7 +171,7 @@ function SearchContent() {
               ].map(({ icon, label, desc }) => (
                 <div key={label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '14px 12px' }}>
                   <div style={{ fontSize: '20px', marginBottom: '6px' }}>{icon}</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', marginBottom: '3px' }}>{label}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '3px' }}>{label}</div>
                   <div style={{ fontSize: '11px', color: '#9a8f7a', lineHeight: 1.4 }}>{desc}</div>
                 </div>
               ))}
@@ -184,11 +184,11 @@ function SearchContent() {
       {searched && !loading && !hasResults && (
         <div style={{ textAlign: 'center', padding: '60px 20px', animation: 'fadeIn 0.3s ease' }}>
           <div style={{ fontSize: '40px', marginBottom: '12px' }}>🔍</div>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#FAF3E1', marginBottom: '8px' }}>No results for "{query}"</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '8px' }}>No results for "{query}"</h3>
           <p style={{ color: '#9a8f7a', fontSize: '14px', marginBottom: '20px' }}>Try a different keyword or browse trending searches</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
             {TRENDING_SEARCHES.slice(0, 4).map(term => (
-              <button key={term} onClick={() => { setQuery(term); handleInput(term) }} style={{ padding: '7px 14px', borderRadius: '999px', fontSize: '13px', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.2)', color: '#FF6D1F', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+              <button key={term} onClick={() => { setQuery(term); handleInput(term) }} style={{ padding: '7px 14px', borderRadius: '999px', fontSize: '13px', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.2)', color: 'var(--color-primary)', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
                 {term}
               </button>
             ))}
@@ -202,7 +202,7 @@ function SearchContent() {
 
           {/* Results count */}
           <p style={{ fontSize: '13px', color: '#9a8f7a', margin: 0 }}>
-            {total} result{total !== 1 ? 's' : ''} for <strong style={{ color: '#FAF3E1' }}>"{query}"</strong>
+            {total} result{total !== 1 ? 's' : ''} for <strong style={{ color: 'var(--color-cream)' }}>"{query}"</strong>
           </p>
 
           {/* Users */}
@@ -216,18 +216,18 @@ function SearchContent() {
                   >
                     {user.avatar_url
                       ? <img src={user.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700, flexShrink: 0 }}>{user.full_name?.[0]}</div>
+                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700, flexShrink: 0 }}>{user.full_name?.[0]}</div>
                     }
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '2px' }}>
-                        <span style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>{user.full_name}</span>
+                        <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{user.full_name}</span>
                         {(user.is_official || user.is_verified) && <VerifiedBadge isOfficial={user.is_official} size={14} />}
                       </div>
                       <div style={{ fontSize: '12px', color: '#9a8f7a' }}>@{user.username}</div>
                       {user.bio && <div style={{ fontSize: '12px', color: '#9a8f7a', marginTop: '3px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{user.bio}</div>}
                     </div>
                     <div style={{ fontSize: '12px', color: '#9a8f7a', flexShrink: 0, textAlign: 'right' }}>
-                      <div style={{ fontWeight: 700, color: '#FAF3E1', fontSize: '14px' }}>{user.followers_count?.toLocaleString()}</div>
+                      <div style={{ fontWeight: 700, color: 'var(--color-cream)', fontSize: '14px' }}>{user.followers_count?.toLocaleString()}</div>
                       <div>followers</div>
                     </div>
                   </Link>
@@ -250,9 +250,9 @@ function SearchContent() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px' }}>
                         <span style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a' }}>@{post.user?.username}</span>
                         {(post.user?.is_official || post.user?.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={12} />}
-                        {post.ai_tool && <span style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: '#FF6D1F', fontWeight: 700 }}>{post.ai_tool}</span>}
+                        {post.ai_tool && <span style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)', fontWeight: 700 }}>{post.ai_tool}</span>}
                       </div>
-                      <p style={{ fontSize: '13px', color: '#F5E7C6', margin: '0 0 4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, lineHeight: 1.5 }}>{post.caption || post.prompt_text || '(no caption)'}</p>
+                      <p style={{ fontSize: '13px', color: 'var(--color-beige)', margin: '0 0 4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, lineHeight: 1.5 }}>{post.caption || post.prompt_text || '(no caption)'}</p>
                       <div style={{ fontSize: '11px', color: '#9a8f7a' }}>♥ {post.likes_count} · {post.media_type}</div>
                     </div>
                   </Link>
@@ -270,13 +270,13 @@ function SearchContent() {
                     onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
-                    <div style={{ height: '4px', background: space.cover_color || '#FF6D1F' }} />
+                    <div style={{ height: '4px', background: space.cover_color || 'var(--color-primary)' }} />
                     <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: `${space.cover_color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>{space.icon}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <span style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1' }}>{space.display_name}</span>
-                          {space.is_official && <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: '#FF6D1F' }}>Official</span>}
+                          <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{space.display_name}</span>
+                          {space.is_official && <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>Official</span>}
                         </div>
                         <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{space.member_count?.toLocaleString()} members</div>
                       </div>
@@ -297,12 +297,12 @@ function SearchContent() {
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '12px', color: '#FF6D1F', fontWeight: 600, marginBottom: '4px' }}>{item.source_name}</div>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', marginBottom: '4px', lineHeight: 1.4 }}>{item.title}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 600, marginBottom: '4px' }}>{item.source_name}</div>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '4px', lineHeight: 1.4 }}>{item.title}</div>
                       <div style={{ fontSize: '12px', color: '#9a8f7a', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{item.summary}</div>
                       <div style={{ fontSize: '11px', color: '#6b6460', marginTop: '6px' }}>{formatDistanceToNow(new Date(item.published_at), { addSuffix: true })}</div>
                     </div>
-                    <span style={{ fontSize: '12px', color: '#FF6D1F', fontWeight: 600, flexShrink: 0, alignSelf: 'center' }}>Read →</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 600, flexShrink: 0, alignSelf: 'center' }}>Read →</span>
                   </a>
                 ))}
               </div>
@@ -322,7 +322,7 @@ function SearchContent() {
                       <img src={tut.thumbnail_url || `https://img.youtube.com/vi/${tut.youtube_video_id}/mqdefault.jpg`} alt={tut.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <div style={{ padding: '10px 12px' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', marginBottom: '4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{tut.title}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{tut.title}</div>
                       <div style={{ fontSize: '11px', color: '#9a8f7a' }}>🎬 {tut.duration_minutes} min · {tut.views_count} views</div>
                     </div>
                   </Link>
@@ -342,7 +342,7 @@ function SearchContent() {
                   >
                     {post.image_url && <img src={post.image_url} alt="" style={{ width: '100%', height: '120px', objectFit: 'cover', display: 'block' }} />}
                     <div style={{ padding: '10px 12px' }}>
-                      <p style={{ fontSize: '12px', color: '#F5E7C6', margin: '0 0 4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{post.caption}</p>
+                      <p style={{ fontSize: '12px', color: 'var(--color-beige)', margin: '0 0 4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{post.caption}</p>
                       <span style={{ fontSize: '11px', color: '#9a8f7a' }}>@{post.user?.username} · ♥ {post.likes_count}</span>
                     </div>
                   </Link>
@@ -360,12 +360,12 @@ function Section({ title, icon, total, filter, type, query, children }: any) {
   return (
     <div style={{ animation: 'fadeIn 0.2s ease' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#FAF3E1', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+        <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
           <span>{icon}</span> {title}
           <span style={{ fontSize: '12px', fontWeight: 400, color: '#9a8f7a' }}>({total})</span>
         </h2>
         {filter === 'all' && total >= 4 && (
-          <Link href={`/search?q=${encodeURIComponent(query)}&type=${type}`} style={{ fontSize: '12px', color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>
+          <Link href={`/search?q=${encodeURIComponent(query)}&type=${type}`} style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
             See all →
           </Link>
         )}

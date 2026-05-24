@@ -75,7 +75,7 @@ export default function MessagesPage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -84,7 +84,7 @@ export default function MessagesPage() {
       <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#FAF3E1' }}>Messages</h1>
+        <h1 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-cream)' }}>Messages</h1>
       </div>
 
       {/* Tabs */}
@@ -96,12 +96,12 @@ export default function MessagesPage() {
           <button key={key} onClick={() => setTab(key)} style={{
             padding: '10px 20px', background: 'none', border: 'none', cursor: 'pointer',
             fontSize: '14px', fontWeight: 600, fontFamily: 'inherit',
-            color: tab === key ? '#FF6D1F' : '#9a8f7a',
-            borderBottom: `2px solid ${tab === key ? '#FF6D1F' : 'transparent'}`,
+            color: tab === key ? 'var(--color-primary)' : '#9a8f7a',
+            borderBottom: `2px solid ${tab === key ? 'var(--color-primary)' : 'transparent'}`,
             marginBottom: '-1px',
           }}>{label}
             {key === 'requests' && requests.length > 0 && (
-              <span style={{ marginLeft: '6px', background: '#FF6D1F', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '999px' }}>
+              <span style={{ marginLeft: '6px', background: 'var(--color-primary)', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '999px' }}>
                 {requests.length}
               </span>
             )}
@@ -115,7 +115,7 @@ export default function MessagesPage() {
           {accepted.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px' }}>
               <div style={{ fontSize: '44px', marginBottom: '14px' }}>💬</div>
-              <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#FAF3E1', marginBottom: '8px' }}>No messages yet</h3>
+              <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '8px' }}>No messages yet</h3>
               <p style={{ color: '#9a8f7a', fontSize: '14px' }}>Visit someone's profile and send them a message</p>
             </div>
           ) : (
@@ -132,24 +132,24 @@ export default function MessagesPage() {
                     <div style={{ position: 'relative', flexShrink: 0 }}>
                       {other?.avatar_url
                         ? <img src={other.avatar_url} alt="" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
-                        : <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
+                        : <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
                       }
                       {unread > 0 && (
-                        <div style={{ position: 'absolute', bottom: 0, right: 0, width: '14px', height: '14px', borderRadius: '50%', background: '#FF6D1F', border: '2px solid #222' }} />
+                        <div style={{ position: 'absolute', bottom: 0, right: 0, width: '14px', height: '14px', borderRadius: '50%', background: 'var(--color-primary)', border: '2px solid #222' }} />
                       )}
                     </div>
 
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                        <span style={{ fontSize: '14px', fontWeight: unread > 0 ? 700 : 600, color: '#FAF3E1' }}>{other?.full_name}</span>
+                        <span style={{ fontSize: '14px', fontWeight: unread > 0 ? 700 : 600, color: 'var(--color-cream)' }}>{other?.full_name}</span>
                         <span style={{ fontSize: '11px', color: '#9a8f7a' }}>{conv.last_message_at ? formatDistanceToNow(new Date(conv.last_message_at), { addSuffix: true }) : ''}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <p style={{ fontSize: '13px', color: unread > 0 ? '#F5E7C6' : '#9a8f7a', margin: 0, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '280px', fontWeight: unread > 0 ? 600 : 400 }}>
+                        <p style={{ fontSize: '13px', color: unread > 0 ? 'var(--color-beige)' : '#9a8f7a', margin: 0, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '280px', fontWeight: unread > 0 ? 600 : 400 }}>
                           {conv.last_message || 'Start chatting'}
                         </p>
                         {unread > 0 && (
-                          <span style={{ background: '#FF6D1F', color: '#fff', fontSize: '11px', fontWeight: 700, padding: '2px 7px', borderRadius: '999px', flexShrink: 0 }}>{unread}</span>
+                          <span style={{ background: 'var(--color-primary)', color: '#fff', fontSize: '11px', fontWeight: 700, padding: '2px 7px', borderRadius: '999px', flexShrink: 0 }}>{unread}</span>
                         )}
                       </div>
                     </div>
@@ -181,20 +181,20 @@ export default function MessagesPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                       {other?.avatar_url
                         ? <img src={other.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
-                        : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
+                        : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
                       }
                       <div>
-                        <Link href={`/profile/${other?.username}`} style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', textDecoration: 'none' }}>{other?.full_name}</Link>
+                        <Link href={`/profile/${other?.username}`} style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{other?.full_name}</Link>
                         <p style={{ fontSize: '12px', color: '#9a8f7a', margin: 0 }}>@{other?.username}</p>
                       </div>
                     </div>
                     <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '10px 12px', marginBottom: '12px' }}>
-                      <p style={{ fontSize: '13px', color: '#F5E7C6', margin: 0, lineHeight: 1.5 }}>{conv.last_message}</p>
+                      <p style={{ fontSize: '13px', color: 'var(--color-beige)', margin: 0, lineHeight: 1.5 }}>{conv.last_message}</p>
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button onClick={() => handleAccept(conv.id)} style={{
                         flex: 1, padding: '9px', borderRadius: '10px', border: 'none',
-                        background: '#FF6D1F', color: '#fff', fontWeight: 700,
+                        background: 'var(--color-primary)', color: '#fff', fontWeight: 700,
                         cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px',
                       }}>Accept</button>
                       <button onClick={() => handleDecline(conv.id)} style={{

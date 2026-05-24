@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const ICONS = ['💬', '🎨', '🤖', '✨', '🎬', '📸', '🚀', '⚡', '🧠', '🎭', '🌟', '🔥', '💡', '🎯', '🏆', '📰', '🔧', '🎮', '🌈', '🦾']
-const COLORS = ['#FF6D1F', '#7c3aed', '#0891b2', '#dc2626', '#059669', '#d97706', '#6366f1', '#ec4899', '#14b8a6', '#f59e0b']
+const COLORS = ['var(--color-primary)', '#7c3aed', '#0891b2', '#dc2626', '#059669', '#d97706', '#6366f1', '#ec4899', '#14b8a6', '#f59e0b']
 
 export default function CreateSpacePage() {
   const router = useRouter()
@@ -13,7 +13,7 @@ export default function CreateSpacePage() {
   const [displayName, setDisplayName] = useState('')
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('💬')
-  const [color, setColor] = useState('#FF6D1F')
+  const [color, setColor] = useState('var(--color-primary)')
   const [rules, setRules] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -42,8 +42,8 @@ export default function CreateSpacePage() {
     router.push(`/community/${data.space.name}`)
   }
 
-  const inp: React.CSSProperties = { width: '100%', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '11px 14px', fontSize: '14px', color: '#FAF3E1', outline: 'none', fontFamily: 'inherit' }
-  const lbl: React.CSSProperties = { display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }
+  const inp: React.CSSProperties = { width: '100%', background: '#2a2a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '11px 14px', fontSize: '14px', color: 'var(--color-cream)', outline: 'none', fontFamily: 'inherit' }
+  const lbl: React.CSSProperties = { display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }
 
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto', padding: '32px 0 80px' }}>
@@ -51,7 +51,7 @@ export default function CreateSpacePage() {
         <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', display: 'flex', padding: 0 }}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 5L7 10L12 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
-        <h1 style={{ fontSize: '20px', fontWeight: 900, color: '#FAF3E1', margin: 0 }}>Create a space</h1>
+        <h1 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--color-cream)', margin: 0 }}>Create a space</h1>
       </div>
 
       {/* Preview */}
@@ -60,7 +60,7 @@ export default function CreateSpacePage() {
         <div style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: `${color}22`, border: `2px solid ${color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>{icon}</div>
           <div>
-            <div style={{ fontSize: '16px', fontWeight: 700, color: '#FAF3E1' }}>{displayName || 'Space name'}</div>
+            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)' }}>{displayName || 'Space name'}</div>
             <div style={{ fontSize: '12px', color: '#9a8f7a' }}>acf/{slug || 'space-name'}</div>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function CreateSpacePage() {
           <label style={lbl}>Icon</label>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {ICONS.map(i => (
-              <button key={i} type="button" onClick={() => setIcon(i)} style={{ width: '40px', height: '40px', borderRadius: '8px', border: `2px solid ${icon === i ? '#FF6D1F' : 'rgba(255,255,255,0.08)'}`, background: icon === i ? 'rgba(255,109,31,0.1)' : '#2a2a2a', cursor: 'pointer', fontSize: '18px' }}>{i}</button>
+              <button key={i} type="button" onClick={() => setIcon(i)} style={{ width: '40px', height: '40px', borderRadius: '8px', border: `2px solid ${icon === i ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: icon === i ? 'rgba(255,109,31,0.1)' : '#2a2a2a', cursor: 'pointer', fontSize: '18px' }}>{i}</button>
             ))}
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function CreateSpacePage() {
             style={{ ...inp, resize: 'none', lineHeight: 1.6 }} />
         </div>
 
-        <button type="submit" disabled={loading || !displayName.trim()} style={{ padding: '13px', background: displayName.trim() ? '#FF6D1F' : '#333', color: displayName.trim() ? '#fff' : '#555', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: displayName.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit' }}>
+        <button type="submit" disabled={loading || !displayName.trim()} style={{ padding: '13px', background: displayName.trim() ? 'var(--color-primary)' : '#333', color: displayName.trim() ? '#fff' : '#555', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: displayName.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit' }}>
           {loading ? 'Creating...' : 'Create space'}
         </button>
       </form>

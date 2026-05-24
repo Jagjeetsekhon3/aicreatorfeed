@@ -106,10 +106,29 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Load brand colors server-side — injected as CSS vars, no client JS needed
+  const s = await getSiteSettings()
+
+  const primary    = s.brand_primary    || '#FF6D1F'
+  const background = s.brand_background || '#222222'
+  const cream      = s.brand_cream      || '#FAF3E1'
+  const beige      = s.brand_beige      || '#F5E7C6'
+
+  const cssVars = `:root {
+    --color-primary: ${primary};
+    --color-bg: ${background};
+    --color-cream: ${cream};
+    --color-beige: ${beige};
+  }`
+
   return (
     <html lang="en">
-      <body className={inter.className} style={{ background: '#222222', color: '#FAF3E1', minHeight: '100vh', margin: 0, padding: 0 }}>
+      <head>
+        {/* Brand color CSS variables — loaded from site_settings, falls back to defaults */}
+        <style dangerouslySetInnerHTML={{ __html: cssVars }} />
+      </head>
+      <body className={inter.className} style={{ background: 'var(--color-bg)', color: 'var(--color-cream)', minHeight: '100vh', margin: 0, padding: 0 }}>
         <AuthProvider>
           <PWAProvider />
           <InstallBanner />

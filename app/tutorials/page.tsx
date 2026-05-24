@@ -52,8 +52,8 @@ export default function TutorialsPage() {
         padding: '5px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
         border: '1px solid', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
         background: active ? 'rgba(255,109,31,0.15)' : 'transparent',
-        borderColor: active ? '#FF6D1F' : 'rgba(255,255,255,0.1)',
-        color: active ? '#FF6D1F' : '#9a8f7a',
+        borderColor: active ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)',
+        color: active ? 'var(--color-primary)' : '#9a8f7a',
       }}>{tag}</button>
     )
   }
@@ -73,7 +73,7 @@ export default function TutorialsPage() {
           {/* Info row */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#FAF3E1', marginBottom: '6px', lineHeight: 1.3 }}>{playing.title}</h2>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-cream)', marginBottom: '6px', lineHeight: 1.3 }}>{playing.title}</h2>
               <p style={{ fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6, margin: '0 0 10px' }}>{playing.description}</p>
               <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: '#9a8f7a', flexWrap: 'wrap' }}>
                 <span>⏱ {playing.duration_minutes} min</span>
@@ -96,16 +96,16 @@ export default function TutorialsPage() {
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#FAF3E1', marginBottom: '4px' }}>Weekly tutorials</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '4px' }}>Weekly tutorials</h1>
           <p style={{ fontSize: '13px', color: '#9a8f7a' }}>New tutorial every Monday • Watch right here</p>
         </div>
         {tutorials.length > 0 && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px',
-            color: '#FF6D1F', background: 'rgba(255,109,31,0.08)',
+            color: 'var(--color-primary)', background: 'rgba(255,109,31,0.08)',
             border: '1px solid rgba(255,109,31,0.2)', padding: '6px 14px', borderRadius: '999px',
           }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF6D1F', display: 'inline-block' }} />
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-primary)', display: 'inline-block' }} />
             New this week
           </span>
         )}
@@ -120,7 +120,7 @@ export default function TutorialsPage() {
           style={{
             width: '100%', boxSizing: 'border-box', padding: '10px 14px',
             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)',
-            borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', fontFamily: 'inherit', outline: 'none',
+            borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', fontFamily: 'inherit', outline: 'none',
           }}
         />
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -134,7 +134,7 @@ export default function TutorialsPage() {
       {/* ── Loading ── */}
       {loading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
       )}
 
@@ -147,7 +147,7 @@ export default function TutorialsPage() {
           </p>
           {(search || activeTag) && (
             <button onClick={() => { setSearch(''); setActiveTag(null) }}
-              style={{ marginTop: '12px', background: 'none', border: 'none', color: '#FF6D1F', cursor: 'pointer', fontSize: '14px', fontFamily: 'inherit', fontWeight: 600 }}>
+              style={{ marginTop: '12px', background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '14px', fontFamily: 'inherit', fontWeight: 600 }}>
               Clear filters
             </button>
           )}
@@ -158,7 +158,7 @@ export default function TutorialsPage() {
       {!loading && latest && (
         <div style={{ animation: 'fadeIn 0.3s ease' }}>
           <div style={{
-            background: '#2f2f2f', border: `2px solid ${playing?.id === latest.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'}`,
+            background: '#2f2f2f', border: `2px solid ${playing?.id === latest.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)'}`,
             borderRadius: '16px', overflow: 'hidden', marginBottom: '32px',
             display: 'flex', flexWrap: 'wrap' as const, cursor: 'pointer', transition: 'border-color 0.15s',
           }}
@@ -184,18 +184,18 @@ export default function TutorialsPage() {
             {/* Info */}
             <div style={{ flex: 1, padding: '24px', minWidth: '240px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' as const }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,109,31,0.15)', color: '#FF6D1F' }}>Latest</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)' }}>Latest</span>
                 {latest.tags.slice(0, 3).map(t => (
                   <span key={t} style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>{t}</span>
                 ))}
               </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#FAF3E1', lineHeight: 1.4, marginBottom: '10px' }}>{latest.title}</h2>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-cream)', lineHeight: 1.4, marginBottom: '10px' }}>{latest.title}</h2>
               <p style={{ fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6, marginBottom: '20px' }}>{latest.description}</p>
               <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: '#9a8f7a', marginBottom: '20px' }}>
                 <span>👁 {(latest.views_count || 0).toLocaleString()} views</span>
                 <span>⏱ {latest.duration_minutes} min</span>
               </div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#FF6D1F', color: '#fff', fontWeight: 700, padding: '10px 20px', borderRadius: '10px', fontSize: '13px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--color-primary)', color: '#fff', fontWeight: 700, padding: '10px 20px', borderRadius: '10px', fontSize: '13px' }}>
                 {playing?.id === latest.id ? '■ Now playing' : '▶ Watch now'}
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function TutorialsPage() {
           {/* Rest — grid */}
           {rest.length > 0 && (
             <>
-              <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#FAF3E1', marginBottom: '16px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '16px' }}>
                 {search || activeTag ? 'Results' : 'Previous tutorials'}
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
@@ -213,12 +213,12 @@ export default function TutorialsPage() {
                     key={t.id}
                     onClick={() => openVideo(t)}
                     style={{
-                      background: '#2f2f2f', border: `1px solid ${playing?.id === t.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'}`,
+                      background: '#2f2f2f', border: `1px solid ${playing?.id === t.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)'}`,
                       borderRadius: '16px', overflow: 'hidden', cursor: 'pointer',
                       animation: `fadeIn 0.3s ease ${i * 0.05}s both`, transition: 'border-color 0.15s, transform 0.15s',
                     }}
                     onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,109,31,0.4)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = playing?.id === t.id ? '#FF6D1F' : 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = playing?.id === t.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}
                   >
                     {/* Thumbnail */}
                     <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#1a1a1a' }}>
@@ -228,7 +228,7 @@ export default function TutorialsPage() {
                         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: playing?.id === t.id ? '#FF6D1F' : 'rgba(255,109,31,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: playing?.id === t.id ? 'var(--color-primary)' : 'rgba(255,109,31,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <span style={{ color: '#fff', fontSize: '16px', marginLeft: playing?.id === t.id ? '0' : '3px' }}>{playing?.id === t.id ? '■' : '▶'}</span>
                         </div>
                       </div>
@@ -239,7 +239,7 @@ export default function TutorialsPage() {
 
                     {/* Info */}
                     <div style={{ padding: '14px' }}>
-                      <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#FAF3E1', lineHeight: 1.4, marginBottom: '6px' }}>{t.title}</h3>
+                      <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-cream)', lineHeight: 1.4, marginBottom: '6px' }}>{t.title}</h3>
                       <p style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.5, marginBottom: '10px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
                         {t.description}
                       </p>

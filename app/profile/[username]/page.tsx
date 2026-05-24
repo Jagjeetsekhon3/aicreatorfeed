@@ -49,16 +49,16 @@ function SavedCollectionsTab({ userId, accessToken }: { userId: string; accessTo
     if (selectedCol?.id === id) setSelectedCol(null)
   }
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '28px', height: '28px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '28px', height: '28px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
 
   if (selectedCol) return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
         <button onClick={() => setSelectedCol(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', fontSize: '20px' }}>←</button>
-        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FAF3E1' }}>📁 {selectedCol.name}</h3>
+        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)' }}>📁 {selectedCol.name}</h3>
         <span style={{ fontSize: '12px', color: '#9a8f7a' }}>{colPosts.length} posts</span>
       </div>
-      {loadingPosts ? <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+      {loadingPosts ? <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
         : colPosts.length === 0 ? <p style={{ color: '#9a8f7a', textAlign: 'center', padding: '40px 0' }}>No posts saved here yet</p>
         : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px' }}>
           {colPosts.map((post: any) => (
@@ -76,8 +76,8 @@ function SavedCollectionsTab({ userId, accessToken }: { userId: string; accessTo
     <div>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
         <input value={newName} onChange={e => setNewName(e.target.value)} onKeyDown={e => e.key === 'Enter' && createCollection()}
-          placeholder="New collection name..." style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '9px 12px', fontFamily: 'inherit', outline: 'none' }} />
-        <button onClick={createCollection} disabled={creating || !newName.trim()} style={{ background: '#FF6D1F', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+          placeholder="New collection name..." style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', padding: '9px 12px', fontFamily: 'inherit', outline: 'none' }} />
+        <button onClick={createCollection} disabled={creating || !newName.trim()} style={{ background: 'var(--color-primary)', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
           {creating ? '...' : '+ Create'}
         </button>
       </div>
@@ -92,7 +92,7 @@ function SavedCollectionsTab({ userId, accessToken }: { userId: string; accessTo
             <div key={col.id} style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', overflow: 'hidden' }}>
               <div onClick={() => openCollection(col)} style={{ padding: '28px 16px 16px', cursor: 'pointer' }}>
                 <div style={{ fontSize: '28px', marginBottom: '8px' }}>📁</div>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: '#FAF3E1', marginBottom: '3px' }}>{col.name}</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '3px' }}>{col.name}</div>
                 <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{col.post_count || 0} posts</div>
               </div>
               <div style={{ padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'flex-end' }}>
@@ -129,7 +129,7 @@ function MessageButton({ profileId, username, currentUserId }: { profileId: stri
     setLoading(false)
   }
   return (
-    <button onClick={handleMessage} disabled={loading} style={{ padding: '7px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', fontFamily: 'inherit', background: 'transparent', color: '#F5E7C6', display: 'flex', alignItems: 'center', gap: '5px' }}>
+    <button onClick={handleMessage} disabled={loading} style={{ padding: '7px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', fontFamily: 'inherit', background: 'transparent', color: 'var(--color-beige)', display: 'flex', alignItems: 'center', gap: '5px' }}>
       {loading ? '...' : '💬 Message'}
     </button>
   )
@@ -297,16 +297,16 @@ export default function ProfilePage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
   if (notFound) return (
     <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
       <div style={{ fontSize: '48px' }}>🔍</div>
-      <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#FAF3E1' }}>Profile not found</h2>
+      <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-cream)' }}>Profile not found</h2>
       <p style={{ color: '#9a8f7a' }}>@{username} doesn't exist</p>
-      <Link href="/feed" style={{ color: '#FF6D1F', textDecoration: 'none', fontWeight: 600 }}>← Back to feed</Link>
+      <Link href="/feed" style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>← Back to feed</Link>
     </div>
   )
 
@@ -321,7 +321,7 @@ export default function ProfilePage() {
         <div style={{ flexShrink: 0 }}>
           {profile?.avatar_url
             ? <img src={profile.avatar_url} alt={profile.full_name} style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,109,31,0.4)' }} />
-            : <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', border: '3px solid rgba(255,109,31,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: 700, color: '#FF6D1F' }}>
+            : <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', border: '3px solid rgba(255,109,31,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: 700, color: 'var(--color-primary)' }}>
                 {profile?.full_name?.[0] || '?'}
               </div>
           }
@@ -331,12 +331,12 @@ export default function ProfilePage() {
         <div style={{ flex: 1, minWidth: '200px' }}>
           {/* Name + actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
-            <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#FAF3E1', margin: 0 }}>{profile?.full_name}</h1>
+            <h1 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-cream)', margin: 0 }}>{profile?.full_name}</h1>
             {profile?.is_official && <VerifiedBadge isOfficial size={20} />}
             {!profile?.is_official && profile?.is_verified && <VerifiedBadge size={20} />}
             <span style={{ fontSize: '15px', color: '#9a8f7a' }}>@{profile?.username}</span>
             {isOwnProfile ? (
-              <Link href="/settings" style={{ padding: '6px 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontSize: '13px', color: '#F5E7C6', textDecoration: 'none', fontWeight: 600 }}>
+              <Link href="/settings" style={{ padding: '6px 16px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontSize: '13px', color: 'var(--color-beige)', textDecoration: 'none', fontWeight: 600 }}>
                 Edit profile
               </Link>
             ) : (
@@ -344,8 +344,8 @@ export default function ProfilePage() {
                 <button onClick={handleFollow} disabled={followLoading} style={{
                   padding: '7px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: 700,
                   border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
-                  background: isFollowing ? 'rgba(255,255,255,0.08)' : '#FF6D1F',
-                  color: isFollowing ? '#F5E7C6' : '#fff',
+                  background: isFollowing ? 'rgba(255,255,255,0.08)' : 'var(--color-primary)',
+                  color: isFollowing ? 'var(--color-beige)' : '#fff',
                 }}>
                   {followLoading ? '...' : isFollowing ? 'Following' : '+ Follow'}
                 </button>
@@ -368,15 +368,15 @@ export default function ProfilePage() {
                 onMouseEnter={e => { if (onClick) e.currentTarget.style.opacity = '0.75' }}
                 onMouseLeave={e => { if (onClick) e.currentTarget.style.opacity = '1' }}
               >
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#FAF3E1' }}>{num.toLocaleString()}</div>
-                <div style={{ fontSize: '12px', color: onClick ? '#FF6D1F' : '#9a8f7a' }}>{label}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-cream)' }}>{num.toLocaleString()}</div>
+                <div style={{ fontSize: '12px', color: onClick ? 'var(--color-primary)' : '#9a8f7a' }}>{label}</div>
               </div>
             ))}
           </div>
 
           {/* Bio */}
           {profile?.bio && (
-            <p style={{ fontSize: '14px', color: '#F5E7C6', lineHeight: 1.6, marginBottom: '10px', whiteSpace: 'pre-wrap', maxWidth: '400px' }}>
+            <p style={{ fontSize: '14px', color: 'var(--color-beige)', lineHeight: 1.6, marginBottom: '10px', whiteSpace: 'pre-wrap', maxWidth: '400px' }}>
               <RenderWithMentions text={profile.bio} />
             </p>
           )}
@@ -384,7 +384,7 @@ export default function ProfilePage() {
           {/* Links */}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             {profile?.website && (
-              <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#FF6D1F', textDecoration: 'none' }}>
+              <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'var(--color-primary)', textDecoration: 'none' }}>
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M1 6.5H12M6.5 1C5 3.5 5 9.5 6.5 12M6.5 1C8 3.5 8 9.5 6.5 12" stroke="currentColor" strokeWidth="1.2"/></svg>
                 {profile.website.replace(/https?:\/\//, '').replace(/\/$/, '')}
               </a>
@@ -418,8 +418,8 @@ export default function ProfilePage() {
           <button key={key} onClick={() => setActiveTab(key as any)} style={{
             padding: '12px 20px', background: 'none', border: 'none', cursor: 'pointer',
             fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '5px',
-            color: activeTab === key ? '#FF6D1F' : '#9a8f7a',
-            borderBottom: `2px solid ${activeTab === key ? '#FF6D1F' : 'transparent'}`,
+            color: activeTab === key ? 'var(--color-primary)' : '#9a8f7a',
+            borderBottom: `2px solid ${activeTab === key ? 'var(--color-primary)' : 'transparent'}`,
             marginBottom: '-1px', transition: 'all 0.15s',
           }}>
             <span>{icon}</span>{label}
@@ -444,7 +444,7 @@ export default function ProfilePage() {
                 : `No ${activeTab} yet`}
             </p>
             {isOwnProfile && (
-              <Link href="/post/new" style={{ display: 'inline-block', marginTop: '16px', background: '#FF6D1F', color: '#fff', padding: '9px 22px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>
+              <Link href="/post/new" style={{ display: 'inline-block', marginTop: '16px', background: 'var(--color-primary)', color: '#fff', padding: '9px 22px', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>
                 + Create post
               </Link>
             )}
@@ -476,7 +476,7 @@ export default function ProfilePage() {
                     ? <img src={post.image_url} alt={post.caption} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     : post.media_type === 'video'
                       ? <div style={{ position: 'absolute', inset: 0, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <span style={{ color: '#fff', fontSize: '14px', marginLeft: '3px' }}>▶</span>
                           </div>
                         </div>
@@ -521,7 +521,7 @@ export default function ProfilePage() {
           <div onClick={e => e.stopPropagation()} style={{ background: '#2a2a2a', borderRadius: '16px', width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FAF3E1' }}>Edit post</h3>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)' }}>Edit post</h3>
               <button onClick={() => setEditingPost(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', fontSize: '20px', lineHeight: 1 }}>×</button>
             </div>
 
@@ -553,7 +553,7 @@ export default function ProfilePage() {
                   onChange={e => setEditForm(p => ({ ...p, prompt_text: e.target.value }))}
                   rows={3}
                   placeholder="The prompt you used to generate this..."
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,109,31,0.04)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', color: '#FAF3E1', fontSize: '13px', padding: '10px 12px', resize: 'none', fontFamily: 'monospace', outline: 'none' }}
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,109,31,0.04)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '13px', padding: '10px 12px', resize: 'none', fontFamily: 'monospace', outline: 'none' }}
                 />
               </div>
 
@@ -563,7 +563,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setShowEditToolDropdown(v => !v)}
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: editForm.ai_tool ? '#FAF3E1' : '#9a8f7a', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: editForm.ai_tool ? 'var(--color-cream)' : '#9a8f7a', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' as const }}
                 >
                   <span>{editForm.ai_tool || 'None'}</span>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ flexShrink: 0, transition: 'transform 0.15s', transform: showEditToolDropdown ? 'rotate(180deg)' : 'rotate(0deg)' }}>
@@ -576,7 +576,7 @@ export default function ProfilePage() {
                       <div
                         key={t || 'none'}
                         onClick={() => { setEditForm(p => ({ ...p, ai_tool: t })); setShowEditToolDropdown(false) }}
-                        style={{ padding: '10px 14px', fontSize: '13px', color: editForm.ai_tool === t ? '#FF6D1F' : (t ? '#FAF3E1' : '#9a8f7a'), cursor: 'pointer', background: editForm.ai_tool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.1s' }}
+                        style={{ padding: '10px 14px', fontSize: '13px', color: editForm.ai_tool === t ? 'var(--color-primary)' : (t ? 'var(--color-cream)' : '#9a8f7a'), cursor: 'pointer', background: editForm.ai_tool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.1s' }}
                         onMouseEnter={e => { if (editForm.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
                         onMouseLeave={e => { if (editForm.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
                       >
@@ -595,7 +595,7 @@ export default function ProfilePage() {
                   value={editForm.tags}
                   onChange={e => setEditForm(p => ({ ...p, tags: e.target.value }))}
                   placeholder="midjourney, portrait, cinematic..."
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#FAF3E1', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }}
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '14px', padding: '10px 12px', fontFamily: 'inherit', outline: 'none' }}
                 />
               </div>
 
@@ -610,7 +610,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSaveEdit}
                     disabled={editSaving}
-                    style={{ background: '#FF6D1F', border: 'none', color: '#fff', padding: '10px 22px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', opacity: editSaving ? 0.7 : 1 }}
+                    style={{ background: 'var(--color-primary)', border: 'none', color: '#fff', padding: '10px 22px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', opacity: editSaving ? 0.7 : 1 }}
                   >{editSaving ? 'Saving…' : 'Save changes'}</button>
                 </div>
               </div>
@@ -631,7 +631,7 @@ export default function ProfilePage() {
           >
             {/* Modal header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#FAF3E1', textTransform: 'capitalize' }}>{followModal}</h3>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)', textTransform: 'capitalize' }}>{followModal}</h3>
               <button
                 onClick={() => { setFollowModal(null); setFollowModalUsers([]) }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a8f7a', fontSize: '20px', lineHeight: 1, fontFamily: 'inherit', padding: '0 4px' }}
@@ -642,7 +642,7 @@ export default function ProfilePage() {
             <div style={{ overflowY: 'auto', flex: 1 }}>
               {followModalLoading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
-                  <div style={{ width: '30px', height: '30px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  <div style={{ width: '30px', height: '30px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                 </div>
               ) : followModalUsers.length === 0 ? (
                 <div style={{ padding: '40px 20px', textAlign: 'center', color: '#9a8f7a', fontSize: '14px' }}>
@@ -660,13 +660,13 @@ export default function ProfilePage() {
                   >
                     {u.avatar_url
                       ? <img src={u.avatar_url} alt={u.full_name} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: '#FF6D1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
+                      : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
                     }
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <span style={{ fontSize: '14px', fontWeight: 700, color: '#FAF3E1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name}</span>
-                        {u.is_official && <span style={{ fontSize: '12px', color: '#FF6D1F' }}>●</span>}
-                        {!u.is_official && u.is_verified && <span style={{ fontSize: '12px', color: '#FF6D1F' }}>✓</span>}
+                        <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name}</span>
+                        {u.is_official && <span style={{ fontSize: '12px', color: 'var(--color-primary)' }}>●</span>}
+                        {!u.is_official && u.is_verified && <span style={{ fontSize: '12px', color: 'var(--color-primary)' }}>✓</span>}
                       </div>
                       <div style={{ fontSize: '12px', color: '#9a8f7a' }}>@{u.username}</div>
                     </div>

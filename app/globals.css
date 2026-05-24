@@ -1,11 +1,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:     #222222;
+  --bg:     var(--color-bg);
   --card:   #2f2f2f;
-  --orange: #FF6D1F;
-  --cream:  #FAF3E1;
-  --beige:  #F5E7C6;
+  --orange: var(--color-primary);
+  --cream:  var(--color-cream);
+  --beige:  var(--color-beige);
   --muted:  #9a8f7a;
   --border: rgba(255,255,255,0.07);
 }

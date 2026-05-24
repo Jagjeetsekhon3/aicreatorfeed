@@ -8,7 +8,7 @@ const AI_TOOLS = ['Midjourney', 'DALL·E 3', 'Stable Diffusion', 'Sora', 'Runway
 const inp: React.CSSProperties = {
   width: '100%', background: '#2a2a2a',
   border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
-  padding: '12px 16px', fontSize: '14px', color: '#FAF3E1',
+  padding: '12px 16px', fontSize: '14px', color: 'var(--color-cream)',
   outline: 'none', fontFamily: 'inherit',
 }
 
@@ -72,7 +72,7 @@ export default function EditPostPage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: '#FF6D1F', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -83,7 +83,7 @@ export default function EditPostPage() {
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           Back
         </button>
-        <h1 style={{ fontSize: '17px', fontWeight: 800, color: '#FAF3E1' }}>Edit post</h1>
+        <h1 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--color-cream)' }}>Edit post</h1>
         <div style={{ width: '40px' }} />
       </div>
 
@@ -103,13 +103,13 @@ export default function EditPostPage() {
 
       <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>Caption</label>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }}>Caption</label>
           <textarea value={caption} onChange={e => setCaption(e.target.value)} rows={4} maxLength={2000}
             style={{ ...inp, resize: 'none', lineHeight: 1.6 }} placeholder="What did you create?" />
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }}>
             ✦ AI Prompt <span style={{ fontWeight: 400, color: '#9a8f7a' }}>(optional)</span>
           </label>
           <textarea value={promptText} onChange={e => setPromptText(e.target.value)} rows={3}
@@ -118,7 +118,7 @@ export default function EditPostPage() {
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>AI tool used</label>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }}>AI tool used</label>
           <select value={aiTool} onChange={e => setAiTool(e.target.value)}
             style={{ ...inp, cursor: 'pointer', appearance: 'none' as any }}>
             <option value="">Select tool...</option>
@@ -127,7 +127,7 @@ export default function EditPostPage() {
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F5E7C6', marginBottom: '7px' }}>Tags</label>
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--color-beige)', marginBottom: '7px' }}>Tags</label>
           <input type="text" value={tags} onChange={e => setTags(e.target.value)}
             placeholder="midjourney, portrait, cinematic"
             style={inp} />
@@ -141,7 +141,7 @@ export default function EditPostPage() {
           }}>Cancel</button>
           <button type="submit" disabled={saving} style={{
             flex: 2, padding: '13px', borderRadius: '12px',
-            background: '#FF6D1F', border: 'none', cursor: saving ? 'wait' : 'pointer',
+            background: 'var(--color-primary)', border: 'none', cursor: saving ? 'wait' : 'pointer',
             fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'inherit',
           }}>
             {saving ? 'Saving...' : 'Save changes'}
