@@ -1,3 +1,6 @@
+'use client'
+export const dynamic = 'force-dynamic'
+
 export default function OfflinePage() {
   return (
     <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', textAlign: 'center' }}>

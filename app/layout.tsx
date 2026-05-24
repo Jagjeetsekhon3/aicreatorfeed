@@ -1,11 +1,22 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import { AuthProvider } from '@/lib/auth-context'
 import { createClient } from '@supabase/supabase-js'
 import PWAProvider from '@/components/PWAProvider'
-import InstallBanner from '@/components/InstallBanner'
+import dynamic from 'next/dynamic'
+
+// InstallBanner uses localStorage + window — never SSR
+const InstallBanner = dynamic(() => import('@/components/InstallBanner'), { ssr: false })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: '#FF6D1F',
+}
 
 const inter = Inter({ subsets: ['latin'], weight: ['400','500','600','700','900'] })
 
@@ -39,13 +50,27 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords,
     authors: [{ name: 'AiCreatorFeed' }],
     creator: 'AiCreatorFeed',
+    manifest: '/manifest.json',
     icons: faviconUrl ? {
       icon: faviconUrl,
       shortcut: faviconUrl,
       apple: faviconUrl,
     } : {
       icon: '/favicon.ico',
+      shortcut: '/favicon.ico',
+      apple: '/apple-touch-icon.png',
+      other: [
+        { rel: 'apple-touch-icon', sizes: '152x152', url: '/icons/icon-152x152.png' },
+        { rel: 'apple-touch-icon', sizes: '192x192', url: '/icons/icon-192x192.png' },
+      ],
     },
+    applicationName: 'AiCreatorFeed',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'black-translucent',
+      title: 'AiCreatorFeed',
+    },
+    formatDetection: { telephone: false },
     openGraph: {
       type: 'website',
       locale: 'en_US',
@@ -72,35 +97,18 @@ export async function generateMetadata(): Promise<Metadata> {
         'max-snippet': -1,
       },
     },
+    other: {
+      'mobile-web-app-capable': 'yes',
+      'msapplication-TileColor': '#222222',
+      'msapplication-tap-highlight': 'no',
+      'theme-color': '#FF6D1F',
+    },
   }
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        {/* PWA */}
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="AiCreatorFeed" />
-        <meta name="application-name" content="AiCreatorFeed" />
-        <meta name="theme-color" content="#FF6D1F" />
-        <meta name="msapplication-TileColor" content="#222222" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        {/* Viewport — prevents zoom on iOS inputs */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
-        {/* Apple icons */}
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
-        <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
-        {/* Favicon */}
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        {/* iOS splash screen background */}
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-      </head>
       <body className={inter.className} style={{ background: '#222222', color: '#FAF3E1', minHeight: '100vh', margin: 0, padding: 0 }}>
         <AuthProvider>
           <PWAProvider />
