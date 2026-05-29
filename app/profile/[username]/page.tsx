@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import YouTubePlayer from '@/components/ui/YouTubePlayer'
 import VerifiedBadge from '@/components/ui/VerifiedBadge'
+import CreatorEligibility from '@/components/creator/CreatorEligibility'
 import MentionInput, { RenderWithMentions } from '@/components/ui/MentionInput'
 
 // ── Saved Collections Tab ───────────────────────────────────────────────────
@@ -414,6 +415,7 @@ export default function ProfilePage() {
           { key: 'posts',       label: 'Posts',       icon: '⊞' },
           { key: 'prompts',     label: 'Prompts',     icon: '✦' },
           ...(isOwnProfile ? [{ key: 'saved', label: 'Saved', icon: '🔖' }] : []),
+          ...(isOwnProfile ? [{ key: 'creator', label: 'Creator', icon: '🌟' }] : []),
         ].map(({ key, label, icon }) => (
           <button key={key} onClick={() => setActiveTab(key as any)} style={{
             padding: '12px 20px', background: 'none', border: 'none', cursor: 'pointer',
@@ -430,6 +432,11 @@ export default function ProfilePage() {
       {/* Saved / Collections tab */}
       {activeTab === 'saved' && isOwnProfile && (
         <SavedCollectionsTab userId={profile!.id} accessToken={accessToken} />
+      )}
+
+      {/* Creator tab */}
+      {activeTab === 'creator' && isOwnProfile && (
+        <CreatorEligibility accessToken={accessToken} />
       )}
 
       {/* Posts grid — click navigates to post detail */}

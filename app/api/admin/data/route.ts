@@ -115,6 +115,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ tickets: data || [] })
   }
 
+  if (type === 'creator_apps') {
+    const { data } = await admin
+      .from('creator_applications')
+      .select('*, profiles(id, username, full_name, avatar_url)')
+      .order('applied_at', { ascending: false })
+    return NextResponse.json({ applications: data || [] })
+  }
+
   if (type === 'settings') {
     const { data } = await admin.from('site_settings').select('*')
     const { data: flags } = await admin.from('feature_flags').select('*')

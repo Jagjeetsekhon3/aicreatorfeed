@@ -33,6 +33,7 @@ const SIDEBAR_ITEMS = [
   { key: 'seo',        icon: '🔍', label: 'SEO & Meta' },
   { key: 'features',   icon: '🔧', label: 'Features' },
   { key: 'tickets',    icon: '🎫', label: 'Support Tickets' },
+  { key: 'creators',   icon: '🌟', label: 'Creators' },
   { key: 'logs',       icon: '📋', label: 'Activity Log' },
 ]
 
@@ -98,6 +99,10 @@ export default function AdminDashboard() {
   const [showTutorialForm, setShowTutorialForm] = useState(false)
   const [tutorialForm, setTutorialForm] = useState({ title: '', description: '', youtube_video_id: '', duration_minutes: '', tags: '' })
   const [tutorialLoading, setTutorialLoading] = useState(false)
+
+  // Creator applications state
+  const [creatorApps, setCreatorApps] = useState<any[]>([])
+  const [creatorAppFilter, setCreatorAppFilter] = useState<'pending'|'approved'|'rejected'|'all'>('all')
 
   // Community state
   const [spaces, setSpaces] = useState<any[]>([])
@@ -169,6 +174,7 @@ export default function AdminDashboard() {
     if (tab === 'community') api('spaces_admin').then(d => { if (d) setSpaces(d.spaces) })
     if (tab === 'aitools')   fetch('/api/ai-tools').then(r => r.json()).then(d => setAiToolsList(d.tools || []))
     if (tab === 'tickets')   api('tickets', `&status=${ticketFilter}`).then(d => { if (d) setTickets(d.tickets) })
+    if (tab === 'creators')  api('creator_apps').then(d => { if (d) setCreatorApps(d.applications || []) })
     if (tab === 'payments')  api('payments_admin').then(d => {
       if (d) {
         setPayments(d.payments || [])
@@ -2235,6 +2241,77 @@ export default function AdminDashboard() {
         )}
 
         {/* ── ACTIVITY LOG ─────────────────────────────────────────────── */}
+        {tab === 'creators' && (
+          <div style={{ animation: 'slideIn 0.2s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 900, margin: 0 }}>🌟 Creator Applications</h1>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {(['all', 'pending', 'approved', 'rejected'] as const).map(f => (
+                  <button key={f} onClick={() => setCreatorAppFilter(f)} style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit', background: creatorAppFilter === f ? 'var(--color-primary)' : '#2a2a2a', color: creatorAppFilter === f ? '#fff' : '#9a8f7a' }}>
+                    {f.charAt(0).toUpperCase() + f.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Stats row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
+              {[
+                { label: 'Pending', count: creatorApps.filter(a => a.status === 'pending').length, color: '#facc15' },
+                { label: 'Approved', count: creatorApps.filter(a => a.status === 'approved').length, color: '#4ade80' },
+                { label: 'Rejected', count: creatorApps.filter(a => a.status === 'rejected').length, color: '#ff8080' },
+              ].map(s => (
+                <div key={s.label} style={{ ...card, textAlign: 'center' }}>
+                  <div style={{ fontSize: '24px', fontWeight: 900, color: s.color }}>{s.count}</div>
+                  <div style={{ fontSize: '12px', color: '#9a8f7a' }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Applications list */}
+            <div style={{ ...card }}>
+              {creatorApps.length === 0 ? (
+                <p style={{ color: '#9a8f7a', textAlign: 'center', padding: '40px 0' }}>No applications yet</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                  {creatorApps
+                    .filter(a => creatorAppFilter === 'all' || a.status === creatorAppFilter)
+                    .map((app: any) => (
+                    <div key={app.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
+                      {/* Avatar */}
+                      {app.profiles?.avatar_url
+                        ? <img src={app.profiles.avatar_url} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                        : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 700, flexShrink: 0 }}>{app.profiles?.full_name?.[0]}</div>
+                      }
+                      {/* Info */}
+                      <div style={{ flex: 1, minWidth: '160px' }}>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{app.profiles?.full_name}</div>
+                        <div style={{ fontSize: '12px', color: '#9a8f7a' }}>@{app.profiles?.username}</div>
+                      </div>
+                      {/* Stats */}
+                      <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: '#9a8f7a', flexWrap: 'wrap' }}>
+                        <span>📅 {app.account_age_days}d old</span>
+                        <span>❤️ {app.total_likes} likes</span>
+                        <span>💬 {app.total_comments} comments</span>
+                        <span>📝 {app.total_posts} posts</span>
+                      </div>
+                      {/* Status badge */}
+                      <div style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: 700,
+                        background: app.status === 'approved' ? 'rgba(74,222,128,0.1)' : app.status === 'pending' ? 'rgba(250,204,21,0.1)' : 'rgba(255,128,128,0.1)',
+                        color: app.status === 'approved' ? '#4ade80' : app.status === 'pending' ? '#facc15' : '#ff8080'
+                      }}>{app.status}</div>
+                      {/* Applied date */}
+                      <div style={{ fontSize: '11px', color: '#6b6460' }}>
+                        {new Date(app.applied_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {tab === 'logs' && (
           <div style={{ animation: 'slideIn 0.2s ease' }}>
             <h1 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>Activity Log</h1>
