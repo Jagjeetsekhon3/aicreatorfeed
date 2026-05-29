@@ -59,7 +59,7 @@ export default async function HomePage() {
         {/* Badge */}
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.25)',
+          background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 25%, transparent)',
           color: 'var(--color-primary)', fontSize: '13px', padding: '6px 16px',
           borderRadius: '999px', marginBottom: '28px',
         }}>
@@ -86,7 +86,7 @@ export default async function HomePage() {
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             background: 'var(--color-primary)', color: '#fff', fontWeight: 700,
             padding: '14px 32px', borderRadius: '12px', textDecoration: 'none', fontSize: '15px',
-            boxShadow: '0 4px 20px rgba(255,109,31,0.35)',
+            boxShadow: '0 4px 20px color-mix(in srgb, var(--color-primary) 35%, transparent)',
           }}>
             Join free →
           </Link>
@@ -148,7 +148,7 @@ export default async function HomePage() {
             }}>
               <div style={{
                 width: '42px', height: '42px', borderRadius: '12px',
-                background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.2)',
+                background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '20px', marginBottom: '16px',
               }}>
@@ -161,7 +161,7 @@ export default async function HomePage() {
         </div>
 
         {/* Bottom CTA */}
-        <div style={{ textAlign: 'center', marginTop: '48px', padding: '40px 20px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '20px' }}>
+        <div style={{ textAlign: 'center', marginTop: '48px', padding: '40px 20px', background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 12%, transparent)', borderRadius: '20px' }}>
           <h3 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--color-cream)', marginBottom: '10px' }}>Ready to join the community?</h3>
           <p style={{ fontSize: '14px', color: '#9a8f7a', marginBottom: '24px' }}>Free to join. No credit card needed.</p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>

@@ -51,7 +51,7 @@ export default function NewsPage() {
         .news-article-content ul,.news-article-content ol{color:var(--color-beige);padding-left:22px;margin:10px 0}
         .news-article-content li{margin-bottom:6px;line-height:1.65;font-size:15px}
         .news-article-content a{color:var(--color-primary);text-decoration:underline}
-        .news-article-content blockquote{border-left:3px solid var(--color-primary);margin:14px 0;padding:10px 16px;background:rgba(255,109,31,0.05);border-radius:0 8px 8px 0;color:#9a8f7a;font-style:italic}
+        .news-article-content blockquote{border-left:3px solid var(--color-primary);margin:14px 0;padding:10px 16px;background:color-mix(in srgb, var(--color-primary) 5%, transparent);border-radius:0 8px 8px 0;color:#9a8f7a;font-style:italic}
         .news-article-content strong,.news-article-content b{color:var(--color-cream);font-weight:700}
         .news-article-content img{max-width:100%;border-radius:10px;margin:12px 0}
       `}</style>
@@ -141,7 +141,7 @@ export default function NewsPage() {
           <button key={t} onClick={() => setTag(t)} style={{
             padding: '6px 14px', borderRadius: '999px', fontSize: '13px', fontWeight: 600,
             border: `1px solid ${tag === t ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`,
-            background: tag === t ? 'rgba(255,109,31,0.12)' : 'transparent',
+            background: tag === t ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)' : 'transparent',
             color: tag === t ? 'var(--color-primary)' : '#9a8f7a', cursor: 'pointer', fontFamily: 'inherit',
           }}>{t}</button>
         ))}
@@ -150,7 +150,7 @@ export default function NewsPage() {
       {/* Loading */}
       {loading && news.length === 0 && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
       )}
 
@@ -169,7 +169,7 @@ export default function NewsPage() {
           <div onClick={() => { setSelectedArticle(news[0]); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
             style={{ textDecoration: 'none', display: 'block', marginBottom: '16px', animation: 'fadeIn 0.3s ease', cursor: 'pointer' }}>
             <div style={{ background: '#2f2f2f', border: `1px solid ${selectedArticle?.id === news[0].id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)'}`, borderRadius: '16px', overflow: 'hidden', transition: 'border-color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.4)')}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 40%, transparent)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = selectedArticle?.id === news[0].id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)')}
             >
               {news[0].image_url && (
@@ -181,7 +181,7 @@ export default function NewsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: `${sourceColor(news[0].source_name)}22`, color: sourceColor(news[0].source_name) }}>{news[0].source_name}</span>
                   <span style={{ fontSize: '11px', color: '#9a8f7a' }}>{formatDistanceToNow(new Date(news[0].published_at), { addSuffix: true })}</span>
-                  <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>Featured</span>
+                  <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}>Featured</span>
                   {news[0].content && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>Full article</span>}
                 </div>
                 <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-cream)', lineHeight: 1.35, marginBottom: '10px' }}>{news[0].title}</h2>
@@ -206,7 +206,7 @@ export default function NewsPage() {
               <div key={item.id} onClick={() => { setSelectedArticle(item); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                 style={{ textDecoration: 'none', animation: `fadeIn 0.3s ease ${i * 0.04}s both`, cursor: 'pointer' }}>
                 <div style={{ background: '#2f2f2f', border: `1px solid ${selectedArticle?.id === item.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)'}`, borderRadius: '14px', overflow: 'hidden', height: '100%', transition: 'border-color 0.2s', display: 'flex', flexDirection: 'column' }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.25)')}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 25%, transparent)')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = selectedArticle?.id === item.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)')}
                 >
                   {item.image_url && (

@@ -23,10 +23,10 @@ type Comment = {
 }
 
 const TOOL_COLORS: Record<string, { bg: string; color: string }> = {
-  'Midjourney':         { bg: 'rgba(255,109,31,0.15)', color: '#FF8540' },
+  'Midjourney':         { bg: 'color-mix(in srgb, var(--color-primary) 15%, transparent)', color: '#FF8540' },
   'DALL·E 3':           { bg: 'rgba(250,243,225,0.1)',  color: 'var(--color-cream)' },
   'Stable Diffusion':   { bg: 'rgba(245,231,198,0.1)',  color: 'var(--color-beige)' },
-  'Sora':               { bg: 'rgba(255,109,31,0.1)',   color: 'var(--color-primary)' },
+  'Sora':               { bg: 'color-mix(in srgb, var(--color-primary) 10%, transparent)',   color: 'var(--color-primary)' },
   'Runway':             { bg: 'rgba(255,122,48,0.12)',  color: '#FF7A30' },
 }
 
@@ -239,7 +239,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
           <Link href={`/profile/${post.user.username}`} style={{ flexShrink: 0 }}>
             {post.user.avatar_url
               ? <img src={post.user.avatar_url} alt="" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover' }} />
-              : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+              : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 15%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
             }
           </Link>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -302,7 +302,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
 
         {/* Prompt — shows current slide's prompt if carousel, else post-level prompt */}
         {(activeSlideData?.prompt_text || post.prompt_text) && (
-          <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', padding: '10px 12px', marginBottom: '10px' }}>
+          <div style={{ background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 15%, transparent)', borderRadius: '10px', padding: '10px 12px', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)' }}>
                 ✦ AI Prompt
@@ -446,7 +446,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                   </button>
                 ))}
                 <button onClick={createAndSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%', padding: '10px 14px', background: 'none', border: 'none', borderTop: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', color: 'var(--color-primary)', fontSize: '13px', fontFamily: 'inherit', fontWeight: 600 }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,109,31,0.08)')}
+                  onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = 'color-mix(in srgb, var(--color-primary) 8%, transparent)')}
                   onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}>
                   + New collection
                 </button>
@@ -460,7 +460,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
           <div style={{ paddingTop: '12px', animation: 'fadeIn 0.2s ease' }}>
             {!commentsLoaded && (
               <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
-                <div style={{ width: '20px', height: '20px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{ width: '20px', height: '20px', border: '2px solid color-mix(in srgb, var(--color-primary) 30%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
               </div>
             )}
             {commentsLoaded && comments.length === 0 && (
@@ -475,7 +475,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                     <Link href={`/profile/${comment.user.username}`} style={{ flexShrink: 0 }}>
                       {comment.user.avatar_url
                         ? <img src={comment.user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-                        : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{comment.user.full_name?.[0]}</div>
+                        : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 15%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{comment.user.full_name?.[0]}</div>
                       }
                     </Link>
                     <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '8px 10px' }}>
@@ -509,7 +509,7 @@ export default function PostCard({ post, currentUserId, accessToken, onDelete, i
                           <Link href={`/profile/${reply.user.username}`} style={{ flexShrink: 0 }}>
                             {reply.user.avatar_url
                               ? <img src={reply.user.avatar_url} alt="" style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
-                              : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
+                              : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 15%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
                             }
                           </Link>
                           <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '6px 10px' }}>

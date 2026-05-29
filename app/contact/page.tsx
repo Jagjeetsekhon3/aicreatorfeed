@@ -87,7 +87,7 @@ export default function ContactPage() {
 
       {/* Header */}
       <div style={{ marginBottom: '40px', animation: 'fadeUp 0.3s ease' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.2)', color: 'var(--color-primary)', fontSize: '12px', fontWeight: 700, padding: '5px 14px', borderRadius: '999px', marginBottom: '16px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', fontSize: '12px', fontWeight: 700, padding: '5px 14px', borderRadius: '999px', marginBottom: '16px' }}>
           ✦ GET IN TOUCH
         </div>
         <h1 style={{ fontSize: 'clamp(28px, 6vw, 44px)', fontWeight: 900, color: 'var(--color-cream)', letterSpacing: '-1px', marginBottom: '12px', lineHeight: 1.1 }}>
@@ -132,14 +132,14 @@ export default function ContactPage() {
             <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '20px' }}>
               <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#9a8f7a', marginBottom: '10px', letterSpacing: '0.05em' }}>EMAIL US</h3>
               <a href={`mailto:${contactEmail}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-                <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>✉️</div>
+                <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>✉️</div>
                 <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600 }}>{contactEmail}</span>
               </a>
             </div>
           )}
 
           {/* Response time note */}
-          <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '14px', padding: '16px' }}>
+          <div style={{ background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 12%, transparent)', borderRadius: '14px', padding: '16px' }}>
             <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '6px' }}>⏱ Response time</div>
             <p style={{ fontSize: '12px', color: '#9a8f7a', lineHeight: 1.6, margin: 0 }}>
               We typically reply within <strong style={{ color: 'var(--color-cream)' }}>24–48 hours</strong> on weekdays. For urgent issues, mention it in your subject line.
@@ -210,7 +210,7 @@ export default function ContactPage() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
                     {categories.map(c => (
                       <button key={c.value} onClick={() => setCategory(c.value)}
-                        style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: '1px solid', transition: 'all 0.15s', background: category === c.value ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.04)', borderColor: category === c.value ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)', color: category === c.value ? 'var(--color-primary)' : '#9a8f7a' }}>
+                        style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: '1px solid', transition: 'all 0.15s', background: category === c.value ? 'color-mix(in srgb, var(--color-primary) 15%, transparent)' : 'rgba(255,255,255,0.04)', borderColor: category === c.value ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)', color: category === c.value ? 'var(--color-primary)' : '#9a8f7a' }}>
                         {c.label}
                       </button>
                     ))}

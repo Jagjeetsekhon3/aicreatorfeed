@@ -83,7 +83,7 @@ export default function NotificationsPage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -99,7 +99,7 @@ export default function NotificationsPage() {
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
           {unreadCount > 0 && (
-            <button onClick={markAllRead} disabled={marking} style={{ fontSize: '12px', fontWeight: 600, padding: '7px 14px', borderRadius: '8px', border: 'none', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)', cursor: 'pointer', fontFamily: 'inherit' }}>
+            <button onClick={markAllRead} disabled={marking} style={{ fontSize: '12px', fontWeight: 600, padding: '7px 14px', borderRadius: '8px', border: 'none', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)', cursor: 'pointer', fontFamily: 'inherit' }}>
               {marking ? '...' : '✓ Mark all read'}
             </button>
           )}
@@ -157,19 +157,19 @@ export default function NotificationsPage() {
               style={{
                 display: 'flex', alignItems: 'flex-start', gap: '12px',
                 padding: '14px 16px', borderRadius: '14px', cursor: 'pointer',
-                background: notif.read ? 'transparent' : 'rgba(255,109,31,0.05)',
-                border: `1px solid ${notif.read ? 'transparent' : 'rgba(255,109,31,0.1)'}`,
+                background: notif.read ? 'transparent' : 'color-mix(in srgb, var(--color-primary) 5%, transparent)',
+                border: `1px solid ${notif.read ? 'transparent' : 'color-mix(in srgb, var(--color-primary) 10%, transparent)'}`,
                 transition: 'all 0.15s', animation: `fadeIn 0.2s ease ${i * 0.03}s both`,
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
-              onMouseLeave={e => (e.currentTarget.style.background = notif.read ? 'transparent' : 'rgba(255,109,31,0.05)')}
+              onMouseLeave={e => (e.currentTarget.style.background = notif.read ? 'transparent' : 'color-mix(in srgb, var(--color-primary) 5%, transparent)')}
             >
               {/* Avatar + icon */}
               <div style={{ position: 'relative', flexShrink: 0 }}>
                 <Link href={`/profile/${actor?.username}`} onClick={e => e.stopPropagation()} style={{ textDecoration: 'none' }}>
                   {actor?.avatar_url
                     ? <img src={actor.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
-                    : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700 }}>{actor?.full_name?.[0] || '?'}</div>
+                    : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700 }}>{actor?.full_name?.[0] || '?'}</div>
                   }
                 </Link>
                 {/* Type icon badge */}

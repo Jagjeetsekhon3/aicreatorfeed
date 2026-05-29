@@ -126,7 +126,7 @@ export default function RazorpayButton({ plan, type, label, amount, customAmount
   return (
     <div>
       <button onClick={handlePay} disabled={loading} style={{
-        background: loading ? 'rgba(255,109,31,0.5)' : 'var(--color-primary)',
+        background: loading ? 'color-mix(in srgb, var(--color-primary) 50%, transparent)' : 'var(--color-primary)',
         border: 'none', color: '#fff', fontWeight: 800, cursor: loading ? 'wait' : 'pointer',
         borderRadius: '12px', padding: '12px 28px', fontSize: '14px', fontFamily: 'inherit',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',

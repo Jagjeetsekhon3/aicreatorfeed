@@ -22,7 +22,7 @@ export default function SearchPage() {
     <Suspense fallback={
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-        <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: '32px', height: '32px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     }>
       <SearchContent />
@@ -94,11 +94,11 @@ function SearchContent() {
           borderRadius: '16px', padding: '4px 16px 4px 16px',
           transition: 'border-color 0.2s',
         }}
-          onFocusCapture={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.4)')}
+          onFocusCapture={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 40%, transparent)')}
           onBlurCapture={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
         >
           {loading
-            ? <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+            ? <div style={{ width: '18px', height: '18px', border: '2px solid color-mix(in srgb, var(--color-primary) 30%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
             : <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
                 <circle cx="8" cy="8" r="5.5" stroke="#9a8f7a" strokeWidth="1.6"/>
                 <path d="M12.5 12.5L16 16" stroke="#9a8f7a" strokeWidth="1.6" strokeLinecap="round"/>
@@ -127,7 +127,7 @@ function SearchContent() {
           <button key={key} onClick={() => handleFilter(key)} style={{
             padding: '7px 14px', borderRadius: '999px', fontSize: '13px', fontWeight: 600,
             border: `1px solid ${filter === key ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`,
-            background: filter === key ? 'rgba(255,109,31,0.12)' : 'transparent',
+            background: filter === key ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)' : 'transparent',
             color: filter === key ? 'var(--color-primary)' : '#9a8f7a',
             cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
             display: 'flex', alignItems: 'center', gap: '5px',
@@ -149,7 +149,7 @@ function SearchContent() {
                   background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
                   color: 'var(--color-beige)', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
                 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,109,31,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,109,31,0.3)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-primary)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'color-mix(in srgb, var(--color-primary) 10%, transparent)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'color-mix(in srgb, var(--color-primary) 30%, transparent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-primary)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-beige)' }}
                 >
                   🔍 {term}
@@ -188,7 +188,7 @@ function SearchContent() {
           <p style={{ color: '#9a8f7a', fontSize: '14px', marginBottom: '20px' }}>Try a different keyword or browse trending searches</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
             {TRENDING_SEARCHES.slice(0, 4).map(term => (
-              <button key={term} onClick={() => { setQuery(term); handleInput(term) }} style={{ padding: '7px 14px', borderRadius: '999px', fontSize: '13px', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.2)', color: 'var(--color-primary)', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+              <button key={term} onClick={() => { setQuery(term); handleInput(term) }} style={{ padding: '7px 14px', borderRadius: '999px', fontSize: '13px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
                 {term}
               </button>
             ))}
@@ -211,12 +211,12 @@ function SearchContent() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {results.users.map((user: any) => (
                   <Link key={user.id} href={`/profile/${user.username}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', background: '#2f2f2f', borderRadius: '12px', padding: '12px 14px', border: '1px solid rgba(255,255,255,0.07)', transition: 'border-color 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     {user.avatar_url
                       ? <img src={user.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700, flexShrink: 0 }}>{user.full_name?.[0]}</div>
+                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700, flexShrink: 0 }}>{user.full_name?.[0]}</div>
                     }
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '2px' }}>
@@ -242,7 +242,7 @@ function SearchContent() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {results.posts.map((post: any) => (
                   <Link key={post.id} href={`/post/${post.id}`} style={{ textDecoration: 'none', display: 'flex', gap: '12px', background: '#2f2f2f', borderRadius: '12px', padding: '12px 14px', border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden', transition: 'border-color 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     {post.image_url && <img src={post.image_url} alt="" style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />}
@@ -250,7 +250,7 @@ function SearchContent() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px' }}>
                         <span style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a' }}>@{post.user?.username}</span>
                         {(post.user?.is_official || post.user?.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={12} />}
-                        {post.ai_tool && <span style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)', fontWeight: 700 }}>{post.ai_tool}</span>}
+                        {post.ai_tool && <span style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)', fontWeight: 700 }}>{post.ai_tool}</span>}
                       </div>
                       <p style={{ fontSize: '13px', color: 'var(--color-beige)', margin: '0 0 4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, lineHeight: 1.5 }}>{post.caption || post.prompt_text || '(no caption)'}</p>
                       <div style={{ fontSize: '11px', color: '#9a8f7a' }}>♥ {post.likes_count} · {post.media_type}</div>
@@ -267,7 +267,7 @@ function SearchContent() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '10px' }}>
                 {results.spaces.map((space: any) => (
                   <Link key={space.id} href={`/community/${space.name}`} style={{ textDecoration: 'none', background: '#2f2f2f', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', display: 'block', transition: 'border-color 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     <div style={{ height: '4px', background: space.cover_color || 'var(--color-primary)' }} />
@@ -276,7 +276,7 @@ function SearchContent() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                           <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{space.display_name}</span>
-                          {space.is_official && <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>Official</span>}
+                          {space.is_official && <span style={{ fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}>Official</span>}
                         </div>
                         <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{space.member_count?.toLocaleString()} members</div>
                       </div>
@@ -293,7 +293,7 @@ function SearchContent() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {results.news.map((item: any) => (
                   <a key={item.id} href={item.source_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', gap: '12px', background: '#2f2f2f', borderRadius: '12px', padding: '12px 14px', border: '1px solid rgba(255,255,255,0.07)', transition: 'border-color 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -315,7 +315,7 @@ function SearchContent() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '10px' }}>
                 {results.tutorials.map((tut: any) => (
                   <Link key={tut.id} href={`/tutorials`} style={{ textDecoration: 'none', background: '#2f2f2f', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', display: 'block', transition: 'border-color 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     <div style={{ background: '#111', height: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -337,7 +337,7 @@ function SearchContent() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px' }}>
                 {results.tags.map((post: any) => (
                   <Link key={post.id} href={`/post/${post.id}`} style={{ textDecoration: 'none', background: '#2f2f2f', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', display: 'block', transition: 'border-color 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     {post.image_url && <img src={post.image_url} alt="" style={{ width: '100%', height: '120px', objectFit: 'cover', display: 'block' }} />}

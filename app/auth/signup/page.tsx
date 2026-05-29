@@ -158,7 +158,7 @@ function SignupForm() {
                 <input type="text" value={username}
                   onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}
                   placeholder="yourname" required
-                  style={{ ...inp, paddingLeft: '30px', borderColor: username && !usernameValid ? 'rgba(255,80,80,0.4)' : username && usernameValid ? 'rgba(255,109,31,0.4)' : 'rgba(255,255,255,0.1)' }}
+                  style={{ ...inp, paddingLeft: '30px', borderColor: username && !usernameValid ? 'rgba(255,80,80,0.4)' : username && usernameValid ? 'color-mix(in srgb, var(--color-primary) 40%, transparent)' : 'rgba(255,255,255,0.1)' }}
                 />
               </div>
               <p style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '5px' }}>3–20 chars · lowercase · letters, numbers, _ or .</p>

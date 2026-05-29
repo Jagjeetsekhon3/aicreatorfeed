@@ -486,7 +486,7 @@ export default function AdminDashboard() {
   if (loading) return (
     <div style={{ minHeight: '100vh', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -496,7 +496,7 @@ export default function AdminDashboard() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', background: 'var(--color-primary)', color: '#fff', padding: '12px 20px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, zIndex: 1000, animation: 'toastIn 0.2s ease', boxShadow: '0 4px 20px rgba(255,109,31,0.4)' }}>
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', background: 'var(--color-primary)', color: '#fff', padding: '12px 20px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, zIndex: 1000, animation: 'toastIn 0.2s ease', boxShadow: '0 4px 20px color-mix(in srgb, var(--color-primary) 40%, transparent)' }}>
           ✓ {toast}
         </div>
       )}
@@ -518,7 +518,7 @@ export default function AdminDashboard() {
             <button key={item.key} onClick={() => setTab(item.key)} style={{
               display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
               padding: '10px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-              background: tab === item.key ? 'rgba(255,109,31,0.12)' : 'transparent',
+              background: tab === item.key ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)' : 'transparent',
               color: tab === item.key ? 'var(--color-primary)' : '#9a8f7a',
               fontSize: '13px', fontWeight: tab === item.key ? 600 : 400,
               fontFamily: 'inherit', textAlign: 'left', marginBottom: '2px',
@@ -560,7 +560,7 @@ export default function AdminDashboard() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                     {editingUser.avatar_url
                       ? <img src={editingUser.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
-                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{editingUser.full_name?.[0]}</div>
+                      : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{editingUser.full_name?.[0]}</div>
                     }
                     <div>
                       <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Edit User</h3>
@@ -675,7 +675,7 @@ export default function AdminDashboard() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           {user.avatar_url
                             ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-                            : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{user.full_name?.[0]}</div>
+                            : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{user.full_name?.[0]}</div>
                           }
                           <span style={{ fontWeight: 600, color: 'var(--color-cream)' }}>{user.full_name}</span>
                         </div>
@@ -687,9 +687,9 @@ export default function AdminDashboard() {
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                           {user.is_verified && <span style={{ fontSize: '14px' }} title="Verified">✓</span>}
-                          {user.is_official && <span style={{ fontSize: '11px', color: 'var(--color-primary)', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>Official</span>}
+                          {user.is_official && <span style={{ fontSize: '11px', color: 'var(--color-primary)', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>Official</span>}
                           <a href={`/profile/${user.username}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: '#9a8f7a', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>View</a>
-                          <button onClick={() => openEditUser(user)} style={{ fontSize: '12px', color: 'var(--color-primary)', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.25)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>✏️ Edit</button>
+                          <button onClick={() => openEditUser(user)} style={{ fontSize: '12px', color: 'var(--color-primary)', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 25%, transparent)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>✏️ Edit</button>
                           <button onClick={() => setDeleteConfirmUser(user)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>🗑</button>
                         </div>
                       </td>
@@ -726,14 +726,14 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap' }}>@{post.user?.username}</td>
                       <td style={{ padding: '12px 14px' }}>
-                        <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)', fontWeight: 600 }}>{post.media_type}</span>
+                        <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)', fontWeight: 600 }}>{post.media_type}</span>
                       </td>
                       <td style={{ padding: '12px 14px', color: 'var(--color-beige)' }}>{post.likes_count}</td>
                       <td style={{ padding: '12px 14px', color: 'var(--color-beige)' }}>{post.comments_count}</td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap' }}>{new Date(post.created_at).toLocaleDateString()}</td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <a href={`/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                          <a href={`/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)' }}>View</a>
                           <button onClick={() => deletePost(post.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Delete</button>
                         </div>
                       </td>
@@ -755,7 +755,7 @@ export default function AdminDashboard() {
             <div style={{ ...card, marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>💳</div>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>💳</div>
                   <div>
                     <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--color-cream)' }}>Razorpay Configuration</div>
                     {!razorpayStatus ? (
@@ -1227,7 +1227,7 @@ export default function AdminDashboard() {
                       </div>
                       <span style={{ fontSize: '11px', color: '#555', fontFamily: 'monospace' }}>#{idx + 1}</span>
                       <button onClick={() => setEditingTool({ ...tool })}
-                        style={{ background: 'rgba(255,109,31,0.08)', border: '1px solid rgba(255,109,31,0.2)', color: 'var(--color-primary)', padding: '5px 10px', borderRadius: '7px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                        style={{ background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', padding: '5px 10px', borderRadius: '7px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
                         ✏️ Edit
                       </button>
                       <button onClick={() => deleteAiTool(tool.id, tool.name)}
@@ -1240,7 +1240,7 @@ export default function AdminDashboard() {
               ))}
             </div>
 
-            <div style={{ marginTop: '14px', padding: '12px 16px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.12)', borderRadius: '12px', fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6 }}>
+            <div style={{ marginTop: '14px', padding: '12px 16px', background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 12%, transparent)', borderRadius: '12px', fontSize: '13px', color: '#9a8f7a', lineHeight: 1.6 }}>
               💡 Changes apply <strong style={{ color: 'var(--color-cream)' }}>immediately</strong> — users will see the updated list next time they open the post form or explore page.
             </div>
           </div>
@@ -1255,7 +1255,7 @@ export default function AdminDashboard() {
             <div style={{ ...card, marginBottom: '16px', gridColumn: '1 / -1' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>☁️</div>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>☁️</div>
                   <div>
                     <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '2px' }}>Cloudinary — Image Storage</div>
                     {!cloudinaryStatus ? (
@@ -1554,10 +1554,10 @@ export default function AdminDashboard() {
                 {tickets.map(ticket => (
                   <div key={ticket.id} onClick={() => setSelectedTicket(ticket)} style={{
                     ...card, cursor: 'pointer', transition: 'all 0.15s',
-                    borderColor: selectedTicket?.id === ticket.id ? 'rgba(255,109,31,0.4)' : 'rgba(255,255,255,0.08)',
+                    borderColor: selectedTicket?.id === ticket.id ? 'color-mix(in srgb, var(--color-primary) 40%, transparent)' : 'rgba(255,255,255,0.08)',
                   }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.3)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = selectedTicket?.id === ticket.id ? 'rgba(255,109,31,0.4)' : 'rgba(255,255,255,0.08)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 30%, transparent)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = selectedTicket?.id === ticket.id ? 'color-mix(in srgb, var(--color-primary) 40%, transparent)' : 'rgba(255,255,255,0.08)')}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '8px' }}>
                       <div style={{ flex: 1 }}>
@@ -1595,7 +1595,7 @@ export default function AdminDashboard() {
                       {selectedTicket.message}
                     </div>
                     {selectedTicket.admin_reply && (
-                      <div style={{ background: 'rgba(255,109,31,0.06)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
+                      <div style={{ background: 'color-mix(in srgb, var(--color-primary) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 15%, transparent)', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
                         <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '6px' }}>YOUR REPLY</div>
                         <p style={{ fontSize: '13px', color: 'var(--color-beige)', margin: 0, lineHeight: 1.6 }}>{selectedTicket.admin_reply}</p>
                       </div>
@@ -1719,7 +1719,7 @@ export default function AdminDashboard() {
 
             {/* Add news form */}
             {showNewsForm && (
-              <div style={{ ...card, marginBottom: '20px', border: '1px solid rgba(255,109,31,0.2)' }}>
+              <div style={{ ...card, marginBottom: '20px', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>Publish news item</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                   <div>
@@ -1786,12 +1786,12 @@ export default function AdminDashboard() {
                           e.target.value = ''
                         }} />
                         <div style={{ border: '2px dashed rgba(255,255,255,0.12)', borderRadius: '10px', padding: '24px', textAlign: 'center', transition: 'border-color 0.15s, background 0.15s' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,109,31,0.4)'; (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,109,31,0.03)' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'color-mix(in srgb, var(--color-primary) 40%, transparent)'; (e.currentTarget as HTMLDivElement).style.background = 'color-mix(in srgb, var(--color-primary) 3%, transparent)' }}
                           onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
                         >
                           {newsImageUploading ? (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                              <div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.3)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                              <div style={{ width: '24px', height: '24px', border: '3px solid color-mix(in srgb, var(--color-primary) 30%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
                               <span style={{ fontSize: '13px', color: '#9a8f7a' }}>Uploading to Cloudinary...</span>
                             </div>
                           ) : (
@@ -1857,14 +1857,14 @@ export default function AdminDashboard() {
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                           {(item.tags || []).slice(0, 2).map((t: string) => (
-                            <span key={t} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>{t}</span>
+                            <span key={t} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}>{t}</span>
                           ))}
                         </div>
                       </td>
                       <td style={{ padding: '12px 14px', color: '#9a8f7a', whiteSpace: 'nowrap', fontSize: '12px' }}>{new Date(item.published_at).toLocaleDateString()}</td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <a href={item.source_url} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                          <a href={item.source_url} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)' }}>View</a>
                           <button onClick={() => deleteNews(item.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Delete</button>
                         </div>
                       </td>
@@ -2006,15 +2006,15 @@ export default function AdminDashboard() {
                   {spaces.map(space => (
                     <div key={space.id}
                       onClick={() => handleSelectSpace(space)}
-                      style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.04)', background: selectedSpace?.id === space.id ? 'rgba(255,109,31,0.08)' : 'transparent', transition: 'background 0.15s' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.04)', background: selectedSpace?.id === space.id ? 'color-mix(in srgb, var(--color-primary) 8%, transparent)' : 'transparent', transition: 'background 0.15s' }}
                       onMouseEnter={e => { if (selectedSpace?.id !== space.id) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = selectedSpace?.id === space.id ? 'rgba(255,109,31,0.08)' : 'transparent' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = selectedSpace?.id === space.id ? 'color-mix(in srgb, var(--color-primary) 8%, transparent)' : 'transparent' }}
                     >
                       <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${space.cover_color}22`, border: `1px solid ${space.cover_color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>{space.icon}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)', display: 'flex', alignItems: 'center', gap: '5px' }}>
                           {space.display_name}
-                          {space.is_official && <span style={{ fontSize: '9px', color: 'var(--color-primary)', background: 'rgba(255,109,31,0.1)', padding: '1px 5px', borderRadius: '999px', fontWeight: 700 }}>Official</span>}
+                          {space.is_official && <span style={{ fontSize: '9px', color: 'var(--color-primary)', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', padding: '1px 5px', borderRadius: '999px', fontWeight: 700 }}>Official</span>}
                         </div>
                         <div style={{ fontSize: '11px', color: '#9a8f7a' }}>{space.member_count} members · {space.post_count} posts</div>
                       </div>
@@ -2081,10 +2081,10 @@ export default function AdminDashboard() {
                               <td style={{ padding: '10px 14px', color: '#9a8f7a', fontSize: '11px', whiteSpace: 'nowrap' }}>{new Date(post.created_at).toLocaleDateString()}</td>
                               <td style={{ padding: '10px 14px' }}>
                                 <div style={{ display: 'flex', gap: '5px' }}>
-                                  <button onClick={() => pinSpacePost(post.id, post.is_pinned)} title={post.is_pinned ? 'Unpin' : 'Pin'} style={{ fontSize: '12px', padding: '3px 8px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: post.is_pinned ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.06)', color: post.is_pinned ? 'var(--color-primary)' : '#9a8f7a' }}>
+                                  <button onClick={() => pinSpacePost(post.id, post.is_pinned)} title={post.is_pinned ? 'Unpin' : 'Pin'} style={{ fontSize: '12px', padding: '3px 8px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: post.is_pinned ? 'color-mix(in srgb, var(--color-primary) 15%, transparent)' : 'rgba(255,255,255,0.06)', color: post.is_pinned ? 'var(--color-primary)' : '#9a8f7a' }}>
                                     {post.is_pinned ? 'Unpin' : '📌 Pin'}
                                   </button>
-                                  <a href={`/community/${selectedSpace.name}/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '3px 8px', borderRadius: '5px', border: '1px solid rgba(255,109,31,0.3)' }}>View</a>
+                                  <a href={`/community/${selectedSpace.name}/post/${post.id}`} target="_blank" rel="noopener" style={{ fontSize: '12px', color: 'var(--color-primary)', textDecoration: 'none', padding: '3px 8px', borderRadius: '5px', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)' }}>View</a>
                                   <button onClick={() => deleteSpacePost(post.id)} style={{ fontSize: '12px', color: '#ff8080', background: 'rgba(255,80,80,0.08)', border: '1px solid rgba(255,80,80,0.2)', borderRadius: '5px', padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit' }}>Del</button>
                                 </div>
                               </td>

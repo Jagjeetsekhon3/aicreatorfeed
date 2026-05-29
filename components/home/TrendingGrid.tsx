@@ -6,7 +6,7 @@ export default function TrendingGrid({ posts }: { posts: any[] }) {
     <>
       <style>{`
         .trending-card { transition: border-color 0.15s, transform 0.15s; }
-        .trending-card:hover { border-color: rgba(255,109,31,0.4) !important; transform: translateY(-2px); }
+        .trending-card:hover { border-color: color-mix(in srgb, var(--color-primary) 40%, transparent) !important; transform: translateY(-2px); }
         .trending-overlay { opacity: 0; transition: opacity 0.2s; }
         .trending-card:hover .trending-overlay { opacity: 1; }
       `}</style>
@@ -33,7 +33,7 @@ export default function TrendingGrid({ posts }: { posts: any[] }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {user?.avatar_url
                     ? <img src={user.avatar_url} alt="" style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }} />
-                    : <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(255,109,31,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{user?.full_name?.[0]}</div>
+                    : <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 50%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{user?.full_name?.[0]}</div>
                   }
                   <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)' }}>@{user?.username}</span>
                   <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginLeft: 'auto' }}>♥ {post.likes_count}</span>
@@ -45,7 +45,7 @@ export default function TrendingGrid({ posts }: { posts: any[] }) {
                 </div>
               )}
               {post.prompt_text && (
-                <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(255,109,31,0.8)', borderRadius: '4px', padding: '2px 5px', fontSize: '9px', fontWeight: 700, color: '#fff' }}>✦</div>
+                <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'color-mix(in srgb, var(--color-primary) 80%, transparent)', borderRadius: '4px', padding: '2px 5px', fontSize: '9px', fontWeight: 700, color: '#fff' }}>✦</div>
               )}
             </div>
           </a>

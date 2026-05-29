@@ -61,17 +61,22 @@ export default function AnalyticsTab() {
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [chartMode, setChartMode] = useState<'users' | 'posts'>('users')
+  const [primaryRgb, setPrimaryRgb] = useState('255,109,31') // fallback orange
   const svgRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
     fetch('/api/admin/analytics').then(r => r.json()).then(d => {
       setData(d); setLoading(false)
     })
+    // Read current brand primary color from CSS var for dynamic rgba usage
+    const hex = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#FF6D1F'
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16)
+    if (!isNaN(r)) setPrimaryRgb(`${r},${g},${b}`)
   }, [])
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '32px', height: '32px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -132,7 +137,7 @@ export default function AnalyticsTab() {
           <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>30-day trend</h3>
           <div style={{ display: 'flex', gap: '6px' }}>
             {(['users', 'posts'] as const).map(m => (
-              <button key={m} onClick={() => setChartMode(m)} style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', background: chartMode === m ? 'rgba(255,109,31,0.15)' : 'transparent', borderColor: chartMode === m ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)', color: chartMode === m ? 'var(--color-primary)' : '#9a8f7a' }}>
+              <button key={m} onClick={() => setChartMode(m)} style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', background: chartMode === m ? 'color-mix(in srgb, var(--color-primary) 15%, transparent)' : 'transparent', borderColor: chartMode === m ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)', color: chartMode === m ? 'var(--color-primary)' : '#9a8f7a' }}>
                 {m === 'users' ? 'Users' : 'Posts'}
               </button>
             ))}
@@ -225,7 +230,7 @@ export default function AnalyticsTab() {
                   const intensity = hmMax > 0 ? v / hmMax : 0
                   const bg = intensity === 0
                     ? 'rgba(255,255,255,0.04)'
-                    : `rgba(255,109,31,${(intensity * 0.85 + 0.1).toFixed(2)})`
+                    : ``rgba(${primaryRgb},${(intensity * 0.85 + 0.1).toFixed(2)})`
                   return (
                     <div key={hi} title={`${DAYS[di]} ${HOURS[hi]}: ${v} posts`}
                       style={{ flex: 1, height: '18px', borderRadius: '3px', background: bg, minWidth: '18px', cursor: 'default', transition: 'opacity 0.15s' }} />
@@ -237,7 +242,7 @@ export default function AnalyticsTab() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', paddingLeft: '32px' }}>
               <span style={{ fontSize: '10px', color: '#9a8f7a' }}>Less</span>
               {[0.05, 0.2, 0.4, 0.65, 0.9].map(op => (
-                <div key={op} style={{ width: '14px', height: '14px', borderRadius: '3px', background: `rgba(255,109,31,${op})` }} />
+                <div key={op} style={{ width: '14px', height: '14px', borderRadius: '3px', background: ``rgba(${primaryRgb},${op})` }} />
               ))}
               <span style={{ fontSize: '10px', color: '#9a8f7a' }}>More</span>
             </div>
@@ -284,8 +289,8 @@ export default function AnalyticsTab() {
                 const opacity = 0.4 + (c.count / maxCountry) * 0.6
                 return (
                   <g key={c.code}>
-                    <circle cx={cx} cy={cy} r={r + 3} fill={`rgba(255,109,31,${(opacity * 0.3).toFixed(2)})`} />
-                    <circle cx={cx} cy={cy} r={r} fill={`rgba(255,109,31,${opacity.toFixed(2)})`} />
+                    <circle cx={cx} cy={cy} r={r + 3} fill={``rgba(${primaryRgb},${(opacity * 0.3).toFixed(2)})`} />
+                    <circle cx={cx} cy={cy} r={r} fill={``rgba(${primaryRgb},${opacity.toFixed(2)})`} />
                     {i < 3 && (
                       <text x={cx + r + 3} y={cy + 4} fontSize="9" fill="var(--color-cream)" fontWeight="500">{c.code}</text>
                     )}
@@ -302,7 +307,7 @@ export default function AnalyticsTab() {
           {/* Country leaderboard */}
           <div>
             {data.topCountries.length === 0 ? (
-              <div style={{ padding: '12px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px' }}>
+              <div style={{ padding: '12px', background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 15%, transparent)', borderRadius: '10px' }}>
                 <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)', margin: '0 0 6px' }}>How to collect country data</p>
                 <ol style={{ fontSize: '11px', color: '#9a8f7a', margin: 0, paddingLeft: '16px', lineHeight: 1.8 }}>
                   <li>Add a Country field to your signup form in Settings</li>
@@ -349,7 +354,7 @@ export default function AnalyticsTab() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {c.avatar_url
                       ? <img src={c.avatar_url} alt="" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      : <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>{c.full_name?.[0]}</div>
+                      : <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>{c.full_name?.[0]}</div>
                     }
                     <div>
                       <div style={{ color: 'var(--color-cream)', fontWeight: 600 }}>{c.full_name}</div>
@@ -503,7 +508,7 @@ export default function AnalyticsTab() {
                       <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
                         {user?.avatar_url
                           ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                          : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: 'var(--color-primary)', fontWeight: 700, flexShrink: 0 }}>
+                          : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: 'var(--color-primary)', fontWeight: 700, flexShrink: 0 }}>
                               {user?.full_name?.[0] || '?'}
                             </div>
                         }

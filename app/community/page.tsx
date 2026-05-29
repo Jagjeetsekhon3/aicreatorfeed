@@ -61,7 +61,7 @@ export default function CommunityPage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -95,7 +95,7 @@ export default function CommunityPage() {
           <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '12px' }}>Your spaces</h2>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {mySpaces.map(space => (
-              <Link key={space.id} href={`/community/${space.name}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#2f2f2f', border: '1px solid rgba(255,109,31,0.2)', borderRadius: '10px', padding: '8px 14px', textDecoration: 'none' }}>
+              <Link key={space.id} href={`/community/${space.name}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#2f2f2f', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderRadius: '10px', padding: '8px 14px', textDecoration: 'none' }}>
                 <span style={{ fontSize: '16px' }}>{space.icon}</span>
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)' }}>{space.display_name}</span>
               </Link>
@@ -109,7 +109,7 @@ export default function CommunityPage() {
         <div style={{ marginBottom: '32px' }}>
           <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', marginBottom: '12px' }}>
             Official spaces
-            <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>By AiCreatorFeed</span>
+            <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}>By AiCreatorFeed</span>
           </h2>
           <SpaceGrid spaces={official} joined={joined} onJoin={handleJoin} joining={joining} />
         </div>
@@ -142,7 +142,7 @@ function SpaceGrid({ spaces, joined, onJoin, joining }: any) {
         const isJoining = joining === space.id
         return (
           <div key={space.id} style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', overflow: 'hidden', transition: 'border-color 0.2s', animation: 'fadeIn 0.2s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
             onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
           >
             {/* Cover */}

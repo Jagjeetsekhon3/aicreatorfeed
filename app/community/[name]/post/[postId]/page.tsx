@@ -75,7 +75,7 @@ export default function SpacePostPage() {
   if (loading || !post) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -110,7 +110,7 @@ export default function SpacePostPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
               {post.user.avatar_url
                 ? <img src={post.user.avatar_url} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
-                : <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+                : <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
               }
               <Link href={`/profile/${post.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{post.user.full_name}</Link>
               {(post.user.is_official || post.user.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={13} />}
@@ -148,7 +148,7 @@ export default function SpacePostPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                     {reply.user.avatar_url
                       ? <img src={reply.user.avatar_url} alt="" style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
-                      : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
+                      : <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{reply.user.full_name?.[0]}</div>
                     }
                     <Link href={`/profile/${reply.user.username}`} style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{reply.user.full_name}</Link>
                     {(reply.user.is_official || reply.user.is_verified) && <VerifiedBadge isOfficial={reply.user.is_official} size={12} />}

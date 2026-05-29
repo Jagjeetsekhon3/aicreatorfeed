@@ -136,7 +136,7 @@ function LoginForm() {
                   <span style={{
                     position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
                     fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '6px',
-                    background: isEmail ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.08)',
+                    background: isEmail ? 'color-mix(in srgb, var(--color-primary) 15%, transparent)' : 'rgba(255,255,255,0.08)',
                     color: isEmail ? 'var(--color-primary)' : '#9a8f7a',
                   }}>
                     {isEmail ? 'email' : 'username'}

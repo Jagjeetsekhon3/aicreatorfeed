@@ -100,7 +100,7 @@ export default function SpacePage() {
   if (!space || loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -120,7 +120,7 @@ export default function SpacePage() {
           <div style={{ flex: 1, minWidth: '200px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
               <h1 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--color-cream)', margin: 0 }}>{space.display_name}</h1>
-              {space.is_official && <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,109,31,0.1)', color: 'var(--color-primary)' }}>Official</span>}
+              {space.is_official && <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}>Official</span>}
             </div>
             <p style={{ fontSize: '13px', color: '#9a8f7a', margin: '0 0 12px' }}>{space.description}</p>
             <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: '#9a8f7a' }}>
@@ -132,7 +132,7 @@ export default function SpacePage() {
             <button onClick={() => { if (!currentUserId) { router.push('/auth/login'); return }; setShowNewPost(true) }} style={{ padding: '9px 18px', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
               + New post
             </button>
-            <button onClick={handleJoin} disabled={joining} style={{ padding: '9px 18px', background: isJoined ? 'rgba(255,255,255,0.06)' : 'rgba(255,109,31,0.1)', color: isJoined ? '#9a8f7a' : 'var(--color-primary)', border: `1px solid ${isJoined ? 'rgba(255,255,255,0.1)' : 'rgba(255,109,31,0.3)'}`, borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
+            <button onClick={handleJoin} disabled={joining} style={{ padding: '9px 18px', background: isJoined ? 'rgba(255,255,255,0.06)' : 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: isJoined ? '#9a8f7a' : 'var(--color-primary)', border: `1px solid ${isJoined ? 'rgba(255,255,255,0.1)' : 'color-mix(in srgb, var(--color-primary) 30%, transparent)'}`, borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px' }}>
               {joining ? '...' : isJoined ? 'Joined' : '+ Join'}
             </button>
           </div>
@@ -143,7 +143,7 @@ export default function SpacePage() {
         <div>
           {/* New post form */}
           {showNewPost && (
-            <div style={{ background: '#2f2f2f', border: '1px solid rgba(255,109,31,0.2)', borderRadius: '14px', padding: '18px', marginBottom: '16px', animation: 'fadeIn 0.2s ease' }}>
+            <div style={{ background: '#2f2f2f', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderRadius: '14px', padding: '18px', marginBottom: '16px', animation: 'fadeIn 0.2s ease' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', margin: 0 }}>New discussion</h3>
                 <button onClick={() => setShowNewPost(false)} style={{ background: 'none', border: 'none', color: '#9a8f7a', cursor: 'pointer', fontSize: '18px' }}>×</button>
@@ -185,7 +185,7 @@ export default function SpacePage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {posts.map((post, i) => (
                 <div key={post.id} style={{ background: '#2f2f2f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '16px', display: 'flex', gap: '14px', transition: 'border-color 0.15s', animation: `fadeIn 0.25s ease ${i * 0.04}s both` }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,109,31,0.2)')}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                 >
                   {/* Vote */}
@@ -205,7 +205,7 @@ export default function SpacePage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         {post.user.avatar_url
                           ? <img src={post.user.avatar_url} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
-                          : <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
+                          : <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }}>{post.user.full_name?.[0]}</div>
                         }
                         <Link href={`/profile/${post.user.username}`} style={{ fontSize: '12px', fontWeight: 600, color: '#9a8f7a', textDecoration: 'none' }}>{post.user.full_name}</Link>
                         {(post.user.is_official || post.user.is_verified) && <VerifiedBadge isOfficial={post.user.is_official} size={12} />}

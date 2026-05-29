@@ -115,8 +115,8 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write y
               onMouseDown={e => { e.preventDefault(); exec(btn.cmd) }}
               style={{
                 ...btn.style,
-                background: activeFormats.has(btn.cmd) ? 'rgba(255,109,31,0.2)' : 'transparent',
-                border: activeFormats.has(btn.cmd) ? '1px solid rgba(255,109,31,0.4)' : '1px solid transparent',
+                background: activeFormats.has(btn.cmd) ? 'color-mix(in srgb, var(--color-primary) 20%, transparent)' : 'transparent',
+                border: activeFormats.has(btn.cmd) ? '1px solid color-mix(in srgb, var(--color-primary) 40%, transparent)' : '1px solid transparent',
                 color: activeFormats.has(btn.cmd) ? 'var(--color-primary)' : '#9a8f7a',
                 borderRadius: '6px', padding: '4px 8px', cursor: 'pointer',
                 fontSize: '13px', fontFamily: 'inherit', minWidth: '28px',
@@ -165,7 +165,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write y
         [contenteditable] a  { color: var(--color-primary); text-decoration: underline; }
         [contenteditable] blockquote {
           border-left: 3px solid var(--color-primary); margin: 12px 0; padding: 8px 14px;
-          background: rgba(255,109,31,0.05); border-radius: 0 8px 8px 0;
+          background: color-mix(in srgb, var(--color-primary) 5%, transparent); border-radius: 0 8px 8px 0;
           color: #9a8f7a; font-style: italic;
         }
         [contenteditable] strong, [contenteditable] b { color: var(--color-cream); }

@@ -51,7 +51,7 @@ export default function TutorialsPage() {
       <button onClick={onClick} style={{
         padding: '5px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
         border: '1px solid', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
-        background: active ? 'rgba(255,109,31,0.15)' : 'transparent',
+        background: active ? 'color-mix(in srgb, var(--color-primary) 15%, transparent)' : 'transparent',
         borderColor: active ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)',
         color: active ? 'var(--color-primary)' : '#9a8f7a',
       }}>{tag}</button>
@@ -102,8 +102,8 @@ export default function TutorialsPage() {
         {tutorials.length > 0 && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px',
-            color: 'var(--color-primary)', background: 'rgba(255,109,31,0.08)',
-            border: '1px solid rgba(255,109,31,0.2)', padding: '6px 14px', borderRadius: '999px',
+            color: 'var(--color-primary)', background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', padding: '6px 14px', borderRadius: '999px',
           }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-primary)', display: 'inline-block' }} />
             New this week
@@ -134,7 +134,7 @@ export default function TutorialsPage() {
       {/* ── Loading ── */}
       {loading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-          <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
       )}
 
@@ -172,7 +172,7 @@ export default function TutorialsPage() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
               />
               <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: playing?.id === latest.id ? 'rgba(255,109,31,1)' : 'rgba(255,109,31,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: playing?.id === latest.id ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-primary) 90%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ color: '#fff', fontSize: '20px', marginLeft: '4px' }}>{playing?.id === latest.id ? '■' : '▶'}</span>
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function TutorialsPage() {
             {/* Info */}
             <div style={{ flex: 1, padding: '24px', minWidth: '240px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' as const }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,109,31,0.15)', color: 'var(--color-primary)' }}>Latest</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: 'color-mix(in srgb, var(--color-primary) 15%, transparent)', color: 'var(--color-primary)' }}>Latest</span>
                 {latest.tags.slice(0, 3).map(t => (
                   <span key={t} style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', color: '#9a8f7a' }}>{t}</span>
                 ))}
@@ -217,7 +217,7 @@ export default function TutorialsPage() {
                       borderRadius: '16px', overflow: 'hidden', cursor: 'pointer',
                       animation: `fadeIn 0.3s ease ${i * 0.05}s both`, transition: 'border-color 0.15s, transform 0.15s',
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,109,31,0.4)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'color-mix(in srgb, var(--color-primary) 40%, transparent)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = playing?.id === t.id ? 'var(--color-primary)' : 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}
                   >
                     {/* Thumbnail */}
@@ -228,7 +228,7 @@ export default function TutorialsPage() {
                         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: playing?.id === t.id ? 'var(--color-primary)' : 'rgba(255,109,31,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: playing?.id === t.id ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-primary) 85%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <span style={{ color: '#fff', fontSize: '16px', marginLeft: playing?.id === t.id ? '0' : '3px' }}>{playing?.id === t.id ? '■' : '▶'}</span>
                         </div>
                       </div>

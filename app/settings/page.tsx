@@ -244,7 +244,7 @@ function SettingsForm() {
   if (pageLoading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -295,8 +295,8 @@ function SettingsForm() {
                 onClick={() => fileRef.current?.click()}
                 style={{
                   width: '80px', height: '80px', borderRadius: '50%', cursor: 'pointer',
-                  background: avatarPreview ? 'transparent' : 'rgba(255,109,31,0.2)',
-                  border: '3px solid rgba(255,109,31,0.4)',
+                  background: avatarPreview ? 'transparent' : 'color-mix(in srgb, var(--color-primary) 20%, transparent)',
+                  border: '3px solid color-mix(in srgb, var(--color-primary) 40%, transparent)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   overflow: 'hidden', flexShrink: 0, position: 'relative',
                 }}
@@ -315,7 +315,7 @@ function SettingsForm() {
               <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
               <div>
                 <button type="button" onClick={() => fileRef.current?.click()} style={{
-                  background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)',
+                  background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)',
                   color: 'var(--color-primary)', borderRadius: '10px', padding: '8px 16px',
                   fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                 }}>
@@ -344,7 +344,7 @@ function SettingsForm() {
                     type="text" value={username}
                     onChange={e => { setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, '')); setUsernameError('') }}
                     placeholder="yourname"
-                    style={{ ...inp, paddingLeft: '30px', borderColor: usernameError ? 'rgba(255,80,80,0.4)' : username && usernameValid ? 'rgba(255,109,31,0.3)' : 'rgba(255,255,255,0.1)' }}
+                    style={{ ...inp, paddingLeft: '30px', borderColor: usernameError ? 'rgba(255,80,80,0.4)' : username && usernameValid ? 'color-mix(in srgb, var(--color-primary) 30%, transparent)' : 'rgba(255,255,255,0.1)' }}
                   />
                 </div>
                 {usernameError

@@ -53,7 +53,7 @@ export default function DonatePage() {
 
   if (pricingLoading) return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '32px', height: '32px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
@@ -78,7 +78,7 @@ export default function DonatePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
           {presets.map(p => (
             <button key={p.key} onClick={() => { setSelected(p.key); setIsCustom(false) }}
-              style={{ padding: '14px 8px', borderRadius: '12px', border: `2px solid ${!isCustom && selected === p.key ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: !isCustom && selected === p.key ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', transition: 'all 0.15s' }}>
+              style={{ padding: '14px 8px', borderRadius: '12px', border: `2px solid ${!isCustom && selected === p.key ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: !isCustom && selected === p.key ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center', transition: 'all 0.15s' }}>
               <div style={{ fontSize: '18px', fontWeight: 900, color: !isCustom && selected === p.key ? 'var(--color-primary)' : 'var(--color-cream)' }}>₹{p.amount}</div>
               <div style={{ fontSize: '11px', color: '#9a8f7a', marginTop: '3px' }}>{p.label}</div>
             </button>
@@ -86,13 +86,13 @@ export default function DonatePage() {
         </div>
 
         <button onClick={() => setIsCustom(true)}
-          style={{ width: '100%', padding: '12px', borderRadius: '12px', border: `2px solid ${isCustom ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: isCustom ? 'rgba(255,109,31,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '20px', transition: 'all 0.15s' }}>
+          style={{ width: '100%', padding: '12px', borderRadius: '12px', border: `2px solid ${isCustom ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: isCustom ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '20px', transition: 'all 0.15s' }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: isCustom ? 'var(--color-primary)' : '#9a8f7a' }}>✏️ Custom amount</div>
         </button>
 
         {isCustom && (
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,109,31,0.3)', borderRadius: '10px', padding: '10px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)', borderRadius: '10px', padding: '10px 14px' }}>
               <span style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '18px', marginRight: '8px' }}>₹</span>
               <input type="number" value={customAmt} onChange={e => setCustomAmt(e.target.value)} min="10" placeholder="Enter amount"
                 style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--color-cream)', fontSize: '18px', fontWeight: 700, fontFamily: 'inherit' }} />
@@ -101,7 +101,7 @@ export default function DonatePage() {
           </div>
         )}
 
-        <div style={{ background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.1)', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 10%, transparent)', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)', margin: '0 0 8px' }}>Your donation goes towards:</p>
           {['🖥 Server & hosting costs', '🛠 New features & improvements', '🎬 Tutorial production', '🌍 Growing the AI creator community'].map(item => (
             <p key={item} style={{ fontSize: '12px', color: '#9a8f7a', margin: '4px 0' }}>{item}</p>

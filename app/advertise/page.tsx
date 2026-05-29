@@ -160,7 +160,7 @@ export default function AdvertisePage() {
 
           {/* Ad preview */}
           {adForm.title && (
-            <div style={{ marginTop: '20px', padding: '14px', background: 'rgba(255,109,31,0.05)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '12px' }}>
+            <div style={{ marginTop: '20px', padding: '14px', background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 15%, transparent)', borderRadius: '12px' }}>
               <div style={{ fontSize: '10px', fontWeight: 700, color: '#9a8f7a', marginBottom: '8px', letterSpacing: '0.05em' }}>AD PREVIEW</div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 {adForm.image_url && <img src={adForm.image_url} alt="" style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />}

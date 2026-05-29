@@ -123,12 +123,12 @@ export default function MentionInput({ value, onChange, onKeyDown, placeholder, 
           )}
           {suggestions.map((u, i) => (
             <div key={u.id} onMouseDown={e => { e.preventDefault(); insertMention(u) }}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', cursor: 'pointer', background: i === selectedIdx ? 'rgba(255,109,31,0.1)' : 'transparent', transition: 'background 0.1s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', cursor: 'pointer', background: i === selectedIdx ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'transparent', transition: 'background 0.1s' }}
               onMouseEnter={() => setSelectedIdx(i)}
             >
               {u.avatar_url
                 ? <img src={u.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
+                : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
               }
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-cream)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name}</div>

@@ -86,7 +86,7 @@ export default function CreateSpacePage() {
           <label style={lbl}>Icon</label>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {ICONS.map(i => (
-              <button key={i} type="button" onClick={() => setIcon(i)} style={{ width: '40px', height: '40px', borderRadius: '8px', border: `2px solid ${icon === i ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: icon === i ? 'rgba(255,109,31,0.1)' : '#2a2a2a', cursor: 'pointer', fontSize: '18px' }}>{i}</button>
+              <button key={i} type="button" onClick={() => setIcon(i)} style={{ width: '40px', height: '40px', borderRadius: '8px', border: `2px solid ${icon === i ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)'}`, background: icon === i ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : '#2a2a2a', cursor: 'pointer', fontSize: '18px' }}>{i}</button>
             ))}
           </div>
         </div>

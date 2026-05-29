@@ -119,7 +119,7 @@ export default function ConversationPage() {
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '32px', height: '32px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -137,7 +137,7 @@ export default function ConversationPage() {
         </button>
         {otherUser?.avatar_url
           ? <img src={otherUser.avatar_url} alt="" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover' }} />
-          : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
+          : <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
         }
         <div style={{ flex: 1 }}>
           <Link href={`/profile/${otherUser?.username}`} style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{otherUser?.full_name}</Link>
@@ -151,7 +151,7 @@ export default function ConversationPage() {
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '40px 0' }}>
             {otherUser?.avatar_url
               ? <img src={otherUser.avatar_url} alt="" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', marginBottom: '4px' }} />
-              : <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', fontWeight: 700, marginBottom: '4px' }}>{otherUser?.full_name?.[0]}</div>
+              : <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', fontWeight: 700, marginBottom: '4px' }}>{otherUser?.full_name?.[0]}</div>
             }
             <div style={{ fontWeight: 700, color: 'var(--color-cream)', fontSize: '15px' }}>{otherUser?.full_name}</div>
             <div style={{ fontSize: '13px', color: '#9a8f7a' }}>@{otherUser?.username}</div>
@@ -179,7 +179,7 @@ export default function ConversationPage() {
                   <div style={{ width: '28px', flexShrink: 0, visibility: showAvatar ? 'visible' : 'hidden' }}>
                     {otherUser?.avatar_url
                       ? <img src={otherUser.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-                      : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
+                      : <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>{otherUser?.full_name?.[0]}</div>
                     }
                   </div>
                 )}

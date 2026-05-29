@@ -56,7 +56,7 @@ export default function InstallBanner() {
     <div style={{
       position: 'fixed', bottom: '72px', left: '50%', transform: 'translateX(-50%)',
       width: 'calc(100% - 32px)', maxWidth: '480px',
-      background: '#2a2a2a', border: '1px solid rgba(255,109,31,0.3)',
+      background: '#2a2a2a', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)',
       borderRadius: '16px', padding: '14px 16px',
       boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       zIndex: 200, animation: 'slideUp 0.3s ease',

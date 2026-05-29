@@ -75,7 +75,7 @@ export default function MessagesPage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -124,15 +124,15 @@ export default function MessagesPage() {
                 const other = getOtherUser(conv)
                 const unread = getUnread(conv)
                 return (
-                  <Link key={conv.id} href={`/messages/${conv.id}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '14px', transition: 'background 0.15s', background: unread > 0 ? 'rgba(255,109,31,0.05)' : 'transparent', border: '1px solid transparent' }}
+                  <Link key={conv.id} href={`/messages/${conv.id}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '14px', transition: 'background 0.15s', background: unread > 0 ? 'color-mix(in srgb, var(--color-primary) 5%, transparent)' : 'transparent', border: '1px solid transparent' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = unread > 0 ? 'rgba(255,109,31,0.05)' : 'transparent')}
+                    onMouseLeave={e => (e.currentTarget.style.background = unread > 0 ? 'color-mix(in srgb, var(--color-primary) 5%, transparent)' : 'transparent')}
                   >
                     {/* Avatar */}
                     <div style={{ position: 'relative', flexShrink: 0 }}>
                       {other?.avatar_url
                         ? <img src={other.avatar_url} alt="" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
-                        : <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
+                        : <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
                       }
                       {unread > 0 && (
                         <div style={{ position: 'absolute', bottom: 0, right: 0, width: '14px', height: '14px', borderRadius: '50%', background: 'var(--color-primary)', border: '2px solid #222' }} />
@@ -181,7 +181,7 @@ export default function MessagesPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                       {other?.avatar_url
                         ? <img src={other.avatar_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
-                        : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
+                        : <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px', fontWeight: 700 }}>{other?.full_name?.[0]}</div>
                       }
                       <div>
                         <Link href={`/profile/${other?.username}`} style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)', textDecoration: 'none' }}>{other?.full_name}</Link>

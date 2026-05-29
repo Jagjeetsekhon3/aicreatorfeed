@@ -63,11 +63,11 @@ export default function ImageUpload({ onUpload, folder = 'posts', maxSizeMB = 10
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           gap: '12px', width: '100%', aspectRatio: '1', borderRadius: '16px',
           border: `2px dashed ${dragOver ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)'}`,
-          background: dragOver ? 'rgba(255,109,31,0.05)' : '#2f2f2f', cursor: 'pointer',
+          background: dragOver ? 'color-mix(in srgb, var(--color-primary) 5%, transparent)' : '#2f2f2f', cursor: 'pointer',
         }}
       >
         <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
-        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(255,109,31,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
           🖼️
         </div>
         <div style={{ textAlign: 'center' }}>

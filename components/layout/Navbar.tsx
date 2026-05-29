@@ -51,7 +51,7 @@ function CommunityIcon({ active }: { active: boolean }) {
 function MessagesIcon({ active }: { active: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? 'var(--color-primary)' : '#9a8f7a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill={active ? 'rgba(255,109,31,0.2)' : 'none'}/>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill={active ? 'color-mix(in srgb, var(--color-primary) 20%, transparent)' : 'none'}/>
     </svg>
   )
 }
@@ -83,8 +83,8 @@ function ProfileDropdown({ user, signOut }: { user: any; signOut: () => void }) 
     <div ref={ref} style={{ position: 'relative' }}>
       <button onClick={() => setOpen(!open)} style={{
         width: '36px', height: '36px', borderRadius: '50%',
-        background: avatar ? 'transparent' : 'rgba(255,109,31,0.2)',
-        border: `2px solid ${open ? 'var(--color-primary)' : 'rgba(255,109,31,0.4)'}`,
+        background: avatar ? 'transparent' : 'color-mix(in srgb, var(--color-primary) 20%, transparent)',
+        border: `2px solid ${open ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-primary) 40%, transparent)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', padding: 0, overflow: 'hidden', transition: 'border-color 0.2s',
       }}>
@@ -202,13 +202,13 @@ function BurgerMenu({ user, signOut }: { user: any; signOut: () => void }) {
               <Link key={href} href={href} onClick={() => setOpen(false)} style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 12px', borderRadius: '8px', textDecoration: 'none',
-                background: pathname.startsWith(href) ? 'rgba(255,109,31,0.1)' : 'transparent',
+                background: pathname.startsWith(href) ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'transparent',
                 color: pathname.startsWith(href) ? 'var(--color-primary)' : 'var(--color-beige)',
                 fontSize: '14px', fontWeight: pathname.startsWith(href) ? 600 : 400,
                 transition: 'background 0.15s',
               }}
                 onMouseEnter={e => { if (!pathname.startsWith(href)) (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.06)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = pathname.startsWith(href) ? 'rgba(255,109,31,0.1)' : 'transparent' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = pathname.startsWith(href) ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'transparent' }}
               >
                 <span style={{ fontSize: '15px' }}>{icon}</span>
                 {label}
@@ -328,7 +328,7 @@ export default function Navbar() {
               return (
                 <Link key={href} href={href} style={{
                   padding: '8px 12px', borderRadius: '8px', fontSize: '13px', textDecoration: 'none',
-                  background: active ? 'rgba(255,109,31,0.12)' : 'transparent',
+                  background: active ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)' : 'transparent',
                   color: active ? 'var(--color-primary)' : '#9a8f7a', fontWeight: active ? 600 : 400,
                 }}>{label}</Link>
               )
@@ -356,7 +356,7 @@ export default function Navbar() {
             <Link href="/post/new" title="Create post" style={{
               width: '36px', height: '36px', borderRadius: '10px', background: 'var(--color-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              textDecoration: 'none', boxShadow: '0 2px 8px rgba(255,109,31,0.35)',
+              textDecoration: 'none', boxShadow: '0 2px 8px color-mix(in srgb, var(--color-primary) 35%, transparent)',
             }}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <path d="M9 3.5V14.5M3.5 9H14.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
@@ -368,7 +368,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/auth/login" style={{ fontSize: '13px', color: '#9a8f7a', textDecoration: 'none' }}>Sign in</Link>
-                <Link href="/auth/signup" style={{ fontSize: '13px', fontWeight: 600, background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.3)', color: 'var(--color-primary)', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none' }}>Join free</Link>
+                <Link href="/auth/signup" style={{ fontSize: '13px', fontWeight: 600, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)', color: 'var(--color-primary)', padding: '8px 16px', borderRadius: '10px', textDecoration: 'none' }}>Join free</Link>
               </>
             )}
           </div>
@@ -428,7 +428,7 @@ export default function Navbar() {
                 <div style={{
                   width: '48px', height: '48px', borderRadius: '14px', background: 'var(--color-primary)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 4px 16px rgba(255,109,31,0.4)', marginTop: '-18px',
+                  boxShadow: '0 4px 16px color-mix(in srgb, var(--color-primary) 40%, transparent)', marginTop: '-18px',
                 }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>

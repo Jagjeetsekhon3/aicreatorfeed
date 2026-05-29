@@ -1,6 +1,7 @@
 import { createClient as createAdmin } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
 
 function checkAdmin() {
   const cookieStore = cookies()
@@ -213,8 +214,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'update_setting') {
-    await admin.from('site_settings').upsert({ key: body.key, value: body.value, updated_at: new Date().toISOString() })
+    await admin.from('site_settings').upsert(
+      { key: body.key, value: body.value, updated_at: new Date().toISOString() },
+      { onConflict: 'key' }
+    )
     await admin.from('admin_logs').insert({ action: `Updated setting: ${body.key} = ${body.value}` })
+    // Bust Next.js cache so layout re-reads brand colors on next request
+    revalidatePath('/', 'layout')
     return NextResponse.json({ success: true })
   }
 

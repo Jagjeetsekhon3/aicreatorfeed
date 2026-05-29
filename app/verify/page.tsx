@@ -48,7 +48,7 @@ export default function VerifyPage() {
     })
   }, [])
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}><div style={{ width: '32px', height: '32px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}><div style={{ width: '32px', height: '32px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
 
   if (profile?.paid_verified || profile?.is_verified) return (
     <div style={{ maxWidth: '480px', margin: '60px auto', padding: '0 16px', textAlign: 'center' }}>
@@ -87,7 +87,7 @@ export default function VerifyPage() {
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px', animation: 'fadeIn 0.3s ease' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,109,31,0.1)', border: '1px solid rgba(255,109,31,0.2)', borderRadius: '999px', padding: '6px 16px', marginBottom: '16px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderRadius: '999px', padding: '6px 16px', marginBottom: '16px' }}>
           <span style={{ color: 'var(--color-primary)', fontWeight: 900 }}>✓</span>
           <span style={{ color: 'var(--color-primary)', fontSize: '12px', fontWeight: 700 }}>VERIFIED CREATOR</span>
         </div>
@@ -110,7 +110,7 @@ export default function VerifyPage() {
                 {selected === plan.id && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }} />}
               </div>
               <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-cream)' }}>{plan.label}</span>
-              <span style={{ fontSize: '10px', background: plan.popular ? 'rgba(255,109,31,0.15)' : 'rgba(255,255,255,0.06)', color: plan.popular ? 'var(--color-primary)' : '#9a8f7a', padding: '2px 7px', borderRadius: '4px', marginLeft: 'auto', fontWeight: 600 }}>{plan.tag}</span>
+              <span style={{ fontSize: '10px', background: plan.popular ? 'color-mix(in srgb, var(--color-primary) 15%, transparent)' : 'rgba(255,255,255,0.06)', color: plan.popular ? 'var(--color-primary)' : '#9a8f7a', padding: '2px 7px', borderRadius: '4px', marginLeft: 'auto', fontWeight: 600 }}>{plan.tag}</span>
             </div>
             <div style={{ marginBottom: '14px' }}>
               <span style={{ fontSize: '28px', fontWeight: 900, color: 'var(--color-cream)' }}>₹{plan.price.toLocaleString()}</span>

@@ -38,7 +38,7 @@ export default function YouTubePlayer({ videoId }: { videoId: string }) {
           width: '60px', height: '60px', borderRadius: '50%',
           background: 'var(--color-primary)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(255,109,31,0.5)',
+          boxShadow: '0 4px 20px color-mix(in srgb, var(--color-primary) 50%, transparent)',
           transition: 'transform 0.15s',
         }}
           onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)')}

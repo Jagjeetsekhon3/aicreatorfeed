@@ -5,10 +5,14 @@ import Navbar from '@/components/layout/Navbar'
 import { AuthProvider } from '@/lib/auth-context'
 import { createClient } from '@supabase/supabase-js'
 import PWAProvider from '@/components/PWAProvider'
-import dynamic from 'next/dynamic'
+import nextDynamic from 'next/dynamic'
+
+// Force layout to be dynamic — never statically cached by Vercel
+// This ensures brand colors from site_settings are always fresh
+export const dynamic = 'force-dynamic'
 
 // InstallBanner uses localStorage + window — never SSR
-const InstallBanner = dynamic(() => import('@/components/InstallBanner'), { ssr: false })
+const InstallBanner = nextDynamic(() => import('@/components/InstallBanner'), { ssr: false })
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -25,7 +29,10 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://aicreatorfeed.com'
 async function getSiteSettings() {
   try {
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
-    const { data } = await supabase.from('site_settings').select('key, value')
+    const { data } = await supabase
+      .from('site_settings')
+      .select('key, value')
+      .order('key') // stable order, prevents query dedup cache
     if (!data) return {}
     return data.reduce((acc: any, s: any) => { acc[s.key] = s.value; return acc }, {})
   } catch { return {} }

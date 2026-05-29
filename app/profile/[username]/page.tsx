@@ -49,7 +49,7 @@ function SavedCollectionsTab({ userId, accessToken }: { userId: string; accessTo
     if (selectedCol?.id === id) setSelectedCol(null)
   }
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '28px', height: '28px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '28px', height: '28px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
 
   if (selectedCol) return (
     <div>
@@ -58,7 +58,7 @@ function SavedCollectionsTab({ userId, accessToken }: { userId: string; accessTo
         <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'var(--color-cream)' }}>📁 {selectedCol.name}</h3>
         <span style={{ fontSize: '12px', color: '#9a8f7a' }}>{colPosts.length} posts</span>
       </div>
-      {loadingPosts ? <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '24px', height: '24px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+      {loadingPosts ? <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><div style={{ width: '24px', height: '24px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
         : colPosts.length === 0 ? <p style={{ color: '#9a8f7a', textAlign: 'center', padding: '40px 0' }}>No posts saved here yet</p>
         : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px' }}>
           {colPosts.map((post: any) => (
@@ -297,7 +297,7 @@ export default function ProfilePage() {
   if (loading) return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ width: '36px', height: '36px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '36px', height: '36px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   )
 
@@ -320,8 +320,8 @@ export default function ProfilePage() {
         {/* Avatar */}
         <div style={{ flexShrink: 0 }}>
           {profile?.avatar_url
-            ? <img src={profile.avatar_url} alt={profile.full_name} style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,109,31,0.4)' }} />
-            : <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', border: '3px solid rgba(255,109,31,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: 700, color: 'var(--color-primary)' }}>
+            ? <img src={profile.avatar_url} alt={profile.full_name} style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid color-mix(in srgb, var(--color-primary) 40%, transparent)' }} />
+            : <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', border: '3px solid color-mix(in srgb, var(--color-primary) 40%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: 700, color: 'var(--color-primary)' }}>
                 {profile?.full_name?.[0] || '?'}
               </div>
           }
@@ -488,7 +488,7 @@ export default function ProfilePage() {
 
                 {/* Badges */}
                 {post.media_type === 'video' && <span style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '12px', pointerEvents: 'none' }}>▶</span>}
-                {post.prompt_text && <span style={{ position: 'absolute', top: '6px', left: '6px', background: 'rgba(255,109,31,0.85)', borderRadius: '4px', padding: '1px 5px', fontSize: '10px', color: '#fff', fontWeight: 700, pointerEvents: 'none' }}>✦</span>}
+                {post.prompt_text && <span style={{ position: 'absolute', top: '6px', left: '6px', background: 'color-mix(in srgb, var(--color-primary) 85%, transparent)', borderRadius: '4px', padding: '1px 5px', fontSize: '10px', color: '#fff', fontWeight: 700, pointerEvents: 'none' }}>✦</span>}
 
                 {/* Hover overlay */}
                 <Link href={`/post/${post.id}`} className="overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', opacity: 0, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
@@ -553,7 +553,7 @@ export default function ProfilePage() {
                   onChange={e => setEditForm(p => ({ ...p, prompt_text: e.target.value }))}
                   rows={3}
                   placeholder="The prompt you used to generate this..."
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,109,31,0.04)', border: '1px solid rgba(255,109,31,0.15)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '13px', padding: '10px 12px', resize: 'none', fontFamily: 'monospace', outline: 'none' }}
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'color-mix(in srgb, var(--color-primary) 4%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 15%, transparent)', borderRadius: '10px', color: 'var(--color-cream)', fontSize: '13px', padding: '10px 12px', resize: 'none', fontFamily: 'monospace', outline: 'none' }}
                 />
               </div>
 
@@ -576,7 +576,7 @@ export default function ProfilePage() {
                       <div
                         key={t || 'none'}
                         onClick={() => { setEditForm(p => ({ ...p, ai_tool: t })); setShowEditToolDropdown(false) }}
-                        style={{ padding: '10px 14px', fontSize: '13px', color: editForm.ai_tool === t ? 'var(--color-primary)' : (t ? 'var(--color-cream)' : '#9a8f7a'), cursor: 'pointer', background: editForm.ai_tool === t ? 'rgba(255,109,31,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.1s' }}
+                        style={{ padding: '10px 14px', fontSize: '13px', color: editForm.ai_tool === t ? 'var(--color-primary)' : (t ? 'var(--color-cream)' : '#9a8f7a'), cursor: 'pointer', background: editForm.ai_tool === t ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'background 0.1s' }}
                         onMouseEnter={e => { if (editForm.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
                         onMouseLeave={e => { if (editForm.ai_tool !== t) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
                       >
@@ -642,7 +642,7 @@ export default function ProfilePage() {
             <div style={{ overflowY: 'auto', flex: 1 }}>
               {followModalLoading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
-                  <div style={{ width: '30px', height: '30px', border: '3px solid rgba(255,109,31,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  <div style={{ width: '30px', height: '30px', border: '3px solid color-mix(in srgb, var(--color-primary) 20%, transparent)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                 </div>
               ) : followModalUsers.length === 0 ? (
                 <div style={{ padding: '40px 20px', textAlign: 'center', color: '#9a8f7a', fontSize: '14px' }}>
@@ -660,7 +660,7 @@ export default function ProfilePage() {
                   >
                     {u.avatar_url
                       ? <img src={u.avatar_url} alt={u.full_name} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,109,31,0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
+                      : <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0 }}>{u.full_name?.[0]}</div>
                     }
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
