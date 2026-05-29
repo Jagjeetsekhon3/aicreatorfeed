@@ -144,7 +144,22 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (tab === 'settings') {
-      api('settings').then(d => { if (d) { setSettings(d.settings); setFlags(d.flags) } })
+      api('settings').then(d => {
+        if (d) {
+          const loaded = d.settings as Setting[]
+          // Seed default brand color rows if they don't exist yet
+          const BRAND_DEFAULTS: Record<string,string> = {
+            brand_primary: '#FF6D1F', brand_background: '#222222',
+            brand_cream: '#FAF3E1', brand_beige: '#F5E7C6'
+          }
+          const merged = [...loaded]
+          Object.entries(BRAND_DEFAULTS).forEach(([k, v]) => {
+            if (!merged.some(s => s.key === k)) merged.push({ key: k, value: v })
+          })
+          setSettings(merged)
+          setFlags(d.flags)
+        }
+      })
       fetch('/api/admin/cloudinary-check').then(r => r.json()).then(d => setCloudinaryStatus(d)).catch(() => {})
     }
     if (tab === 'users')     api('users').then(d => { if (d) setUsers(d.users) })
@@ -1312,13 +1327,18 @@ export default function AdminDashboard() {
                   { key: 'brand_beige',      label: 'Beige (secondary)',  default: '#F5E7C6' },
                 ].map(({ key, label, default: def }) => {
                   const val = settingVal(key) || def
+                  const setVal = (v: string) => setSettings(prev => {
+                    const exists = prev.some(s => s.key === key)
+                    if (exists) return prev.map(s => s.key === key ? { ...s, value: v } : s)
+                    return [...prev, { key, value: v }] // add if key not in DB yet
+                  })
                   return (
                     <div key={key} style={{ marginBottom: '14px' }}>
                       <label style={{ fontSize: '12px', color: '#9a8f7a', display: 'block', marginBottom: '6px' }}>{label}</label>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <input type="color" value={val} onChange={e => setSettings(prev => prev.map(s => s.key === key ? { ...s, value: e.target.value } : s.key === key ? { key, value: e.target.value } : s))}
+                        <input type="color" value={val} onChange={e => setVal(e.target.value)}
                           style={{ width: '40px', height: '36px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: 'transparent', padding: 0 }} />
-                        <input type="text" value={val} onChange={e => setSettings(prev => prev.map(s => s.key === key ? { ...s, value: e.target.value } : s))}
+                        <input type="text" value={val} onChange={e => setVal(e.target.value)}
                           style={{ ...inp, flex: 1 }} />
                         <button onClick={() => saveSetting(key, val)} style={btn()} disabled={saving}>Save</button>
                       </div>
