@@ -66,7 +66,7 @@ export default function CreatorEligibility({ accessToken }: { accessToken: strin
   if (data.is_creator) return (
     <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 12%, transparent), color-mix(in srgb, var(--color-primary) 4%, transparent))', border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)', borderRadius: '16px', padding: '24px', textAlign: 'center' }}>
       <div style={{ fontSize: '36px', marginBottom: '8px' }}>🌟</div>
-      <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--color-cream)', marginBottom: '4px' }}>You're a Creator!</div>
+      <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--color-cream)', marginBottom: '4px' }}>You&apos;re a Creator!</div>
       <div style={{ fontSize: '13px', color: '#9a8f7a' }}>You can now create paid tutorials, sell prompt packs, and receive tips from supporters.</div>
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px', flexWrap: 'wrap' }}>
         {[
@@ -187,7 +187,7 @@ export default function CreatorEligibility({ accessToken }: { accessToken: strin
           disabled={applying}
           style={{ width: '100%', padding: '13px', background: 'var(--color-primary)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: applying ? 'not-allowed' : 'pointer', opacity: applying ? 0.7 : 1, fontFamily: 'inherit', letterSpacing: '0.3px', boxShadow: '0 4px 20px color-mix(in srgb, var(--color-primary) 35%, transparent)' }}
         >
-          {applying ? 'Activating...' : '🚀 Activate Creator Status — It's Free'}
+          {applying ? 'Activating...' : '🚀 Activate Creator Status — Free'}
         </button>
       ) : !data.eligible ? (
         <div style={{ textAlign: 'center', padding: '10px', fontSize: '12px', color: '#6b6460' }}>
