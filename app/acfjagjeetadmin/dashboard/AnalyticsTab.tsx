@@ -230,7 +230,7 @@ export default function AnalyticsTab() {
                   const intensity = hmMax > 0 ? v / hmMax : 0
                   const bg = intensity === 0
                     ? 'rgba(255,255,255,0.04)'
-                    : ``rgba(${primaryRgb},${(intensity * 0.85 + 0.1).toFixed(2)})`
+                    : `rgba(${primaryRgb},${(intensity * 0.85 + 0.1).toFixed(2)})`
                   return (
                     <div key={hi} title={`${DAYS[di]} ${HOURS[hi]}: ${v} posts`}
                       style={{ flex: 1, height: '18px', borderRadius: '3px', background: bg, minWidth: '18px', cursor: 'default', transition: 'opacity 0.15s' }} />
@@ -242,7 +242,7 @@ export default function AnalyticsTab() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', paddingLeft: '32px' }}>
               <span style={{ fontSize: '10px', color: '#9a8f7a' }}>Less</span>
               {[0.05, 0.2, 0.4, 0.65, 0.9].map(op => (
-                <div key={op} style={{ width: '14px', height: '14px', borderRadius: '3px', background: ``rgba(${primaryRgb},${op})` }} />
+                <div key={op} style={{ width: '14px', height: '14px', borderRadius: '3px', background: `rgba(${primaryRgb},${op})` }} />
               ))}
               <span style={{ fontSize: '10px', color: '#9a8f7a' }}>More</span>
             </div>
@@ -289,8 +289,8 @@ export default function AnalyticsTab() {
                 const opacity = 0.4 + (c.count / maxCountry) * 0.6
                 return (
                   <g key={c.code}>
-                    <circle cx={cx} cy={cy} r={r + 3} fill={``rgba(${primaryRgb},${(opacity * 0.3).toFixed(2)})`} />
-                    <circle cx={cx} cy={cy} r={r} fill={``rgba(${primaryRgb},${opacity.toFixed(2)})`} />
+                    <circle cx={cx} cy={cy} r={r + 3} fill={`rgba(${primaryRgb},${(opacity * 0.3).toFixed(2)})`} />
+                    <circle cx={cx} cy={cy} r={r} fill={`rgba(${primaryRgb},${opacity.toFixed(2)})`} />
                     {i < 3 && (
                       <text x={cx + r + 3} y={cy + 4} fontSize="9" fill="var(--color-cream)" fontWeight="500">{c.code}</text>
                     )}
