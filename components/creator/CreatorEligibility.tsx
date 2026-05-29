@@ -158,18 +158,40 @@ export default function CreatorEligibility({ accessToken }: { accessToken: strin
         })}
       </div>
 
+      {/* Benefits section — always visible */}
+      <div style={{ margin: '20px 0', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#9a8f7a', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '12px' }}>What you unlock</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {[
+            { icon: '☕', title: 'Receive Tips', desc: 'Supporters can tip you directly on your profile' },
+            { icon: '🎓', title: 'Paid Tutorials', desc: 'Publish tutorials with a price — earn per unlock' },
+            { icon: '📦', title: 'Prompt Packs', desc: 'Bundle & sell your best prompts as a pack' },
+            { icon: '🌟', title: 'Creator Badge', desc: 'Stand out with a Creator badge on your profile' },
+          ].map(b => (
+            <div key={b.title} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', flexShrink: 0 }}>{b.icon}</div>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: data.eligible ? 'var(--color-cream)' : '#6b6460' }}>{b.title}</div>
+                <div style={{ fontSize: '11px', color: '#6b6460', marginTop: '1px' }}>{b.desc}</div>
+              </div>
+              <div style={{ marginLeft: 'auto', fontSize: '14px' }}>{data.eligible ? '✅' : '🔒'}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* CTA */}
       {data.eligible && data.application?.status !== 'pending' ? (
         <button
           onClick={applyNow}
           disabled={applying}
-          style={{ width: '100%', padding: '12px', background: 'var(--color-primary)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: applying ? 'not-allowed' : 'pointer', opacity: applying ? 0.7 : 1, fontFamily: 'inherit', letterSpacing: '0.3px' }}
+          style={{ width: '100%', padding: '13px', background: 'var(--color-primary)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: applying ? 'not-allowed' : 'pointer', opacity: applying ? 0.7 : 1, fontFamily: 'inherit', letterSpacing: '0.3px', boxShadow: '0 4px 20px color-mix(in srgb, var(--color-primary) 35%, transparent)' }}
         >
-          {applying ? 'Activating...' : '🚀 Activate Creator Status'}
+          {applying ? 'Activating...' : '🚀 Activate Creator Status — It's Free'}
         </button>
       ) : !data.eligible ? (
-        <div style={{ textAlign: 'center', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', fontSize: '12px', color: '#6b6460' }}>
-          Keep creating to unlock these features ✦
+        <div style={{ textAlign: 'center', padding: '10px', fontSize: '12px', color: '#6b6460' }}>
+          Complete the requirements above to unlock ✦
         </div>
       ) : null}
     </div>
