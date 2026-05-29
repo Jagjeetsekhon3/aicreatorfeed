@@ -165,7 +165,7 @@ export default function ProfilePage() {
   const [accessToken, setAccessToken] = useState('')
   const [isFollowing, setIsFollowing] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<'posts' | 'prompts' | 'saved'>('posts')
+  const [activeTab, setActiveTab] = useState<'posts' | 'prompts' | 'saved' | 'creator'>('posts')
   const [editingPost, setEditingPost] = useState<Post | null>(null)
   const [editForm, setEditForm] = useState({ caption: '', prompt_text: '', ai_tool: '', tags: '' })
   const [editSaving, setEditSaving] = useState(false)
