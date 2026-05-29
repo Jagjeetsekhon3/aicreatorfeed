@@ -183,13 +183,15 @@ export async function POST(req: NextRequest) {
     creator_approved_at:  new Date().toISOString(),
   }).eq('id', user.id)
 
-  // Send notification
-  await db.from('notifications').insert({
-    user_id:   user.id,
-    type:      'creator_approved',
-    message:   '🎉 Congratulations! You are now a Creator. You can now create paid tutorials, sell prompt packs, and receive tips.',
-    is_read:   false,
-  }).catch(() => {}) // don't fail if notifications table schema differs
+  // Send notification (wrapped in try/catch — no .catch() on Supabase builders)
+  try {
+    await db.from('notifications').insert({
+      user_id:  user.id,
+      type:     'creator_approved',
+      message:  '🎉 Congratulations! You are now a Creator. You can now create paid tutorials, sell prompt packs, and receive tips.',
+      is_read:  false,
+    })
+  } catch (_) {} // don't fail if notifications table schema differs
 
   return NextResponse.json({ success: true, message: 'Congratulations! You are now a Creator.' })
 }
